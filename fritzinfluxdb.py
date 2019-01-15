@@ -64,7 +64,6 @@ def main(config_filename):
                 "fields": points
                 }
         influxdb_client.write_points([data], time_precision="ms")
-        print(data)
         time.sleep(10)
 
 
