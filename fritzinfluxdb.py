@@ -63,7 +63,7 @@ def main(config_filename):
                 "time": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
                 "fields": points
                 }
-        influxdb_client.write_points(data, time_precision="ms")
+        influxdb_client.write_points([data], time_precision="ms")
         print(data)
         time.sleep(10)
 
