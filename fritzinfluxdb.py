@@ -157,11 +157,16 @@ def main():
         points = query_points(fritz_client_unauth, unauth_services)
         points.update(query_points(fritz_client_auth, auth_services))
         data = {
-            "measurement": config.get('fritzbox', 'measurement_name'),
+            "measurement": config.get('influxdb', 'measurement_name'),
             "time": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
             "fields": points
         }
-        influxdb_client.write_points([data], time_precision="ms")
+        try:
+            influxdb_client.write_points([data], time_precision="ms")
+        except Exception:
+            logging.error("Failed to write to InfluxDB %s" % config.get('influxdb', 'host'))
+
+        # just sleep for 10 seconds
         time.sleep(10)
 
 
