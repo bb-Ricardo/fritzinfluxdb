@@ -10,16 +10,17 @@ import time
 from datetime import datetime
 import argparse
 import logging
-import pprint
 
 running = True
 default_config = os.path.join(os.path.dirname(__file__), 'default.ini')
+default_loglevel = logging.INFO
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", dest="config_file", default=default_config,
                         help="define config file (default: " + default_config + ")")
+    parser.add_argument("-d", "--debug", help="switch on debug mode", action="store_true")
     args = parser.parse_args()
     return args
 
@@ -90,11 +91,13 @@ def check_db_status(db_handler, db_name):
             if db['name'] == db_name:
                 db_found = True
         if not db_found:
-            logging.info('Database <%s> not found, trying to create it', db_name)
+            logging.info('Database <%s> not found, trying to create it' % db_name)
             db_handler.create_database(db_name)
+        else:
+            logging.debug('Influx Database <%s> exists' % db_name)
         return True
     except Exception as e:
-        logging.error('Error creating database: %s', e)
+        logging.error('Problem creating database: %s', e)
         return False
 
 
@@ -114,11 +117,12 @@ def main():
     signal.signal(signal.SIGTERM, shutdown)
     signal.signal(signal.SIGINT, shutdown)
 
-    # set logging
-    logging.basicConfig(level=logging.INFO)
-
     # parse command line arguments
     args = parse_args()
+
+    # set logging
+    log_level = logging.DEBUG if args.debug == True else default_loglevel
+    logging.basicConfig(level=log_level, format="%(levelname)s: %(message)s")
 
     # check if config file exists
     if not os.path.isfile(args.config_file):
@@ -127,6 +131,8 @@ def main():
 
     # read config from ini file
     config = read_config(args.config_file)
+
+    logging.info("Done parsing config file")
 
     # set up influxdb handler
     influxdb_client = influxdb.InfluxDBClient(
@@ -139,6 +145,8 @@ def main():
 
     # check influx db status
     check_db_status(influxdb_client, config.get('influxdb', 'database'))
+
+    logging.info("Connection to InfluxDB established and database present")
 
     # create unauthenticated FB client handler
     fritz_client_unauth = fritzconnection.FritzConnection(
@@ -164,6 +172,8 @@ def main():
         logging.error("Failed to connect to %s" % config.get('fritzbox', 'host'))
         exit(1)
 
+    logging.info("Successfully connected to FritzBox")
+
     # read services from config file
     unauth_services = get_services(config, "service")
     auth_services = get_services(config, "auth_service")
@@ -177,6 +187,7 @@ def main():
             "fields": points
         }
         try:
+            logging.debug("writing data to InfluxDB")
             influxdb_client.write_points([data], time_precision="ms")
         except Exception:
             logging.error("Failed to write to InfluxDB %s" % config.get('influxdb', 'host'))
