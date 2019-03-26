@@ -67,7 +67,7 @@ def main():
 
     # check if config file exists
     if not os.path.isfile(args.config_file):
-        sys.stderr.write("Error: config file \"" + args.config_file + "\" not found.\n")
+        logging.error("config file \"%s\" not found" % args.config_file)
         exit(1)
 
     # read config from ini file
@@ -85,15 +85,27 @@ def main():
     # check influx db status
     check_db_status(influxdb_client, config.get('influxdb', 'database'))
 
-    fritz_client = fritzconnection.FritzConnection(
+    # create two different FB client handlers
+    fritz_client_unauth = fritzconnection.FritzConnection(
+        address = config.get('fritzbox', 'host'),
+        port = config.get('fritzbox', 'port'),
+    )
+
+    if fritz_client_unauth.modelname is None:
+        logging.error("Failed to connect to %s" % config.get('fritzbox', 'host'))
+        exit(1)
+
+    fritz_client_auth = fritzconnection.FritzConnection(
         address=config.get('fritzbox', 'host'),
         port=config.get('fritzbox', 'port'),
         user=config.get('fritzbox', 'username'),
         password=config.get('fritzbox', 'password')
     )
-    if fritz_client.modelname is None:
-        raise IOError("fritzinflux: Failed to connect to %s" %
-                      config.get('fritzbox', 'host'))
+
+    if fritz_client_auth.modelname is None:
+        logging.error("Failed to connect to %s" % config.get('fritzbox', 'host'))
+        exit(1)
+
 
     sections = [s for s in config.sections() if s.startswith('service')]
     services = {}
@@ -101,7 +113,7 @@ def main():
         services.update({config.get(s, 'service'): config.get(s, 'actions').split("\n")})
 
     while running:
-        points = query_points(fritz_client, services)
+        points = query_points(fritz_client_auth, services)
         data = {
             "measurement": config.get('fritzbox', 'measurement_name'),
             "time": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
