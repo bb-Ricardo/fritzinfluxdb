@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 import sys
 import signal
@@ -6,16 +8,21 @@ import fritzconnection
 import influxdb
 import time
 from datetime import datetime
+import argparse
 
 running = True
+default_config = os.path.join(os.path.dirname(__file__), 'default.ini')
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-c", "--config", dest="config_file", default=default_config,
+                        help="define config file (default: "+default_config+")")
+    args = parser.parse_args()
+    return args
 
 def shutdown(signal, frame):
     global running
     running = False
-
-
-signal.signal(signal.SIGTERM, shutdown)
 
 
 def query_points(fc, services):
@@ -34,8 +41,17 @@ def read_config(filename):
     return config
 
 
-def main(config_filename):
-    config = read_config(config_filename)
+def main():
+    signal.signal(signal.SIGTERM, shutdown)
+
+    args = parse_args()
+
+    # check if config file exists
+    if not os.path.isfile(args.config_file):
+        sys.stderr.write("Error: config file \"" + args.config_file + "\" not found.\n")
+        exit(1)
+
+    config = read_config(args.config_file)
 
     influxdb_client = influxdb.InfluxDBClient(
         config.get('influxdb', 'host'),
@@ -73,4 +89,4 @@ def main(config_filename):
 
 
 if __name__ == "__main__":
-    main(*sys.argv[1:])
+    main()
