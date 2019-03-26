@@ -1,0 +1,19 @@
+[Unit]
+Description=Fritz to InfluxDB daemon
+After=sshd.service
+
+[Service]
+Type=simple
+User=nobody
+Group=nogroup
+WorkingDirectory=/opt/fritzinfluxdb
+ExecStart=/opt/fritzinfluxdb/fritzinfluxdb.py
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=fritzinfluxdb
+RemainAfterExit=no
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
