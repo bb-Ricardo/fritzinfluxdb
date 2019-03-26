@@ -112,6 +112,7 @@ def get_services(config, section_name_start):
 
 def main():
     signal.signal(signal.SIGTERM, shutdown)
+    signal.signal(signal.SIGINT, shutdown)
 
     # set logging
     logging.basicConfig(level=logging.INFO)
