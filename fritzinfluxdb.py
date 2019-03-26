@@ -9,6 +9,7 @@ import influxdb
 import time
 from datetime import datetime
 import argparse
+import logging
 
 running = True
 default_config = os.path.join(os.path.dirname(__file__), 'default.ini')
@@ -36,14 +37,32 @@ def query_points(fc, services):
 
 def read_config(filename):
     config = configparser.ConfigParser()
-    config.read(os.path.join(os.path.dirname(__file__), 'defaults.ini'))
     config.read(filename)
     return config
 
+def check_db_status(db_handler, db_name):
+
+    try:
+        dblist = db_handler.get_list_database()
+        db_found = False
+        for db in dblist:
+            if db['name'] == db_name:
+                db_found = True
+        if not db_found:
+            logging.info('Database <%s> not found, trying to create it', db_name)
+            db_handler.create_database(db_name)
+        return True
+    except Exception as e:
+        logging.error('Error creating database: %s', e)
+        return False
 
 def main():
     signal.signal(signal.SIGTERM, shutdown)
 
+    # set logging
+    logging.basicConfig(level=logging.INFO)
+
+    # parse command line arguments
     args = parse_args()
 
     # check if config file exists
@@ -51,8 +70,10 @@ def main():
         sys.stderr.write("Error: config file \"" + args.config_file + "\" not found.\n")
         exit(1)
 
+    # read config from ini file
     config = read_config(args.config_file)
 
+    # set up influxdb handler
     influxdb_client = influxdb.InfluxDBClient(
         config.get('influxdb', 'host'),
         config.getint('influxdb', 'port'),
@@ -60,7 +81,9 @@ def main():
         config.get('influxdb', 'password'),
         config.get('influxdb', 'database'),
     )
-    influxdb_client.create_database(config.get('influxdb', 'database'))
+
+    # check influx db status
+    check_db_status(influxdb_client, config.get('influxdb', 'database'))
 
     fritz_client = fritzconnection.FritzConnection(
         address=config.get('fritzbox', 'host'),
