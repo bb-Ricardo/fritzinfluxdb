@@ -6,7 +6,7 @@ It is equal capable as fritzcollectd and directly writing to influxdb.
 # Setup
 ```
 cd /opt
-git clone [.]
+git clone <this_repo_url>
 virtualenv --no-site-packages venv
 . ./venv/bin/activate
 pip -r requirements.txt
