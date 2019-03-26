@@ -10,6 +10,7 @@ import time
 from datetime import datetime
 import argparse
 import logging
+import pprint
 
 running = True
 default_config = os.path.join(os.path.dirname(__file__), 'default.ini')
@@ -27,6 +28,24 @@ def shutdown(signal, frame):
     global running
     running = False
 
+# sometimes integers are returned as string
+# try to sanatize this a bit
+def sanatize_fb_return_data(results):
+
+    return_results = {}
+    for instance in results:
+        # turn None => 0
+        if results[instance] == None:
+            return_results.update({instance: 0})
+        else:
+            # try to parse as int
+            try:
+                return_results.update({instance: int(results[instance])})
+            # keep it a string if this fails
+            except ValueError:
+                return_results.update({instance: results[instance]})
+
+    return return_results
 
 def query_points(fc, services):
     result = {}
@@ -48,18 +67,13 @@ def query_points(fc, services):
                         instance = instance.strip()
                         rewrite_name = rewrite_name.strip()
 
+                    # only keep desired result key
                     if instance in this_result:
-                        if rewrite_name != None:
-                            try:
-                                result.update({rewrite_name: int(this_result[instance])})
-                            except ValueError:
-                                result.update({rewrite_name: this_result[instance]})
-                        else:
-                            result.update({instance: int(this_result[instance])})
+                        result.update({ rewrite_name if rewrite_name != None else instance : this_result[instance]})
             else:
                 result.update(fc.call_action(service, action))
 
-    return result
+    return sanatize_fb_return_data(result)
 
 
 def read_config(filename):
