@@ -1,13 +1,14 @@
 [Unit]
 Description=Fritz to InfluxDB daemon
-After=sshd.service
+Wants=network-online.target
+After=network-online.target
 
 [Service]
 Type=simple
 User=nobody
 Group=nogroup
 WorkingDirectory=/opt/fritzinfluxdb
-ExecStart=/opt/fritzinfluxdb/fritzinfluxdb.py
+ExecStart=/opt/fritzinfluxdb/.venv/bin/python /opt/fritzinfluxdb/fritzinfluxdb.py
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=fritzinfluxdb
