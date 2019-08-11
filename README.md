@@ -27,3 +27,8 @@ This was heavily inspired from: https://grafana.com/dashboards/713
 
 check here to find a overview of more attributes which probaly could be added
 https://wiki.fhem.de/w/index.php?title=FRITZBOX
+
+# License
+>You can check out the full license [here](LICENSE.txt)
+
+This project is licensed under the terms of the **MIT** license.
