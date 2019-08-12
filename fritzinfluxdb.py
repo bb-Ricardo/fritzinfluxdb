@@ -1,42 +1,52 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import os
-import sys
-import signal
+# import standard modules
+import argparse
 import configparser
-import fritzconnection
-import influxdb
+import logging
+import os
+import signal
+import sys
 import time
 from datetime import datetime
-import argparse
-import logging
+
+# import 3rd party modules
+import fritzconnection
+import influxdb
+
 
 running = True
-default_config = os.path.join(os.path.dirname(__file__), 'default.ini')
+default_config = os.path.join(os.path.dirname(__file__), 'fritzfluxdb.ini')
 default_loglevel = logging.INFO
 
 
 def parse_args():
+
     parser = argparse.ArgumentParser()
+
     parser.add_argument("-c", "--config", dest="config_file", default=default_config,
                         help="define config file (default: " + default_config + ")")
     parser.add_argument("-d", "--debug", help="switch on debug mode", action="store_true")
+
     args = parser.parse_args()
+
     return args
 
 
-def shutdown(signal, frame):
+def shutdown():
     global running
     running = False
 
-# sometimes integers are returned as string
-# try to sanatize this a bit
-def sanatize_fb_return_data(results):
 
+def sanitize_fb_return_data(results):
+    """
+    sometimes integers are returned as string
+    try to sanitize this a bit
+    """
     return_results = {}
     for instance in results:
         # turn None => 0
-        if results[instance] == None:
+        if results[instance] is None:
             return_results.update({instance: 0})
         else:
             # try to parse as int
@@ -47,6 +57,7 @@ def sanatize_fb_return_data(results):
                 return_results.update({instance: results[instance]})
 
     return return_results
+
 
 def query_points(fc, services):
     result = {}
@@ -70,11 +81,11 @@ def query_points(fc, services):
 
                     # only keep desired result key
                     if instance in this_result:
-                        result.update({ rewrite_name if rewrite_name != None else instance : this_result[instance]})
+                        result.update({rewrite_name if rewrite_name is not None else instance: this_result[instance]})
             else:
                 result.update(fc.call_action(service, action))
 
-    return sanatize_fb_return_data(result)
+    return sanitize_fb_return_data(result)
 
 
 def read_config(filename):
@@ -121,7 +132,7 @@ def main():
     args = parse_args()
 
     # set logging
-    log_level = logging.DEBUG if args.debug == True else default_loglevel
+    log_level = logging.DEBUG if args.debug is True else default_loglevel
     logging.basicConfig(level=log_level, format="%(levelname)s: %(message)s")
 
     # check if config file exists
