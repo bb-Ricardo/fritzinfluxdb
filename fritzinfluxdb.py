@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 
+self_description = """
+Fritz InfluxDB is a tiny daemon written to fetch data from a fritz box router and
+writes it to an InfluxDB instance.
+"""
+
 # import standard modules
-import argparse
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
 import configparser
 import logging
 import os
@@ -15,22 +20,36 @@ import fritzconnection
 import influxdb
 
 
+__version__ = "0.1.0"
+__version_date__ = "2019-08-12"
+__description__ = "fritzinfluxdb"
+__license__ = "MIT"
+
+
+# default vars
 running = True
 default_config = os.path.join(os.path.dirname(__file__), 'fritzfluxdb.ini')
 default_loglevel = logging.INFO
 
 
 def parse_args():
+    """parse command line arguments
 
-    parser = argparse.ArgumentParser()
+    Also add current version and version date to description
+    """
+
+    parser = ArgumentParser(
+        description=self_description + "\nVersion: " + __version__ + " (" + __version_date__ + ")",
+        formatter_class=RawDescriptionHelpFormatter)
 
     parser.add_argument("-c", "--config", dest="config_file", default=default_config,
                         help="define config file (default: " + default_config + ")")
-    parser.add_argument("-d", "--debug", help="switch on debug mode", action="store_true")
+    parser.add_argument("-d", "--daemon", action='store_true',
+                        help="define if the script is run as a systemd daemon")
+    parser.add_argument("-v", "--verbose", action='store_true',
+                        help="turn on verbose output to get debug logging")
 
-    args = parser.parse_args()
-
-    return args
+    return parser.parse_args()
 
 
 def shutdown():
@@ -132,8 +151,13 @@ def main():
     args = parse_args()
 
     # set logging
-    log_level = logging.DEBUG if args.debug is True else default_loglevel
-    logging.basicConfig(level=log_level, format="%(levelname)s: %(message)s")
+    log_level = logging.DEBUG if args.verbose is True else default_loglevel
+
+    if args.daemon:
+        # omit time stamp if run in daemon mode
+        logging.basicConfig(level=log_level, format='%(levelname)s: %(message)s')
+    else:
+        logging.basicConfig(level=log_level, format='%(asctime)s - %(levelname)s: %(message)s')
 
     # check if config file exists
     if not os.path.isfile(args.config_file):
