@@ -28,7 +28,7 @@ __license__ = "MIT"
 
 # default vars
 running = True
-default_config = os.path.join(os.path.dirname(__file__), 'fritzfluxdb.ini')
+default_config = os.path.join(os.path.dirname(__file__), 'fritzinfluxdb.ini')
 default_loglevel = logging.INFO
 
 
