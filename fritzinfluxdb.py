@@ -80,6 +80,7 @@ def sanitize_fb_return_data(results):
 
 def query_points(fc, services):
     result = {}
+    error = False
 
     for service, content in services.items():
 
@@ -87,7 +88,16 @@ def query_points(fc, services):
 
             if 'value_instances' in content:
 
-                this_result = fc.call_action(service, action)
+                try:
+                    this_result = fc.call_action(service, action)
+                except fritzconnection.fritzconnection.ServiceError:
+                    logging.error("Requested invalid service: %s" % service)
+                    error = True
+                    continue
+                except fritzconnection.fritzconnection.ActionError:
+                    logging.error("Requested invalid action: %s" % action)
+                    error = True
+                    continue
 
                 for instance in content['value_instances']:
 
@@ -102,33 +112,75 @@ def query_points(fc, services):
                     if instance in this_result:
                         result.update({rewrite_name if rewrite_name is not None else instance: this_result[instance]})
             else:
-                result.update(fc.call_action(service, action))
+                try:
+                    result.update(fc.call_action(service, action))
+                except fritzconnection.fritzconnection.ServiceError:
+                    logging.error("Requested invalid service: %s" % service)
+                    error = True
+                    continue
+                except fritzconnection.fritzconnection.ActionError:
+                    logging.error("Requested invalid action: %s" % action)
+                    error = True
+                    continue
+
+    if error is True:
+        logging.error("Encountered errors while requesting data. Exit")
+        exit(1)
 
     return sanitize_fb_return_data(result)
 
 
 def read_config(filename):
-    config = configparser.ConfigParser()
-    config.read(filename)
+
+    config = None
+
+    # check if config file exists
+    if not os.path.isfile(filename):
+        logging.error("config file \"%s\" not found" % filename)
+        exit(1)
+
+    # check if config file is readable
+    if not os.access(filename, os.R_OK):
+        logging.error("config file \"%s\" not readable" % filename)
+        exit(1)
+
+    try:
+        config = configparser.ConfigParser()
+        config.read(filename)
+    except configparser.Error as e:
+        logging.error("Config Error: %s", str(e))
+        exit(1)
+
+    logging.info("Done parsing config file")
+
     return config
 
 
 def check_db_status(db_handler, db_name):
+
+    dblist = None
+
     try:
         dblist = db_handler.get_list_database()
-        db_found = False
-        for db in dblist:
-            if db['name'] == db_name:
-                db_found = True
-        if not db_found:
-            logging.info('Database <%s> not found, trying to create it' % db_name)
-            db_handler.create_database(db_name)
-        else:
-            logging.debug('Influx Database <%s> exists' % db_name)
-        return True
     except Exception as e:
-        logging.error('Problem creating database: %s', e)
-        return False
+        logging.error('Problem connecting to database: %s', e)
+        exit(1)
+
+    if db_name not in [db['name'] for db in dblist]:
+
+        logging.info('Database <%s> not found, trying to create it' % db_name)
+
+        try:
+            db_handler.create_database(db_name)
+        except Exception as e:
+            logging.error('Problem creating database: %s', e)
+            exit(1)
+    else:
+        logging.debug('Influx Database <%s> exists' % db_name)
+
+    logging.info("Connection to InfluxDB established and database present")
+
+    return
 
 
 def get_services(config, section_name_start):
@@ -159,52 +211,66 @@ def main():
     else:
         logging.basicConfig(level=log_level, format='%(asctime)s - %(levelname)s: %(message)s')
 
-    # check if config file exists
-    if not os.path.isfile(args.config_file):
-        logging.error("config file \"%s\" not found" % args.config_file)
-        exit(1)
-
     # read config from ini file
     config = read_config(args.config_file)
 
-    logging.info("Done parsing config file")
-
     # set up influxdb handler
-    influxdb_client = influxdb.InfluxDBClient(
-        config.get('influxdb', 'host'),
-        config.getint('influxdb', 'port'),
-        config.get('influxdb', 'username'),
-        config.get('influxdb', 'password'),
-        config.get('influxdb', 'database'),
-    )
+    influxdb_client = None
+    try:
+        influxdb_client = influxdb.InfluxDBClient(
+            config.get('influxdb', 'host'),
+            config.getint('influxdb', 'port'),
+            config.get('influxdb', 'username'),
+            config.get('influxdb', 'password'),
+            config.get('influxdb', 'database'),
+        )
+        # test more config options
+        _ = config.get('influxdb', 'measurement_name')
+    except configparser.Error as e:
+        logging.error("Config Error: %s", str(e))
+        exit(1)
+    except ValueError as e:
+        logging.error("Config Error: %s", str(e))
+        exit(1)
 
     # check influx db status
     check_db_status(influxdb_client, config.get('influxdb', 'database'))
 
-    logging.info("Connection to InfluxDB established and database present")
-
     # create unauthenticated FB client handler
-    fritz_client_unauth = fritzconnection.FritzConnection(
-        address=config.get('fritzbox', 'host'),
-        port=config.get('fritzbox', 'port'),
-    )
+    fritz_client_unauth = None
+    try:
+        fritz_client_unauth = fritzconnection.FritzConnection(
+            address=config.get('fritzbox', 'host'),
+            port=config.get('fritzbox', 'port'),
+        )
+    except configparser.Error as e:
+        logging.error("Config Error: %s", str(e))
+        exit(1)
 
     # test connection
     if fritz_client_unauth.modelname is None:
-        logging.error("Failed to connect to %s" % config.get('fritzbox', 'host'))
+        logging.error("Failed to connect to FritzBox '%s'" % config.get('fritzbox', 'host'))
         exit(1)
 
     # create authenticated FB client handler
-    fritz_client_auth = fritzconnection.FritzConnection(
-        address=config.get('fritzbox', 'host'),
-        port=config.get('fritzbox', 'port'),
-        user=config.get('fritzbox', 'username'),
-        password=config.get('fritzbox', 'password')
-    )
+    fritz_client_auth = None
+    try:
+        fritz_client_auth = fritzconnection.FritzConnection(
+            address=config.get('fritzbox', 'host'),
+            port=config.get('fritzbox', 'port'),
+            user=config.get('fritzbox', 'username'),
+            password=config.get('fritzbox', 'password')
+        )
+    except configparser.Error as e:
+        logging.error("Config Error: %s", str(e))
+        exit(1)
 
-    # test connection
-    if fritz_client_auth.modelname is None:
-        logging.error("Failed to connect to %s" % config.get('fritzbox', 'host'))
+    # test auth connection
+    try:
+        fritz_client_auth.call_action("DeviceInfo", "GetInfo")
+    except fritzconnection.fritzconnection.FritzConnectionException:
+        logging.error("Failed to connect to FritzBox '%s' using credentials. Check username and password!" %
+                      config.get('fritzbox', 'host'))
         exit(1)
 
     logging.info("Successfully connected to FritzBox")
@@ -221,8 +287,10 @@ def main():
             "time": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
             "fields": points
         }
+
+        logging.debug("writing data to InfluxDB")
+
         try:
-            logging.debug("writing data to InfluxDB")
             influxdb_client.write_points([data], time_precision="ms")
         except Exception:
             logging.error("Failed to write to InfluxDB %s" % config.get('influxdb', 'host'))
