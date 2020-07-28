@@ -16,6 +16,21 @@ systemctl start fritzinfluxdb
 systemctl enable fritzinfluxdb
 ```
 
+## Run with Docker
+```
+git clone <this_repo_url>
+cd fritzinfluxdb
+docker build -t fritzinfluxdb .
+```
+
+Copy the config from the [example](default.ini) to ```my-frtizinfluxdb.ini``` and edit
+the settings.
+
+Now you should be able to run the image with following command
+```
+docker run -d -v /PATH/TO/my-frtizinfluxdb.ini:/app/idefault.ini --name fritzinfluxdb fritzinfluxdb
+```
+
 # Grafana
 
 Use ```grafana_dashboard_fritzbox.json``` to import this dashboard.
