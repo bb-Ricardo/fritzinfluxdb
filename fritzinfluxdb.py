@@ -11,7 +11,6 @@ import configparser
 import logging
 import os
 import signal
-import sys
 import time
 from datetime import datetime
 
@@ -29,7 +28,7 @@ __license__ = "MIT"
 # default vars
 running = True
 default_config = os.path.join(os.path.dirname(__file__), 'fritzinfluxdb.ini')
-default_loglevel = logging.INFO
+default_log_level = logging.INFO
 
 
 def parse_args():
@@ -52,7 +51,8 @@ def parse_args():
     return parser.parse_args()
 
 
-def shutdown():
+# noinspection PyUnusedLocal
+def shutdown(exit_signal, frame):
     global running
     running = False
 
@@ -203,7 +203,7 @@ def main():
     args = parse_args()
 
     # set logging
-    log_level = logging.DEBUG if args.verbose is True else default_loglevel
+    log_level = logging.DEBUG if args.verbose is True else default_log_level
 
     if args.daemon:
         # omit time stamp if run in daemon mode
@@ -223,6 +223,8 @@ def main():
             config.get('influxdb', 'username'),
             config.get('influxdb', 'password'),
             config.get('influxdb', 'database'),
+            config.get('influxdb', 'ssl'),
+            config.get('influxdb', 'verify_ssl'),
         )
         # test more config options
         _ = config.get('influxdb', 'measurement_name')
@@ -290,6 +292,7 @@ def main():
 
         logging.debug("writing data to InfluxDB")
 
+        # noinspection PyBroadException
         try:
             influxdb_client.write_points([data], time_precision="ms")
         except Exception:

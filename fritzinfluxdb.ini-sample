@@ -4,6 +4,8 @@ port = 8086
 username = bla
 password = blub
 database = db
+ssl = false
+verify_ssl = true
 measurement_name = fritzbox
 
 [fritzbox]
