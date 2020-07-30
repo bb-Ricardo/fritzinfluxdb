@@ -219,12 +219,12 @@ def main():
     try:
         influxdb_client = influxdb.InfluxDBClient(
             config.get('influxdb', 'host'),
-            config.getint('influxdb', 'port'),
+            config.getint('influxdb', 'port', fallback=8086),
             config.get('influxdb', 'username'),
             config.get('influxdb', 'password'),
             config.get('influxdb', 'database'),
-            config.get('influxdb', 'ssl'),
-            config.get('influxdb', 'verify_ssl'),
+            config.get('influxdb', 'ssl', fallback=False),
+            config.get('influxdb', 'verify_ssl', fallback=False)
         )
         # test more config options
         _ = config.get('influxdb', 'measurement_name')
@@ -242,10 +242,12 @@ def main():
     fritz_client_auth = None
     try:
         fritz_client_auth = fritzconnection.FritzConnection(
-            address=config.get('fritzbox', 'host'),
-            port=config.get('fritzbox', 'port'),
+            address=config.get('fritzbox', 'host', fallback='192.168.178.1'),
+            port=config.getint('fritzbox', 'port', fallback=49000),
             user=config.get('fritzbox', 'username'),
-            password=config.get('fritzbox', 'password')
+            password=config.get('fritzbox', 'password'),
+            timeout=config.getint('fritzbox', 'timeout', fallback=5),
+            use_tls=config.get('fritzbox', 'ssl', fallback=False)
         )
     except configparser.Error as e:
         logging.error("Config Error: %s", str(e))

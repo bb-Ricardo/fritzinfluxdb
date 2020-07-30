@@ -12,7 +12,11 @@ measurement_name = fritzbox
 host = 192.168.178.1
 username = dslf-config
 password =
+# change to 49443 if you use ssl
 port = 49000
+timeout = 5
+ssl = false
+
 
 [service1]
 service = WANCommonIFC
