@@ -16,6 +16,8 @@ password =
 port = 49000
 timeout = 5
 ssl = false
+# interval to request data in seconds
+#interval = 10
 
 
 [service1]

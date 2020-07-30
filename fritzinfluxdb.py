@@ -344,6 +344,7 @@ def main():
 
     # create authenticated FB client handler
     fritz_client_auth = None
+    request_interval = 10
     try:
         fritz_client_auth = fritzconnection.FritzConnection(
             address=config.get('fritzbox', 'host', fallback='192.168.178.1'),
@@ -353,6 +354,9 @@ def main():
             timeout=config.getint('fritzbox', 'timeout', fallback=5),
             use_tls=config.getboolean('fritzbox', 'ssl', fallback=False)
         )
+
+        request_interval = config.getint('fritzbox', 'interval', fallback=10)
+
     except configparser.Error as e:
         logging.error("Config Error: %s", str(e))
         exit(1)
@@ -380,6 +384,10 @@ def main():
     logging.info("Starting main loop")
 
     while running:
+        logging.debug("Starting FritzBox requests")
+
+        start = int(datetime.utcnow().timestamp() * 1000)
+
         # query data
         data = {
             "measurement": config.get('influxdb', 'measurement_name'),
@@ -400,11 +408,19 @@ def main():
         except Exception as e:
             logging.error("Failed to write to InfluxDB <%s>: %s" % (config.get('influxdb', 'host'), str(e)))
 
-        # just sleep for 10 seconds
-        for _ in range(0, 20):
+        duration = int(datetime.utcnow().timestamp() * 1000) - start
+
+        logging.debug("Duration of requesting Fritzbox and sending data to InfluxDB: %0.3fs" % (duration / 1000))
+
+        if duration + 1000 >= (request_interval * 1000):
+            logging.warning(f"Request interval of {request_interval} seconds might be to short considering last "
+                            "duration for all requests was %0.3f seconds" % (duration / 1000))
+
+        # just sleep for interval seconds - last run duration
+        for _ in range(0, int(((request_interval * 1000) - duration) / 100)):
             if running is False:
                 break
-            time.sleep(0.5)
+            time.sleep(0.0965)
 
 
 if __name__ == "__main__":
