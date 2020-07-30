@@ -38,7 +38,7 @@ def parse_args():
     """
 
     parser = ArgumentParser(
-        description=self_description + "\nVersion: " + __version__ + " (" + __version_date__ + ")",
+        description=self_description + f"\nVersion: {__version__} ({__version_date__})",
         formatter_class=RawDescriptionHelpFormatter)
 
     parser.add_argument("-c", "--config", dest="config_file", default=default_config,
@@ -53,15 +53,36 @@ def parse_args():
 
 # noinspection PyUnusedLocal
 def shutdown(exit_signal, frame):
+    """
+    Signal handler which ends the loop
+    Parameters
+    ----------
+    exit_signal: int
+        signal value
+    frame: unused
+
+    """
+
     global running
+    logging.info(f"Program terminated. Signal {exit_signal}")
     running = False
 
 
 def sanitize_fb_return_data(results):
     """
-    sometimes integers are returned as string
+    Sometimes integers are returned as string
     try to sanitize this a bit
+
+    Parameters
+    ----------
+    results: dict
+        dict of results from fritzconnection call
+
+    Returns
+    -------
+    dict: sanitized version of results
     """
+
     return_results = {}
     for instance in results:
         # turn None => 0
@@ -78,26 +99,71 @@ def sanitize_fb_return_data(results):
     return return_results
 
 
-def query_points(fc, services):
-    result = {}
+def query_services(fc, services):
+    """
+    Query all services from a Fritzbox which are defined in config
+
+    Parameters
+    ----------
+    fc: fritzconnection.FritzConnection
+        initialized fritzconnection handler
+    services: dict
+
+    Returns
+    -------
+    dict: dict of requested and sanitized value_instances
+    """
+
+    result = dict()
     error = False
 
+    def _fb_call_action(service_called, action_called):
+        """
+        Perform actual Fritzbox request
+
+        Parameters
+        ----------
+        service_called: str
+            name of requested service
+        action_called: str
+            name of requested action
+
+        Returns
+        -------
+        dict: result from called action or None if an error occurred
+        """
+
+        call_result = None
+        logging.debug(f"Requesting {service_called} : {action_called}")
+        try:
+            call_result = fc.call_action(service_called, action_called)
+        except fritzconnection.core.exceptions.FritzServiceError:
+            logging.error(f"Requested invalid service: {service_called}")
+        except fritzconnection.core.exceptions.FritzActionError:
+            logging.error(f"Requested invalid action: {action_called}")
+
+        if call_result is not None:
+            logging.debug("Request returned successfully")
+
+            for key, value in call_result.items():
+                logging.debug(f"Response: {key} = {value}")
+
+        return call_result
+
     for service, content in services.items():
+
+        if error is True:
+            break
 
         for action in content['actions']:
 
             if 'value_instances' in content:
 
-                try:
-                    this_result = fc.call_action(service, action)
-                except fritzconnection.core.exceptions.FritzServiceError:
-                    logging.error("Requested invalid service: %s" % service)
+                this_result = _fb_call_action(service, action)
+
+                if this_result is None:
                     error = True
-                    continue
-                except fritzconnection.core.exceptions.FritzActionError:
-                    logging.error("Requested invalid action: %s" % action)
-                    error = True
-                    continue
+                    break
 
                 for instance in content['value_instances']:
 
@@ -112,16 +178,14 @@ def query_points(fc, services):
                     if instance in this_result:
                         result.update({rewrite_name if rewrite_name is not None else instance: this_result[instance]})
             else:
-                try:
-                    result.update(fc.call_action(service, action))
-                except fritzconnection.core.exceptions.FritzServiceError:
-                    logging.error("Requested invalid service: %s" % service)
+
+                this_result = _fb_call_action(service, action)
+
+                if this_result is None:
                     error = True
-                    continue
-                except fritzconnection.core.exceptions.FritzActionError:
-                    logging.error("Requested invalid action: %s" % action)
-                    error = True
-                    continue
+                    break
+
+                result.update(this_result)
 
     if error is True:
         logging.error("Encountered errors while requesting data. Exit")
@@ -131,17 +195,29 @@ def query_points(fc, services):
 
 
 def read_config(filename):
+    """
+    Read config ini file and return configparser object
+
+    Parameters
+    ----------
+    filename: str
+        path of ini file to parse
+
+    Returns
+    -------
+    configparser.ConfigParser(): configparser object
+    """
 
     config = None
 
     # check if config file exists
     if not os.path.isfile(filename):
-        logging.error("config file \"%s\" not found" % filename)
+        logging.error(f'Config file "{filename}" not found')
         exit(1)
 
     # check if config file is readable
     if not os.access(filename, os.R_OK):
-        logging.error("config file \"%s\" not readable" % filename)
+        logging.error(f'Config file "{filename}" not readable')
         exit(1)
 
     try:
@@ -157,34 +233,62 @@ def read_config(filename):
 
 
 def check_db_status(db_handler, db_name):
+    """
+    Check if InfluxDB handler has access to a database.
+    If it doesn't exist try to create it.
+    If anything fails exit program
+
+    Parameters
+    ----------
+    db_handler: influxdb.InfluxDBClient
+        InfluxDB handler object
+
+    db_name: str
+        Name of DB to check
+    """
 
     dblist = None
 
     try:
         dblist = db_handler.get_list_database()
     except Exception as e:
-        logging.error('Problem connecting to database: %s', e)
+        logging.error('Problem connecting to database: %s', str(e))
         exit(1)
 
     if db_name not in [db['name'] for db in dblist]:
 
-        logging.info('Database <%s> not found, trying to create it' % db_name)
+        logging.info(f'Database <{db_name}> not found, trying to create it')
 
         try:
             db_handler.create_database(db_name)
         except Exception as e:
-            logging.error('Problem creating database: %s', e)
+            logging.error('Problem creating database: %s', str(e))
             exit(1)
     else:
-        logging.debug('Influx Database <%s> exists' % db_name)
+        logging.debug(f'Influx Database <{db_name}> exists')
 
     logging.info("Connection to InfluxDB established and database present")
 
     return
 
 
-def get_services(config, section_name_start):
-    this_sections = [s for s in config.sections() if s.startswith(section_name_start)]
+def get_services(config, section_name_prefix):
+    """
+    Parse all sections matching the prefix to a dict which is used to request services and actions.
+
+    Parameters
+    ----------
+    config: configparser.ConfigParser
+        configparser object with current config
+    section_name_prefix: str
+        prefix of section names to parse
+
+    Returns
+    -------
+    dict: a dict of all services and values instances which match the prefix
+    """
+
+    this_sections = [s for s in config.sections() if s.startswith(section_name_prefix)]
     this_services = {}
     for s in this_sections:
         this_services.update({config.get(s, 'service'): {'actions': config.get(s, 'actions').split("\n")}})
@@ -226,7 +330,7 @@ def main():
             config.get('influxdb', 'ssl', fallback=False),
             config.get('influxdb', 'verify_ssl', fallback=False)
         )
-        # test more config options
+        # test more config options and see if they are present
         _ = config.get('influxdb', 'measurement_name')
     except configparser.Error as e:
         logging.error("Config Error: %s", str(e))
@@ -247,13 +351,13 @@ def main():
             user=config.get('fritzbox', 'username'),
             password=config.get('fritzbox', 'password'),
             timeout=config.getint('fritzbox', 'timeout', fallback=5),
-            use_tls=config.get('fritzbox', 'ssl', fallback=False)
+            use_tls=config.getboolean('fritzbox', 'ssl', fallback=False)
         )
     except configparser.Error as e:
         logging.error("Config Error: %s", str(e))
         exit(1)
     except BaseException as e:
-        logging.error("Failed to connect to FritzBox '%s'" % e)
+        logging.error("Failed to connect to FritzBox '%s'" % str(e))
         exit(1)
 
     # test connection
@@ -273,22 +377,28 @@ def main():
     # read services from config file
     services_to_query = get_services(config, "service")
 
+    logging.info("Starting main loop")
+
     while running:
         # query data
-        points = query_points(fritz_client_auth, services_to_query)
         data = {
             "measurement": config.get('influxdb', 'measurement_name'),
             "time": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
-            "fields": points
+            "fields": query_services(fritz_client_auth, services_to_query)
         }
 
-        logging.debug("writing data to InfluxDB")
+        logging.debug("Writing data to InfluxDB")
+
+        logging.debug("InfluxDB - measurement: %s" % data.get("measurement"))
+        logging.debug("InfluxDB - time: %s" % data.get("time"))
+        for k, v in data.get("fields").items():
+            logging.debug(f"InfluxDB - field: {k} = {v}")
 
         # noinspection PyBroadException
         try:
             influxdb_client.write_points([data], time_precision="ms")
-        except Exception:
-            logging.error("Failed to write to InfluxDB %s" % config.get('influxdb', 'host'))
+        except Exception as e:
+            logging.error("Failed to write to InfluxDB <%s>: %s" % (config.get('influxdb', 'host'), str(e)))
 
         # just sleep for 10 seconds
         for _ in range(0, 20):
