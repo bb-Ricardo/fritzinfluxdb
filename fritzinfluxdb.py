@@ -90,11 +90,11 @@ def query_points(fc, services):
 
                 try:
                     this_result = fc.call_action(service, action)
-                except fritzconnection.fritzconnection.ServiceError:
+                except fritzconnection.core.exceptions.FritzServiceError:
                     logging.error("Requested invalid service: %s" % service)
                     error = True
                     continue
-                except fritzconnection.fritzconnection.ActionError:
+                except fritzconnection.core.exceptions.FritzActionError:
                     logging.error("Requested invalid action: %s" % action)
                     error = True
                     continue
@@ -114,11 +114,11 @@ def query_points(fc, services):
             else:
                 try:
                     result.update(fc.call_action(service, action))
-                except fritzconnection.fritzconnection.ServiceError:
+                except fritzconnection.core.exceptions.FritzServiceError:
                     logging.error("Requested invalid service: %s" % service)
                     error = True
                     continue
-                except fritzconnection.fritzconnection.ActionError:
+                except fritzconnection.core.exceptions.FritzActionError:
                     logging.error("Requested invalid action: %s" % action)
                     error = True
                     continue
@@ -238,22 +238,6 @@ def main():
     # check influx db status
     check_db_status(influxdb_client, config.get('influxdb', 'database'))
 
-    # create unauthenticated FB client handler
-    fritz_client_unauth = None
-    try:
-        fritz_client_unauth = fritzconnection.FritzConnection(
-            address=config.get('fritzbox', 'host'),
-            port=config.get('fritzbox', 'port'),
-        )
-    except configparser.Error as e:
-        logging.error("Config Error: %s", str(e))
-        exit(1)
-
-    # test connection
-    if fritz_client_unauth.modelname is None:
-        logging.error("Failed to connect to FritzBox '%s'" % config.get('fritzbox', 'host'))
-        exit(1)
-
     # create authenticated FB client handler
     fritz_client_auth = None
     try:
@@ -266,24 +250,30 @@ def main():
     except configparser.Error as e:
         logging.error("Config Error: %s", str(e))
         exit(1)
+    except BaseException as e:
+        logging.error("Failed to connect to FritzBox '%s'" % e)
+        exit(1)
 
-    # test auth connection
+    # test connection
     try:
         fritz_client_auth.call_action("DeviceInfo", "GetInfo")
-    except fritzconnection.fritzconnection.FritzConnectionException:
-        logging.error("Failed to connect to FritzBox '%s' using credentials. Check username and password!" %
-                      config.get('fritzbox', 'host'))
+    except fritzconnection.core.exceptions.FritzConnectionException as e:
+        if "401" in str(e):
+            logging.error("Failed to connect to FritzBox '%s' using credentials. Check username and password!" %
+                          config.get('fritzbox', 'host'))
+        else:
+            logging.error(str(e))
+
         exit(1)
 
     logging.info("Successfully connected to FritzBox")
 
     # read services from config file
-    unauth_services = get_services(config, "service")
-    auth_services = get_services(config, "auth_service")
+    services_to_query = get_services(config, "service")
 
     while running:
-        points = query_points(fritz_client_unauth, unauth_services)
-        points.update(query_points(fritz_client_auth, auth_services))
+        # query data
+        points = query_points(fritz_client_auth, services_to_query)
         data = {
             "measurement": config.get('influxdb', 'measurement_name'),
             "time": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
@@ -299,7 +289,10 @@ def main():
             logging.error("Failed to write to InfluxDB %s" % config.get('influxdb', 'host'))
 
         # just sleep for 10 seconds
-        time.sleep(10)
+        for _ in range(0, 20):
+            if running is False:
+                break
+            time.sleep(0.5)
 
 
 if __name__ == "__main__":

@@ -15,34 +15,34 @@ password =
 port = 49000
 
 [service1]
-service = WANCommonInterfaceConfig
-actions = GetTotalBytesReceived
-          GetTotalBytesSent
+service = WANCommonIFC
+actions = GetAddonInfos
           GetCommonLinkProperties
-          GetAddonInfos
-value_instances = NewLayer1DownstreamMaxBitRate : downstreammax
-                  NewLayer1UpstreamMaxBitRate : upstreammax
-                  NewByteSendRate : sendrate
+value_instances = NewByteSendRate : sendrate
                   NewByteReceiveRate : receiverate
                   NewX_AVM_DE_TotalBytesSent64: totalbytessent
                   NewX_AVM_DE_TotalBytesReceived64 : totalbytesreceived
+                  NewLayer1DownstreamMaxBitRate : downstreammax
+                  NewLayer1UpstreamMaxBitRate : upstreammax
                   NewPhysicalLinkStatus : physicallinkstatus
                   NewWANAccessType: physicallinktype
 
 [service2]
-service = WANIPConnection
+service = WANIPConn
 actions = GetStatusInfo
+          X_AVM_DE_GetExternalIPv6Address
 value_instances = NewUptime : linkuptime
                   NewConnectionStatus: connection_status
                   NewLastConnectionError: last_connection_error
+                  NewExternalIPv6Address: external_ipv6
 
-[auth_service1]
+[service3]
 service = WANCommonInterfaceConfig:1
 actions = GetCommonLinkProperties
 value_instances = NewLayer1DownstreamMaxBitRate: downstreamphysicalmax
                   NewLayer1UpstreamMaxBitRate: upstreamphysicalmax
 
-[auth_service2]
+[service4]
 service = DeviceInfo
 actions = GetInfo
 value_instances = NewUpTime : systemuptime
@@ -51,13 +51,13 @@ value_instances = NewUpTime : systemuptime
                   NewModelName: model
                   NewSoftwareVersion: softwareversion
 
-[auth_service3]
+[service5]
 service = LANEthernetInterfaceConfig:1
 actions = GetStatistics
 value_instances = NewBytesReceived: lan_totalbytesreceived
                   NewBytesSent: lan_totalbytessent
 
-[auth_service4]
+[service6]
 service = WANDSLInterfaceConfig
 actions = GetInfo
           GetStatisticsTotal
@@ -73,20 +73,24 @@ value_instances = NewDownstreamMaxRate: maxBitRate_downstream
                   NewErroredSecs: errored_seconds
                   NewCRCErrors: crc_errors
 
-[auth_service5]
+[service7]
 service = Hosts:1
 actions = GetHostNumberOfEntries
 value_instances = NewHostNumberOfEntries: number_of_hosts
 
-[auth_service6]
+[service8]
 service = UserInterface:1
 actions = GetInfo
 value_instances = NewUpgradeAvailable: upgrade_available
                   NewX_AVM-DE_UpdateState: update_state
 
-[auth_service7]
+[service9]
 service = WANPPPConnection:1
 actions = GetInfo
 value_instances = NewExternalIPAddress: external_ip
                   #NewLastAuthErrorInfo: last_auth_error
                   NewPPPoEACName: remote_pop
+                  NewUptime : linkuptime
+                  NewConnectionStatus: connection_status
+                  NewLastConnectionError: last_connection_error
+

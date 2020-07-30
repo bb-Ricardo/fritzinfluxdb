@@ -1,2 +1,2 @@
-fritzconnection==0.7.3
+fritzconnection==1.3.3
 influxdb
