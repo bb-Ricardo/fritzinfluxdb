@@ -8,24 +8,26 @@ It is equal capable as fritzcollectd and directly writing to influxdb.
 
 ## Ubuntu 18.04
 ```
-sudo apt-get install virtualenv python3-lxml
+sudo apt-get install virtualenv
 cd /opt
-git clone <this_repo_url>
+git clone https://github.com/yunity/fritzinfluxdb.git
 cd fritzinfluxdb
-virtualenv --system-site-packages -p python3 .venv
+git checkout python2.7
+virtualenv -p python2 .venv
 . .venv/bin/activate
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 ## RHEL/CentOS 7 with EPEL
 ```
-yum install git python36-virtualenv python36-lxml
+yum install git python-virtualenv
 cd /opt
-git clone <this_repo_url>
+git clone https://github.com/yunity/fritzinfluxdb.git
 cd fritzinfluxdb
-virtualenv-3 --system-site-packages .venv
+git checkout python2.7
+virtualenv .venv
 . .venv/bin/activate
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 * modify your configuration and test it
@@ -47,21 +49,6 @@ sed -e 's/nogroup/nobody/g' /opt/fritzinfluxdb/fritzinfluxdb.service > /etc/syst
 systemctl daemon-reload
 systemctl start fritzinfluxdb
 systemctl enable fritzinfluxdb
-```
-
-## Run with Docker
-```
-git clone <this_repo_url>
-cd fritzinfluxdb
-docker build -t fritzinfluxdb .
-```
-
-Copy the config from the [example](default.ini) to ```my-frtizinfluxdb.ini``` and edit
-the settings.
-
-Now you should be able to run the image with following command
-```
-docker run -d -v /PATH/TO/my-frtizinfluxdb.ini:/app/idefault.ini --name fritzinfluxdb fritzinfluxdb
 ```
 
 # Grafana
