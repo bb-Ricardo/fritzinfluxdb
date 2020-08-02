@@ -1,2 +1,3 @@
 fritzconnection==0.7.3
 influxdb
+configparser

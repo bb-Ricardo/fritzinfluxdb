@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import os
-import sys
 import signal
 import configparser
 import fritzconnection
@@ -29,14 +28,17 @@ def shutdown(signal, frame):
     global running
     running = False
 
-# sometimes integers are returned as string
-# try to sanatize this a bit
-def sanatize_fb_return_data(results):
+
+def sanitize_fb_return_data(results):
+    """
+    sometimes integers are returned as string
+    try to sanitize this a bit
+    """
 
     return_results = {}
     for instance in results:
         # turn None => 0
-        if results[instance] == None:
+        if results[instance] is None:
             return_results.update({instance: 0})
         else:
             # try to parse as int
@@ -47,6 +49,7 @@ def sanatize_fb_return_data(results):
                 return_results.update({instance: results[instance]})
 
     return return_results
+
 
 def query_points(fc, services):
     result = {}
@@ -70,11 +73,11 @@ def query_points(fc, services):
 
                     # only keep desired result key
                     if instance in this_result:
-                        result.update({ rewrite_name if rewrite_name != None else instance : this_result[instance]})
+                        result.update({rewrite_name if rewrite_name is not None else instance: this_result[instance]})
             else:
                 result.update(fc.call_action(service, action))
 
-    return sanatize_fb_return_data(result)
+    return sanitize_fb_return_data(result)
 
 
 def read_config(filename):
@@ -121,7 +124,7 @@ def main():
     args = parse_args()
 
     # set logging
-    log_level = logging.DEBUG if args.debug == True else default_loglevel
+    log_level = logging.DEBUG if args.debug is True else default_loglevel
     logging.basicConfig(level=log_level, format="%(levelname)s: %(message)s")
 
     # check if config file exists
@@ -141,6 +144,8 @@ def main():
         config.get('influxdb', 'username'),
         config.get('influxdb', 'password'),
         config.get('influxdb', 'database'),
+        config.getboolean('influxdb', 'ssl'),
+        config.getboolean('influxdb', 'verify_ssl')
     )
 
     # check influx db status
