@@ -19,8 +19,8 @@ import fritzconnection
 import influxdb
 
 
-__version__ = "0.1.0"
-__version_date__ = "2019-08-12"
+__version__ = "0.3.0"
+__version_date__ = "2020-08-03"
 __description__ = "fritzinfluxdb"
 __license__ = "MIT"
 
@@ -140,7 +140,7 @@ def query_services(fc, services):
         except fritzconnection.core.exceptions.FritzServiceError:
             logging.error(f"Requested invalid service: {service_called}")
         except fritzconnection.core.exceptions.FritzActionError:
-            logging.error(f"Requested invalid action '{action_called}' for service: {service_called}x")
+            logging.error(f"Requested invalid action '{action_called}' for service: {service_called}")
 
         if call_result is not None:
             logging.debug("Request returned successfully")

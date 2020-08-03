@@ -10,7 +10,7 @@ It is equal capable as fritzcollectd and directly writing to influxdb.
 ```
 sudo apt-get install virtualenv python3-lxml
 cd /opt
-git clone <this_repo_url>
+git clone https://github.com/yunity/fritzinfluxdb.git
 cd fritzinfluxdb
 virtualenv --system-site-packages -p python3 .venv
 . .venv/bin/activate
@@ -21,7 +21,7 @@ pip3 install -r requirements.txt
 ```
 yum install git python36-virtualenv python36-lxml
 cd /opt
-git clone <this_repo_url>
+git clone https://github.com/yunity/fritzinfluxdb.git
 cd fritzinfluxdb
 virtualenv-3 --system-site-packages .venv
 . .venv/bin/activate
@@ -63,6 +63,12 @@ Now you should be able to run the image with following command
 ```
 docker run -d -v /PATH/TO/my-frtizinfluxdb.ini:/app/idefault.ini --name fritzinfluxdb fritzinfluxdb
 ```
+
+## Upgrading
+If you upgrade from a version < 0.3 make sure to perform following steps
+
+* update your virtual env `pip3 install -r requirements.txt`
+* use the updated config and add the credentials and addresses from your old config
 
 # Grafana
 
