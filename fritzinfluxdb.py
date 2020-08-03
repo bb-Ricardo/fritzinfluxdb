@@ -236,7 +236,6 @@ def check_db_status(db_handler, db_name):
     """
     Check if InfluxDB handler has access to a database.
     If it doesn't exist try to create it.
-    If anything fails exit program
 
     Parameters
     ----------
@@ -247,13 +246,11 @@ def check_db_status(db_handler, db_name):
         Name of DB to check
     """
 
-    dblist = None
-
     try:
         dblist = db_handler.get_list_database()
     except Exception as e:
         logging.error('Problem connecting to database: %s', str(e))
-        exit(1)
+        return
 
     if db_name not in [db['name'] for db in dblist]:
 
@@ -263,7 +260,7 @@ def check_db_status(db_handler, db_name):
             db_handler.create_database(db_name)
         except Exception as e:
             logging.error('Problem creating database: %s', str(e))
-            exit(1)
+            return
     else:
         logging.debug(f'Influx Database <{db_name}> exists')
 
@@ -327,8 +324,8 @@ def main():
             config.get('influxdb', 'username'),
             config.get('influxdb', 'password'),
             config.get('influxdb', 'database'),
-            config.get('influxdb', 'ssl', fallback=False),
-            config.get('influxdb', 'verify_ssl', fallback=False)
+            config.getboolean('influxdb', 'ssl', fallback=False),
+            config.getboolean('influxdb', 'verify_ssl', fallback=False)
         )
         # test more config options and see if they are present
         _ = config.get('influxdb', 'measurement_name')
