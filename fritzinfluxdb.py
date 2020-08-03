@@ -140,7 +140,7 @@ def query_services(fc, services):
         except fritzconnection.core.exceptions.FritzServiceError:
             logging.error(f"Requested invalid service: {service_called}")
         except fritzconnection.core.exceptions.FritzActionError:
-            logging.error(f"Requested invalid action: {action_called}")
+            logging.error(f"Requested invalid action '{action_called}' for service: {service_called}x")
 
         if call_result is not None:
             logging.debug("Request returned successfully")
@@ -152,9 +152,6 @@ def query_services(fc, services):
 
     for service, content in services.items():
 
-        if error is True:
-            break
-
         for action in content['actions']:
 
             if 'value_instances' in content:
@@ -163,7 +160,7 @@ def query_services(fc, services):
 
                 if this_result is None:
                     error = True
-                    break
+                    continue
 
                 for instance in content['value_instances']:
 
@@ -183,13 +180,12 @@ def query_services(fc, services):
 
                 if this_result is None:
                     error = True
-                    break
+                    continue
 
                 result.update(this_result)
 
     if error is True:
-        logging.error("Encountered errors while requesting data. Exit")
-        exit(1)
+        logging.error("Encountered problems while requesting data. Data might be incomplete.")
 
     return sanitize_fb_return_data(result)
 
