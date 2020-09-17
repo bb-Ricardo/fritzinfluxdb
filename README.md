@@ -79,7 +79,7 @@ If you upgrade from a version < 0.3 make sure to perform following steps
 # Grafana
 
 Since I'm using Chronograf to show my InfluxDB data I haven't done any changes to the original Grafana Dashboard.
-So it is not included, but to make it runable with multible Fritzboxes shouldn't be that hard.
+So it is not included, but to make it runable with multible fritz box routers shouldn't be that hard.
 
 # Configure more attributes
 
