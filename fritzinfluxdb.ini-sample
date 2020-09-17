@@ -6,9 +6,10 @@ password = blub
 database = db
 ssl = false
 verify_ssl = true
-measurement_name = fritzbox
+measurement_name = Fritzbox
+boxes = ["fritz.1", "fritz.2"]
 
-[fritzbox]
+[fritz.1]
 host = 192.168.178.1
 username = dslf-config
 password =
@@ -18,6 +19,14 @@ timeout = 5
 ssl = false
 # interval to request data in seconds
 #interval = 10
+
+[fritz.2]
+host = 192.168.178.2
+username = dslf-config
+password =
+port = 49000
+timeout = 5
+ssl = false
 
 
 [service1]

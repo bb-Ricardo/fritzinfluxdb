@@ -2,15 +2,12 @@
 
 Fritz InfluxDb is a tiny daemon written in python to fetch data from a fritz box router and writes it to influxdb.
 It is equal capable as fritzcollectd and directly writing to influxdb.
+Original created by [yunity](https://github.com/yunity/fritzinfluxdb) and changed so it is able to monitor multiple fritz box routers.
 
 # Requirements
 * python3.6 or newer
 * influxdb
-* fritzconnection >= 1.3.3
-
-## Python 2.7
-If you still need to run it with Python 2 check out the the branch
-[python2.7](https://github.com/yunity/fritzinfluxdb/tree/python2.7)
+* fritzconnection >= 1.3.4
 
 # Setup
 * here we assume we install in ```/opt```
@@ -81,10 +78,8 @@ If you upgrade from a version < 0.3 make sure to perform following steps
 
 # Grafana
 
-Use ```grafana_dashboard_fritzbox.json``` to import this dashboard.
-This was heavily inspired from: https://grafana.com/dashboards/713
-
-![Grafan Dashboard](grafana_dashboard.jpg)
+Since I'm using Chronograf to show my InfluxDB data I haven't done any changes to the original Grafana Dashboard.
+So it is not included, but to make it runable with multible Fritzboxes shouldn't be that hard.
 
 # Configure more attributes
 
