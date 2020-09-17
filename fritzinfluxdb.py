@@ -355,9 +355,6 @@ def thread_function(box, influxdb_client, config):
         }
 
         logging.debug("Thread %s: Writing data to InfluxDB" % box)
-
-        logging.debug("Thread %s: InfluxDB - measurement: %s" % (box,data.get("measurement")))
-        logging.debug("Thread %s: InfluxDB - boxes: %s" % (box,data.get("boxes")))
         logging.debug("Thread %s: InfluxDB - time: %s" % (box,data.get("time")))
         for k, v in data.get("fields").items():
             logging.debug("Thread %s: "f"InfluxDB - field: {k} = {v}" % box)
