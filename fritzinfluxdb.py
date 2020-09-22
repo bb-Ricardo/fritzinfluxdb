@@ -101,7 +101,7 @@ def sanitize_fb_return_data(results):
     return return_results
 
 
-def query_services(fc, services):
+def query_services(fc, services, box):
     """
     Query all services from a Fritzbox which are defined in config
 
@@ -138,19 +138,19 @@ def query_services(fc, services):
         """
 
         call_result = None
-        logging.debug(f"Requesting {service_called} : {action_called}")
+        logging.debug("Thread %s: "f"Requesting {service_called} : {action_called}", box)
         try:
             call_result = fc.call_action(service_called, action_called)
         except fritzconnection.core.exceptions.FritzServiceError:
-            logging.error(f"Requested invalid service: {service_called}")
+            logging.error("Thread %s: "f"Requested invalid service: {service_called}", box)
         except fritzconnection.core.exceptions.FritzActionError:
-            logging.error(f"Requested invalid action '{action_called}' for service: {service_called}")
+            logging.error("Thread %s: "f"Requested invalid action '{action_called}' for service: {service_called}", box)
 
         if call_result is not None:
-            logging.debug("Request returned successfully")
+            logging.debug("Thread %s: Request returned successfully", box)
 
             for key, value in call_result.items():
-                logging.debug(f"Response: {key} = {value}")
+                logging.debug("Thread %s: "f"Response: {key} = {value}", box)
 
         return call_result
 
@@ -189,7 +189,7 @@ def query_services(fc, services):
                 result.update(this_result)
 
     if error is True:
-        logging.error("Encountered problems while requesting data. Data might be incomplete.")
+        logging.error("Thread %s: Encountered problems while requesting data. Data might be incomplete.", box)
 
     return sanitize_fb_return_data(result)
 
@@ -328,7 +328,7 @@ def thread_function(box, influxdb_client, config):
             logging.error("Thread %s: Failed to connect to FritzBox using credentials. Check username and password!" %
                         config.get(box, 'host'))
         else:
-            logging.error(str(e))
+            logging.error("Thread %s: %s" % (box,str(e)))
 
         exit(1)
 
@@ -345,13 +345,17 @@ def thread_function(box, influxdb_client, config):
         start = int(datetime.utcnow().timestamp() * 1000)
 
         # query data
+        try: 
+            query_data = query_services(fritz_client_auth, services_to_query, box)
+        except:
+            query_data = ""
         data = {
             "measurement": config.get('influxdb', 'measurement_name'),
             "tags": {
                 "host": box
             },
             "time": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
-            "fields": query_services(fritz_client_auth, services_to_query)
+            "fields": query_data
         }
 
         logging.debug("Thread %s: Writing data to InfluxDB" % box)
@@ -371,7 +375,7 @@ def thread_function(box, influxdb_client, config):
 
         if duration + 1000 >= (request_interval * 1000):
             logging.warning("Thread %s: "f"Request interval of {request_interval} seconds might be to short considering last "
-                            "duration for all requests was %0.3f seconds" % (duration / 1000)  % box )
+                            "duration for all requests was %0.3f seconds" % (box, (duration / 1000)))
 
         # just sleep for interval seconds - last run duration
         for _ in range(0, int(((request_interval * 1000) - duration) / 100)):
@@ -415,10 +419,10 @@ def main():
         _ = config.get('influxdb', 'measurement_name')
         _ = config.get('influxdb', 'boxes')
     except configparser.Error as e:
-        logging.error("Config Error: %s", str(e))
+        logging.error("Thread %s: Config Error: %s", (box,str(e)))
         exit(1)
     except ValueError as e:
-        logging.error("Config Error: %s", str(e))
+        logging.error("Thread %s: Config Error: %s", (box,str(e)))
         exit(1)
 
     # check influx db status
