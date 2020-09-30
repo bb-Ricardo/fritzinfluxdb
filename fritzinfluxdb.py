@@ -317,8 +317,8 @@ def thread_function(box, influxdb_client, config):
         logging.error("Thread %s: Config Error: %s" % (box,str(e)))
         exit(1)
     except BaseException as e:
-        logging.error("Thread %s: Failed to connect '%s'" % (box,str(e)))
-        exit(1)
+        logging.error("Thread %s: Failed to connect '%s' --> Retrying" % (box,str(e)))
+            
 
     # test connection
     try:
