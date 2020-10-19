@@ -31,6 +31,7 @@ __license__ = "MIT"
 running = True
 default_config = os.path.join(os.path.dirname(__file__), 'fritzinfluxdb.ini')
 default_log_level = logging.INFO
+logfile = default_config
 
 
 def parse_args():
@@ -301,23 +302,28 @@ def thread_function(box, influxdb_client, config):
     # create authenticated FB client handler
     fritz_client_auth = None
     request_interval = 10
-    try:
-        fritz_client_auth = fritzconnection.FritzConnection(
-            address=config.get(box, 'host', fallback='192.168.178.1'),
-            port=config.getint(box, 'port', fallback=49000),
-            user=config.get(box, 'username'),
-            password=config.get(box, 'password'),
-            timeout=config.getint(box, 'timeout', fallback=5),
-            use_tls=config.getboolean(box, 'ssl', fallback=False)
-        )
+    conn = True
+    while conn == True:
+        try:
+            fritz_client_auth = fritzconnection.FritzConnection(
+                address=config.get(box, 'host', fallback='192.168.178.1'),
+                port=config.getint(box, 'port', fallback=49000),
+                user=config.get(box, 'username'),
+                password=config.get(box, 'password'),
+                timeout=config.getint(box, 'timeout', fallback=5),
+                use_tls=config.getboolean(box, 'ssl', fallback=False)
+            )
 
-        request_interval = config.getint(box, 'interval', fallback=10)
+            request_interval = config.getint(box, 'interval', fallback=10)
+            conn = False
 
-    except configparser.Error as e:
-        logging.error("Thread %s: Config Error: %s" % (box,str(e)))
-        exit(1)
-    except BaseException as e:
-        logging.error("Thread %s: Failed to connect '%s' --> Retrying" % (box,str(e)))
+        except configparser.Error as e:
+            logging.error("Thread %s: Config Error: %s" % (box,str(e)))
+            conn = False
+            exit(1)
+        except BaseException as e:
+            logging.error("Thread %s: Failed to connect '%s' --> Retrying" % (box,str(e)))
+            time.sleep(10)
             
 
     # test connection
@@ -391,17 +397,18 @@ def main():
     # parse command line arguments
     args = parse_args()
 
+    # read config from ini file
+    config = read_config(args.config_file)
+
     # set logging
     log_level = logging.DEBUG if args.verbose is True else default_log_level
+    logpath = config.get('logging', 'logpath')
 
     if args.daemon:
         # omit time stamp if run in daemon mode
-        logging.basicConfig(level=log_level, format='%(levelname)s: %(message)s')
+        logging.basicConfig(filename=logpath ,level=log_level, format='%(levelname)s: %(message)s')
     else:
-        logging.basicConfig(level=log_level, format='%(asctime)s - %(levelname)s: %(message)s')
-
-    # read config from ini file
-    config = read_config(args.config_file)
+        logging.basicConfig(filename=logpath ,level=log_level, format='%(asctime)s - %(levelname)s: %(message)s')
 
     # set up influxdb handler
     influxdb_client = None
