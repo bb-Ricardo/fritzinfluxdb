@@ -26,12 +26,14 @@ __version_date__ = "2020-09-17"
 __description__ = "fritzinfluxdb"
 __license__ = "MIT"
 
-
 # default vars
 running = True
 default_config = os.path.join(os.path.dirname(__file__), 'fritzinfluxdb.ini')
-default_log_level = logging.INFO
-logfile = default_config
+default_log_level = logging.DEBUG
+default_log_path = os.path.join(os.path.dirname(__file__), 'fritzinfluxdb.log')
+
+#set logging
+logging.basicConfig(filename=default_log_path, level=default_log_level, format="[%(asctime)s][%(threadName)-18s| %(levelname)-8s] %(message)s")
 
 
 def parse_args():
@@ -102,7 +104,7 @@ def sanitize_fb_return_data(results):
     return return_results
 
 
-def query_services(fc, services, box):
+def query_services(fc, services):
     """
     Query all services from a Fritzbox which are defined in config
 
@@ -139,19 +141,19 @@ def query_services(fc, services, box):
         """
 
         call_result = None
-        logging.debug("Thread %s: "f"Requesting {service_called} : {action_called}", box)
+        logging.debug(f"Requesting {service_called} : {action_called}")
         try:
             call_result = fc.call_action(service_called, action_called)
         except fritzconnection.core.exceptions.FritzServiceError:
-            logging.error("Thread %s: "f"Requested invalid service: {service_called}", box)
+            logging.error(f"Requested invalid service: {service_called}")
         except fritzconnection.core.exceptions.FritzActionError:
-            logging.error("Thread %s: "f"Requested invalid action '{action_called}' for service: {service_called}", box)
+            logging.error(f"Requested invalid action '{action_called}' for service: {service_called}")
 
         if call_result is not None:
-            logging.debug("Thread %s: Request returned successfully", box)
+            logging.debug("Request returned successfully")
 
             for key, value in call_result.items():
-                logging.debug("Thread %s: "f"Response: {key} = {value}", box)
+                logging.debug(f"Response: {key} = {value}")
 
         return call_result
 
@@ -190,7 +192,7 @@ def query_services(fc, services, box):
                 result.update(this_result)
 
     if error is True:
-        logging.error("Thread %s: Encountered problems while requesting data. Data might be incomplete.", box)
+        logging.error("Encountered problems while requesting data. Data might be incomplete.")
 
     return sanitize_fb_return_data(result)
 
@@ -298,7 +300,7 @@ def get_services(config, section_name_prefix):
 
 
 def thread_function(box, influxdb_client, config):
-    logging.info("Thread %s: starting" % box)
+    logging.info("starting")
     # create authenticated FB client handler
     fritz_client_auth = None
     request_interval = 10
@@ -318,11 +320,11 @@ def thread_function(box, influxdb_client, config):
             conn = False
 
         except configparser.Error as e:
-            logging.error("Thread %s: Config Error: %s" % (box,str(e)))
+            logging.error("Config Error: %s" % str(e))
             conn = False
             exit(1)
         except BaseException as e:
-            logging.error("Thread %s: Failed to connect '%s' --> Retrying" % (box,str(e)))
+            logging.error("Failed to connect '%s' --> Retrying" % str(e))
             time.sleep(10)
             
 
@@ -331,28 +333,27 @@ def thread_function(box, influxdb_client, config):
         fritz_client_auth.call_action("DeviceInfo", "GetInfo")
     except fritzconnection.core.exceptions.FritzConnectionException as e:
         if "401" in str(e):
-            logging.error("Thread %s: Failed to connect to FritzBox using credentials. Check username and password!" %
-                        config.get(box, 'host'))
+            logging.error("Failed to connect to FritzBox using credentials. Check username and password!")
         else:
-            logging.error("Thread %s: %s" % (box,str(e)))
+            logging.error("%s" % str(e))
 
         exit(1)
 
-    logging.info("Thread %s: Successfully connected" % box)
+    logging.info("Successfully connected")
 
     # read services from config file
     services_to_query = get_services(config, "service")
 
-    logging.info("Thread %s: Starting main loop" % box)
+    logging.info("Starting main loop")
 
     while running:
-        logging.debug("Thread %s: Starting FritzBox requests" % box)
+        logging.debug("Starting FritzBox requests")
 
         start = int(datetime.utcnow().timestamp() * 1000)
 
         # query data
         try: 
-            query_data = query_services(fritz_client_auth, services_to_query, box)
+            query_data = query_services(fritz_client_auth, services_to_query)
         except:
             query_data = ""
         data = {
@@ -364,24 +365,24 @@ def thread_function(box, influxdb_client, config):
             "fields": query_data
         }
 
-        logging.debug("Thread %s: Writing data to InfluxDB" % box)
-        logging.debug("Thread %s: InfluxDB - time: %s" % (box,data.get("time")))
+        logging.debug("Writing data to InfluxDB")
+        logging.debug("InfluxDB - time: %s" % data.get("time"))
         for k, v in data.get("fields").items():
-            logging.debug("Thread %s: "f"InfluxDB - field: {k} = {v}" % box)
+            logging.debug(f"InfluxDB - field: {k} = {v}")
 
         # noinspection PyBroadException
         try:
             influxdb_client.write_points([data], time_precision="ms")
         except Exception as e:
-            logging.error("Thread %s: Failed to write to InfluxDB <%s>: %s" % (box, str(e)))
+            logging.error("Failed to write to InfluxDB <%s>: %s" % str(e))
 
         duration = int(datetime.utcnow().timestamp() * 1000) - start
 
-        logging.debug("Thread %s: Duration of requesting Fritzbox and sending data to InfluxDB: %0.3fs" % (box, (duration / 1000)))
+        logging.debug("Duration of requesting Fritzbox and sending data to InfluxDB: %0.3fs" % (duration / 1000))
 
         if duration + 1000 >= (request_interval * 1000):
-            logging.warning("Thread %s: "f"Request interval of {request_interval} seconds might be to short considering last "
-                            "duration for all requests was %0.3f seconds" % (box, (duration / 1000)))
+            logging.warning(f"Request interval of {request_interval} seconds might be to short considering last "
+                            "duration for all requests was %0.3f seconds" % (duration / 1000))
 
         # just sleep for interval seconds - last run duration
         for _ in range(0, int(((request_interval * 1000) - duration) / 100)):
@@ -400,16 +401,6 @@ def main():
     # read config from ini file
     config = read_config(args.config_file)
 
-    # set logging
-    log_level = logging.DEBUG if args.verbose is True else default_log_level
-    logpath = config.get('logging', 'logpath')
-
-    if args.daemon:
-        # omit time stamp if run in daemon mode
-        logging.basicConfig(filename=logpath ,level=log_level, format='%(levelname)s: %(message)s')
-    else:
-        logging.basicConfig(filename=logpath ,level=log_level, format='%(asctime)s - %(levelname)s: %(message)s')
-
     # set up influxdb handler
     influxdb_client = None
     try:
@@ -426,10 +417,10 @@ def main():
         _ = config.get('influxdb', 'measurement_name')
         _ = config.get('influxdb', 'boxes')
     except configparser.Error as e:
-        logging.error("Thread %s: Config Error: %s", (box,str(e)))
+        logging.error("Config Error: %s", str(e))
         exit(1)
     except ValueError as e:
-        logging.error("Thread %s: Config Error: %s", (box,str(e)))
+        logging.error("Config Error: %s", str(e))
         exit(1)
 
     # check influx db status
