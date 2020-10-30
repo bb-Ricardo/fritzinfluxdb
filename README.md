@@ -91,6 +91,13 @@ This was heavily inspired from: https://grafana.com/dashboards/713
 check here to find a overview of more attributes which probaly could be added
 https://wiki.fhem.de/w/index.php?title=FRITZBOX
 
+To specify service actions that need parameters, you can put it like this:
+
+```
+service = WANCommonInterfaceConfig
+actions = X_AVM-DE_GetOnlineMonitor,NewSyncGroupIndex=0
+```
+
 # License
 >You can check out the full license [here](LICENSE.txt)
 
