@@ -1,4 +1,46 @@
 {
+  "__inputs": [
+    {
+      "name": "DS_INFLUXDB_HOME",
+      "label": "InfluxDB Home",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "influxdb",
+      "pluginName": "InfluxDB"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "7.3.4"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "influxdb",
+      "name": "InfluxDB",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "singlestat",
+      "name": "Singlestat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table-old",
+      "name": "Table (old)",
+      "version": ""
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -16,7 +58,7 @@
   "editable": true,
   "gnetId": 713,
   "graphTooltip": 2,
-  "id": 8,
+  "id": null,
   "links": [],
   "panels": [
     {
@@ -24,14 +66,23 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB Home",
+      "datasource": "${DS_INFLUXDB_HOME}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
-        "h": 8,
+        "h": 13,
         "w": 24,
         "x": 0,
         "y": 0
       },
+      "hiddenSeries": false,
       "id": 22,
       "legend": {
         "avg": false,
@@ -46,7 +97,11 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
+      "pluginVersion": "7.3.4",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -634,8 +689,8 @@
           "format": "bps",
           "label": "DSL Speed",
           "logBase": 1,
-          "max": "130000000",
-          "min": "-38000000",
+          "max": "142000000",
+          "min": "-40000000",
           "show": true
         },
         {
@@ -662,7 +717,13 @@
         "#508642",
         "#1f78c1"
       ],
-      "datasource": "InfluxDB Home",
+      "datasource": "${DS_INFLUXDB_HOME}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -675,7 +736,7 @@
         "h": 4,
         "w": 2,
         "x": 0,
-        "y": 8
+        "y": 13
       },
       "id": 10,
       "interval": null,
@@ -778,8 +839,14 @@
         "rgba(237, 129, 40, 0.89)",
         "#1f78c1"
       ],
-      "datasource": "InfluxDB Home",
+      "datasource": "${DS_INFLUXDB_HOME}",
       "decimals": 2,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "dtdurations",
       "gauge": {
         "maxValue": 100,
@@ -792,8 +859,9 @@
         "h": 4,
         "w": 3,
         "x": 2,
-        "y": 8
+        "y": 13
       },
+      "hideTimeOverride": true,
       "id": 9,
       "interval": null,
       "links": [],
@@ -864,6 +932,8 @@
         }
       ],
       "thresholds": "1,1",
+      "timeFrom": "5m",
+      "timeShift": null,
       "title": "DSL Link Uptime",
       "type": "singlestat",
       "valueFontSize": "80%",
@@ -895,8 +965,14 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "InfluxDB Home",
+      "datasource": "${DS_INFLUXDB_HOME}",
       "decimals": 2,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "dtdurations",
       "gauge": {
         "maxValue": 100,
@@ -909,8 +985,9 @@
         "h": 4,
         "w": 3,
         "x": 5,
-        "y": 8
+        "y": 13
       },
+      "hideTimeOverride": true,
       "id": 13,
       "interval": null,
       "links": [],
@@ -983,6 +1060,7 @@
         }
       ],
       "thresholds": "1,1",
+      "timeFrom": "5m",
       "title": "System Uptime",
       "type": "singlestat",
       "valueFontSize": "80%",
@@ -1014,11 +1092,17 @@
         "rgba(237, 129, 40, 0.89)",
         "#1f78c1"
       ],
-      "datasource": "InfluxDB Home",
+      "datasource": "${DS_INFLUXDB_HOME}",
       "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "Bps",
       "gauge": {
-        "maxValue": 13526875,
+        "maxValue": 14263750,
         "minValue": 0,
         "show": true,
         "thresholdLabels": false,
@@ -1028,7 +1112,7 @@
         "h": 4,
         "w": 3,
         "x": 8,
-        "y": 8
+        "y": 13
       },
       "id": 11,
       "interval": null,
@@ -1121,8 +1205,14 @@
         "rgba(237, 129, 40, 0.89)",
         "#e24d42"
       ],
-      "datasource": "InfluxDB Home",
+      "datasource": "${DS_INFLUXDB_HOME}",
       "decimals": 1,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "Bps",
       "gauge": {
         "maxValue": 4163375,
@@ -1135,7 +1225,7 @@
         "h": 4,
         "w": 3,
         "x": 11,
-        "y": 8
+        "y": 13
       },
       "id": 12,
       "interval": null,
@@ -1228,8 +1318,14 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "InfluxDB Home",
+      "datasource": "${DS_INFLUXDB_HOME}",
       "decimals": 3,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "decbytes",
       "gauge": {
         "maxValue": 100,
@@ -1242,8 +1338,9 @@
         "h": 4,
         "w": 5,
         "x": 14,
-        "y": 8
+        "y": 13
       },
+      "hideTimeOverride": true,
       "id": 8,
       "interval": null,
       "links": [],
@@ -1305,6 +1402,8 @@
         }
       ],
       "thresholds": "",
+      "timeFrom": "24h",
+      "timeShift": null,
       "title": "Total Upload since connection",
       "type": "singlestat",
       "valueFontSize": "80%",
@@ -1328,8 +1427,14 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "InfluxDB Home",
+      "datasource": "${DS_INFLUXDB_HOME}",
       "decimals": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "decbytes",
       "gauge": {
         "maxValue": 100,
@@ -1342,8 +1447,9 @@
         "h": 4,
         "w": 5,
         "x": 19,
-        "y": 8
+        "y": 13
       },
+      "hideTimeOverride": true,
       "id": 3,
       "interval": null,
       "links": [],
@@ -1378,7 +1484,7 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": true
       },
-      "tableColumn": "totalbytesreceived",
+      "tableColumn": "",
       "targets": [
         {
           "dsType": "influxdb",
@@ -1409,6 +1515,7 @@
         }
       ],
       "thresholds": "",
+      "timeFrom": "24h",
       "title": "Total Download since connection",
       "type": "singlestat",
       "valueFontSize": "80%",
@@ -1430,8 +1537,14 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "InfluxDB Home",
+      "datasource": "${DS_INFLUXDB_HOME}",
       "decimals": 3,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "decbytes",
       "gauge": {
         "maxValue": 100,
@@ -1444,7 +1557,7 @@
         "h": 3,
         "w": 6,
         "x": 0,
-        "y": 12
+        "y": 17
       },
       "id": 16,
       "interval": null,
@@ -1552,8 +1665,14 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "InfluxDB Home",
+      "datasource": "${DS_INFLUXDB_HOME}",
       "decimals": 3,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "decbytes",
       "gauge": {
         "maxValue": 100,
@@ -1566,7 +1685,7 @@
         "h": 3,
         "w": 6,
         "x": 6,
-        "y": 12
+        "y": 17
       },
       "hideTimeOverride": false,
       "id": 15,
@@ -1678,16 +1797,25 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB Home",
+      "datasource": "${DS_INFLUXDB_HOME}",
       "editable": true,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 0,
+      "fillGradient": 0,
       "grid": {},
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 12
+        "y": 17
       },
+      "hiddenSeries": false,
       "id": 17,
       "interval": "1h",
       "legend": {
@@ -1703,7 +1831,11 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
+      "pluginVersion": "7.3.4",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1877,14 +2009,23 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB Home",
+      "datasource": "${DS_INFLUXDB_HOME}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 15
+        "y": 20
       },
+      "hiddenSeries": false,
       "id": 2,
       "interval": "10s",
       "legend": {
@@ -1904,7 +2045,11 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
+      "pluginVersion": "7.3.4",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -2054,15 +2199,23 @@
     },
     {
       "columns": [],
-      "datasource": "InfluxDB Home",
+      "datasource": "${DS_INFLUXDB_HOME}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fontSize": "100%",
       "gridPos": {
         "h": 10,
         "w": 12,
         "x": 12,
-        "y": 20
+        "y": 25
       },
+      "hideTimeOverride": true,
       "id": 20,
+      "interval": "",
       "links": [],
       "pageSize": null,
       "scroll": true,
@@ -2074,6 +2227,7 @@
       "styles": [
         {
           "alias": "Type",
+          "align": "auto",
           "dateFormat": "YYYY-MM-DD HH:mm:ss",
           "link": false,
           "pattern": "Time",
@@ -2081,6 +2235,7 @@
         },
         {
           "alias": "",
+          "align": "auto",
           "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
@@ -2100,6 +2255,7 @@
         },
         {
           "alias": "Key",
+          "align": "auto",
           "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
@@ -2121,7 +2277,7 @@
           "measurement": "fritzbox",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT \"model\" AS \"Model\" FROM \"fritzbox\" LIMIT 1",
+          "query": "SELECT \"model\" AS \"Model\", \"serialnumber\" AS \"Serial\", \"softwareversion\" AS \"SW Version\", \"external_ip\" AS \"IP\", \"external_ipv6\" AS \"IPv6\", \"number_of_hosts\" AS \"Number of network hosts\", \"connection_status\" AS \"PPP Connection Status\", \"physicallinkstatus\" AS \"Link Status\", \"physicallinktype\" AS \"Link Type\", \"remote_pop\" AS \"Remote POP\", \"last_connection_error\" AS \"Last Connect Error\" FROM \"fritzbox\" WHERE $timeFilter LIMIT 1",
           "rawQuery": false,
           "refId": "A",
           "resultFormat": "time_series",
@@ -2132,6 +2288,10 @@
                   "model"
                 ],
                 "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
               },
               {
                 "params": [
@@ -2265,24 +2425,46 @@
                 ],
                 "type": "alias"
               }
+            ],
+            [
+              {
+                "params": [
+                  "external_ipv6"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [
+                  "IPv6"
+                ],
+                "type": "alias"
+              }
             ]
           ],
           "tags": []
         }
       ],
+      "timeFrom": "1m",
+      "timeShift": null,
       "title": "FritzBox Info",
       "transform": "timeseries_to_rows",
-      "type": "table"
+      "type": "table-old"
     },
     {
       "columns": [],
-      "datasource": "InfluxDB Home",
+      "datasource": "${DS_INFLUXDB_HOME}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fontSize": "100%",
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 22
+        "y": 27
       },
       "id": 14,
       "links": [],
@@ -2296,12 +2478,14 @@
       "styles": [
         {
           "alias": "Time",
+          "align": "auto",
           "dateFormat": "MMMM D, YYYY LT",
           "pattern": "Time",
           "type": "date"
         },
         {
           "alias": "",
+          "align": "auto",
           "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
@@ -2415,18 +2599,18 @@
       "timeShift": null,
       "title": "Daily Traffic",
       "transform": "timeseries_to_columns",
-      "type": "table"
+      "type": "table-old"
     }
   ],
   "refresh": "10s",
-  "schemaVersion": 16,
+  "schemaVersion": 26,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {
@@ -2457,5 +2641,5 @@
   "timezone": "",
   "title": "FRITZ!Box Router Status",
   "uid": "000000013",
-  "version": 17
+  "version": 26
 }
