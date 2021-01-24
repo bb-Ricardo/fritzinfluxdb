@@ -70,7 +70,20 @@ the settings.
 
 Now you should be able to run the image with following command
 ```
-docker run -d -v /PATH/TO/my-frtizinfluxdb.ini:/app/idefault.ini --name fritzinfluxdb fritzinfluxdb
+docker run -d -v /PATH/TO/my-frtizinfluxdb.ini:/app/frtizinfluxdb.ini --name fritzinfluxdb fritzinfluxdb
+```
+
+If you're running the influxdb in a docker on the same host you need to add `--link` to the run command.
+
+### Example:
+* starting the influx container
+```
+docker run --name=influxdb -d -p 8086:8086 influxdb
+```
+* set influxdb host in `fritzinfluxdb.ini` to `influxdb`
+* run docker container
+```
+docker run --link influxdb -d -v /PATH/TO/my-frtizinfluxdb.ini:/app/frtizinfluxdb.ini --name fritzinfluxdb fritzinfluxdb
 ```
 
 ## Upgrading
