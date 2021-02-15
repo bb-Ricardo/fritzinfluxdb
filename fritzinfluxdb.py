@@ -16,7 +16,10 @@ from datetime import datetime
 
 # import 3rd party modules
 import fritzconnection
+# InfluxDB version 1.x client
 import influxdb
+# InfluxDB version 2.x client
+import influxdb_client
 
 
 __version__ = "0.3.0"
@@ -101,7 +104,7 @@ def sanitize_fb_return_data(results):
 
 def query_services(fc, services):
     """
-    Query all services from a Fritzbox which are defined in config
+    Query all services from a FritzBox which are defined in config
 
     Parameters
     ----------
@@ -312,19 +315,35 @@ def main():
     config = read_config(args.config_file)
 
     # set up influxdb handler
-    influxdb_client = None
+    influx_params = dict()
+    influx_version = config.getint('influxdb', 'version')
     try:
-        influxdb_client = influxdb.InfluxDBClient(
-            config.get('influxdb', 'host'),
-            config.getint('influxdb', 'port', fallback=8086),
-            config.get('influxdb', 'username'),
-            config.get('influxdb', 'password'),
-            config.get('influxdb', 'database'),
-            config.getboolean('influxdb', 'ssl', fallback=False),
-            config.getboolean('influxdb', 'verify_ssl', fallback=False)
-        )
+        if influx_version == 1:
+            influx_params["host"] = config.get('influxdb', 'host')
+            influx_params["port"] = config.getint('influxdb', 'port', fallback=8086)
+            influx_params["username"] = config.get('influxdb', 'username'),
+            influx_params["password"] = config.get('influxdb', 'password'),
+            influx_params["database"] = config.get('influxdb', 'database'),
+            influx_params["ssl"] = config.getboolean('influxdb', 'ssl', fallback=False),
+            influx_params["verify_ssl"] = config.getboolean('influxdb', 'verify_ssl', fallback=False)
+
+        else:
+            influx_proto = "http"
+            if config.getboolean('influxdb', 'ssl', fallback=False) is True:
+                influx_proto = "https"
+            influx_params["url"] = "{}://{}:{}".format(
+                influx_proto,
+                config.get('influxdb', 'host'),
+                config.getint('influxdb', 'port', fallback=8086)
+            )
+            influx_params["token"] = config.get('influxdb', 'token')
+            influx_params["org"] = config.get('influxdb', 'org')
+            influx_params["verify_ssl"] = config.getboolean('influxdb', 'verify_ssl', fallback=False)
+            _ = config.get('influxdb', 'bucket')
+
         # test more config options and see if they are present
         _ = config.get('influxdb', 'measurement_name')
+
     except configparser.Error as e:
         logging.error("Config Error: %s", str(e))
         exit(1)
@@ -332,8 +351,14 @@ def main():
         logging.error("Config Error: %s", str(e))
         exit(1)
 
-    # check influx db status
-    check_db_status(influxdb_client, config.get('influxdb', 'database'))
+    if influx_version == 1:
+        influxdb_handler = influxdb.InfluxDBClient(**influx_params)
+
+        # check influx db status
+        check_db_status(influxdb_handler, config.get('influxdb', 'database'))
+    else:
+        influxdb_client_handler = influxdb_client.InfluxDBClient(**influx_params)
+        influxdb_handler = influxdb_client_handler.write_api(write_options=influxdb_client.client.write_api.SYNCHRONOUS)
 
     # create authenticated FB client handler
     fritz_client_auth = None
@@ -397,13 +422,17 @@ def main():
 
         # noinspection PyBroadException
         try:
-            influxdb_client.write_points([data], time_precision="ms")
+            if influx_version == 1:
+                influxdb_handler.write_points([data], time_precision="ms")
+            else:
+                influxdb_handler.write(bucket=config.get('influxdb', 'bucket'), record=data,
+                                       write_precision=influxdb_client.domain.write_precision.WritePrecision.MS)
         except Exception as e:
             logging.error("Failed to write to InfluxDB <%s>: %s" % (config.get('influxdb', 'host'), str(e)))
 
         duration = int(datetime.utcnow().timestamp() * 1000) - start
 
-        logging.debug("Duration of requesting Fritzbox and sending data to InfluxDB: %0.3fs" % (duration / 1000))
+        logging.debug("Duration of requesting FritzBox and sending data to InfluxDB: %0.3fs" % (duration / 1000))
 
         if duration + 1000 >= (request_interval * 1000):
             logging.warning(f"Request interval of {request_interval} seconds might be to short considering last "

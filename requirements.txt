@@ -1,2 +1,3 @@
 fritzconnection==1.3.3
 influxdb
+influxdb_client==1.14.0
