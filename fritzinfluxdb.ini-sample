@@ -100,3 +100,13 @@ value_instances = NewExternalIPAddress: external_ip
                   NewConnectionStatus: connection_status
                   NewLastConnectionError: last_connection_error
 
+[service10]
+service = X_AVM-DE_RemoteAccess
+actions = GetDDNSInfo
+value_instances = NewEnabled: ddns_enabled
+                  NewProviderName: ddns_provider_name
+                  NewDomain: ddns_domain
+                  NewStatusIPv4: ddns_status_ipv4
+                  NewStatusIPv6: ddns_status_ipv6
+                  NewMode: ddns_mode
+
