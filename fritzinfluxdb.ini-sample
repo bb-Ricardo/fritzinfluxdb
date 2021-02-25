@@ -93,12 +93,12 @@ value_instances = NewUpgradeAvailable: upgrade_available
 [service9]
 service = WANPPPConnection:1
 actions = GetInfo
-value_instances = NewExternalIPAddress: external_ip
+value_instances = NewConnectionStatus: connection_status
+                  NewUptime: linkuptime
+                  NewLastConnectionError: last_connection_error
+                  NewExternalIPAddress: external_ip
                   #NewLastAuthErrorInfo: last_auth_error
                   NewPPPoEACName: remote_pop
-                  NewUptime: linkuptime
-                  NewConnectionStatus: connection_status
-                  NewLastConnectionError: last_connection_error
 
 [service10]
 service = X_AVM-DE_RemoteAccess
