@@ -19,7 +19,12 @@ ssl = false
 # interval to request data in seconds
 #interval = 10
 
+# Begin services
+# Documentation of TR-064 protocoll see:
+# https://avm.de/service/schnittstellen/
+
 [service1]
+# https://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/deviceinfoSCPD.pdf
 service = DeviceInfo
 actions = GetInfo
 value_instances = NewUpTime: systemuptime
@@ -42,12 +47,14 @@ value_instances = NewByteSendRate: sendrate
                   NewWANAccessType: physicallinktype
 
 [service3]
+# https://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/wancommonifconfigSCPD.pdf
 service = WANCommonInterfaceConfig:1
 actions = GetCommonLinkProperties
 value_instances = NewLayer1DownstreamMaxBitRate: downstreamphysicalmax
                   NewLayer1UpstreamMaxBitRate: upstreamphysicalmax
                   
 [service4]
+# https://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/wanipconnSCPD.pdf
 service = WANIPConn
 actions = GetStatusInfo
           X_AVM_DE_GetExternalIPv6Address
@@ -57,6 +64,7 @@ value_instances = NewUptime: linkuptime
                   NewExternalIPv6Address: external_ipv6
 
 [service5]
+# https://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/wanpppconnSCPD.pdf
 service = WANPPPConnection:1
 actions = GetInfo
 value_instances = NewConnectionStatus: connection_status
@@ -68,6 +76,7 @@ value_instances = NewConnectionStatus: connection_status
                   NewPPPoEACName: remote_pop
 
 [service6]
+# https://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/wandslifconfigSCPD.pdf
 service = WANDSLInterfaceConfig
 actions = GetInfo
           GetStatisticsTotal
@@ -84,28 +93,33 @@ value_instances = NewDownstreamMaxRate: maxBitRate_downstream
                   NewCRCErrors: crc_errors
 
 [service7]
+# https://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/lanifconfigSCPD.pdf
 service = LANEthernetInterfaceConfig:1
 actions = GetStatistics
 value_instances = NewBytesReceived: lan_totalbytesreceived
                   NewBytesSent: lan_totalbytessent
 
 [service8]
+# https://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/lanhostconfigmgmSCPD.pdf
 service = LANHostConfigManagement
 actions = GetInfo
 value_instances = NewDNSServers: internal_dns_servers
 
 [service9]
+# https://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/hostsSCPD.pdf
 service = Hosts:1
 actions = GetHostNumberOfEntries
 value_instances = NewHostNumberOfEntries: number_of_hosts
 
 [service10]
+# https://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/userifSCPD.pdf
 service = UserInterface:1
 actions = GetInfo
 value_instances = NewUpgradeAvailable: upgrade_available
                   NewX_AVM-DE_UpdateState: update_state
 
 [service11]
+# https://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/wlanconfigSCPD.pdf
 # 2.4 GHz
 service = WLANConfiguration:1
 actions = GetInfo
@@ -115,6 +129,7 @@ value_instances = NewStatus: wlan1_status
                   NewStandard: wlan1_802.11_standard
 
 [service12]
+# https://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/wlanconfigSCPD.pdf
 # 5 GHz
 service = WLANConfiguration:2
 actions = GetInfo
@@ -124,6 +139,7 @@ value_instances = NewStatus: wlan2_status
                   NewStandard: wlan2_802.11_standard
 
 [service13]
+# https://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/x_remoteSCPD.pdf
 service = X_AVM-DE_RemoteAccess
 actions = GetDDNSInfo
 value_instances = NewEnabled: ddns_enabled
