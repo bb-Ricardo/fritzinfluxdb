@@ -97,6 +97,7 @@ value_instances = NewConnectionStatus: connection_status
                   NewUptime: linkuptime
                   NewLastConnectionError: last_connection_error
                   NewExternalIPAddress: external_ip
+                  NewDNSServers: external_dns_servers
                   #NewLastAuthErrorInfo: last_auth_error
                   NewPPPoEACName: remote_pop
 
@@ -110,3 +111,7 @@ value_instances = NewEnabled: ddns_enabled
                   NewStatusIPv6: ddns_status_ipv6
                   NewMode: ddns_mode
 
+[service11]
+service = LANHostConfigManagement
+actions = GetInfo
+value_instances = NewDNSServers: internal_dns_servers
