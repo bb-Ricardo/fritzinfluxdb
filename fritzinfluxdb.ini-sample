@@ -24,20 +24,20 @@ ssl = false
 service = WANCommonIFC
 actions = GetAddonInfos
           GetCommonLinkProperties
-value_instances = NewByteSendRate : sendrate
-                  NewByteReceiveRate : receiverate
+value_instances = NewByteSendRate: sendrate
+                  NewByteReceiveRate: receiverate
                   NewX_AVM_DE_TotalBytesSent64: totalbytessent
-                  NewX_AVM_DE_TotalBytesReceived64 : totalbytesreceived
-                  NewLayer1DownstreamMaxBitRate : downstreammax
-                  NewLayer1UpstreamMaxBitRate : upstreammax
-                  NewPhysicalLinkStatus : physicallinkstatus
+                  NewX_AVM_DE_TotalBytesReceived64: totalbytesreceived
+                  NewLayer1DownstreamMaxBitRate: downstreammax
+                  NewLayer1UpstreamMaxBitRate: upstreammax
+                  NewPhysicalLinkStatus: physicallinkstatus
                   NewWANAccessType: physicallinktype
 
 [service2]
 service = WANIPConn
 actions = GetStatusInfo
           X_AVM_DE_GetExternalIPv6Address
-value_instances = NewUptime : linkuptime
+value_instances = NewUptime: linkuptime
                   NewConnectionStatus: connection_status
                   NewLastConnectionError: last_connection_error
                   NewExternalIPv6Address: external_ipv6
@@ -51,8 +51,8 @@ value_instances = NewLayer1DownstreamMaxBitRate: downstreamphysicalmax
 [service4]
 service = DeviceInfo
 actions = GetInfo
-value_instances = NewUpTime : systemuptime
-                  NewDescription : description
+value_instances = NewUpTime: systemuptime
+                  NewDescription: description
                   NewSerialNumber: serialnumber
                   NewModelName: model
                   NewSoftwareVersion: softwareversion
@@ -96,7 +96,7 @@ actions = GetInfo
 value_instances = NewExternalIPAddress: external_ip
                   #NewLastAuthErrorInfo: last_auth_error
                   NewPPPoEACName: remote_pop
-                  NewUptime : linkuptime
+                  NewUptime: linkuptime
                   NewConnectionStatus: connection_status
                   NewLastConnectionError: last_connection_error
 
