@@ -19,8 +19,16 @@ ssl = false
 # interval to request data in seconds
 #interval = 10
 
-
 [service1]
+service = DeviceInfo
+actions = GetInfo
+value_instances = NewUpTime: systemuptime
+                  NewDescription: description
+                  NewSerialNumber: serialnumber
+                  NewModelName: model
+                  NewSoftwareVersion: softwareversion
+
+[service2]
 service = WANCommonIFC
 actions = GetAddonInfos
           GetCommonLinkProperties
@@ -33,7 +41,13 @@ value_instances = NewByteSendRate: sendrate
                   NewPhysicalLinkStatus: physicallinkstatus
                   NewWANAccessType: physicallinktype
 
-[service2]
+[service3]
+service = WANCommonInterfaceConfig:1
+actions = GetCommonLinkProperties
+value_instances = NewLayer1DownstreamMaxBitRate: downstreamphysicalmax
+                  NewLayer1UpstreamMaxBitRate: upstreamphysicalmax
+                  
+[service4]
 service = WANIPConn
 actions = GetStatusInfo
           X_AVM_DE_GetExternalIPv6Address
@@ -42,26 +56,16 @@ value_instances = NewUptime: linkuptime
                   NewLastConnectionError: last_connection_error
                   NewExternalIPv6Address: external_ipv6
 
-[service3]
-service = WANCommonInterfaceConfig:1
-actions = GetCommonLinkProperties
-value_instances = NewLayer1DownstreamMaxBitRate: downstreamphysicalmax
-                  NewLayer1UpstreamMaxBitRate: upstreamphysicalmax
-
-[service4]
-service = DeviceInfo
-actions = GetInfo
-value_instances = NewUpTime: systemuptime
-                  NewDescription: description
-                  NewSerialNumber: serialnumber
-                  NewModelName: model
-                  NewSoftwareVersion: softwareversion
-
 [service5]
-service = LANEthernetInterfaceConfig:1
-actions = GetStatistics
-value_instances = NewBytesReceived: lan_totalbytesreceived
-                  NewBytesSent: lan_totalbytessent
+service = WANPPPConnection:1
+actions = GetInfo
+value_instances = NewConnectionStatus: connection_status
+                  NewUptime: linkuptime
+                  NewLastConnectionError: last_connection_error
+                  NewExternalIPAddress: external_ip
+                  NewDNSServers: external_dns_servers
+                  #NewLastAuthErrorInfo: last_auth_error
+                  NewPPPoEACName: remote_pop
 
 [service6]
 service = WANDSLInterfaceConfig
@@ -80,43 +84,28 @@ value_instances = NewDownstreamMaxRate: maxBitRate_downstream
                   NewCRCErrors: crc_errors
 
 [service7]
+service = LANEthernetInterfaceConfig:1
+actions = GetStatistics
+value_instances = NewBytesReceived: lan_totalbytesreceived
+                  NewBytesSent: lan_totalbytessent
+
+[service8]
+service = LANHostConfigManagement
+actions = GetInfo
+value_instances = NewDNSServers: internal_dns_servers
+
+[service9]
 service = Hosts:1
 actions = GetHostNumberOfEntries
 value_instances = NewHostNumberOfEntries: number_of_hosts
 
-[service8]
+[service10]
 service = UserInterface:1
 actions = GetInfo
 value_instances = NewUpgradeAvailable: upgrade_available
                   NewX_AVM-DE_UpdateState: update_state
 
-[service9]
-service = WANPPPConnection:1
-actions = GetInfo
-value_instances = NewConnectionStatus: connection_status
-                  NewUptime: linkuptime
-                  NewLastConnectionError: last_connection_error
-                  NewExternalIPAddress: external_ip
-                  NewDNSServers: external_dns_servers
-                  #NewLastAuthErrorInfo: last_auth_error
-                  NewPPPoEACName: remote_pop
-
-[service10]
-service = X_AVM-DE_RemoteAccess
-actions = GetDDNSInfo
-value_instances = NewEnabled: ddns_enabled
-                  NewProviderName: ddns_provider_name
-                  NewDomain: ddns_domain
-                  NewStatusIPv4: ddns_status_ipv4
-                  NewStatusIPv6: ddns_status_ipv6
-                  NewMode: ddns_mode
-
 [service11]
-service = LANHostConfigManagement
-actions = GetInfo
-value_instances = NewDNSServers: internal_dns_servers
-
-[service12]
 # 2.4 GHz
 service = WLANConfiguration:1
 actions = GetInfo
@@ -125,7 +114,7 @@ value_instances = NewStatus: wlan1_status
                   NewSSID: wlan1_ssid
                   NewStandard: wlan1_802.11_standard
 
-[service13]
+[service12]
 # 5 GHz
 service = WLANConfiguration:2
 actions = GetInfo
@@ -134,3 +123,12 @@ value_instances = NewStatus: wlan2_status
                   NewSSID: wlan2_ssid
                   NewStandard: wlan2_802.11_standard
 
+[service13]
+service = X_AVM-DE_RemoteAccess
+actions = GetDDNSInfo
+value_instances = NewEnabled: ddns_enabled
+                  NewProviderName: ddns_provider_name
+                  NewDomain: ddns_domain
+                  NewStatusIPv4: ddns_status_ipv4
+                  NewStatusIPv6: ddns_status_ipv6
+                  NewMode: ddns_mode
