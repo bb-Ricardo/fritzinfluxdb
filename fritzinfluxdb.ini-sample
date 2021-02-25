@@ -115,3 +115,22 @@ value_instances = NewEnabled: ddns_enabled
 service = LANHostConfigManagement
 actions = GetInfo
 value_instances = NewDNSServers: internal_dns_servers
+
+[service12]
+# 2.4 GHz
+service = WLANConfiguration:1
+actions = GetInfo
+value_instances = NewStatus: wlan1_status
+                  NewChannel: wlan1_channel
+                  NewSSID: wlan1_ssid
+                  NewStandard: wlan1_802.11_standard
+
+[service13]
+# 5 GHz
+service = WLANConfiguration:2
+actions = GetInfo
+value_instances = NewStatus: wlan2_status
+                  NewChannel: wlan2_channel
+                  NewSSID: wlan2_ssid
+                  NewStandard: wlan2_802.11_standard
+
