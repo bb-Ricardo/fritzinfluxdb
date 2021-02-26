@@ -325,6 +325,7 @@ def main():
         )
         # test more config options and see if they are present
         _ = config.get('influxdb', 'measurement_name')
+        box_tag = config.get('influxdb', 'box_tag', "fritz.box")
     except configparser.Error as e:
         logging.error("Config Error: %s", str(e))
         exit(1)
@@ -384,6 +385,7 @@ def main():
         # query data
         data = {
             "measurement": config.get('influxdb', 'measurement_name'),
+            "tags": {"box": box_tag},
             "time": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
             "fields": query_services(fritz_client_auth, services_to_query)
         }
@@ -391,6 +393,8 @@ def main():
         logging.debug("Writing data to InfluxDB")
 
         logging.debug("InfluxDB - measurement: %s" % data.get("measurement"))
+        for k, v in data.get("tags").items():
+            logging.debug(f"InfluxDB - tag: {k} = {v}")
         logging.debug("InfluxDB - time: %s" % data.get("time"))
         for k, v in data.get("fields").items():
             logging.debug(f"InfluxDB - field: {k} = {v}")

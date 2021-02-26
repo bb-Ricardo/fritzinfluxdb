@@ -7,6 +7,7 @@ database = db
 ssl = false
 verify_ssl = true
 measurement_name = fritzbox
+box_tag = fritz.box
 
 [fritzbox]
 host = 192.168.178.1
