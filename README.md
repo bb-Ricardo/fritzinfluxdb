@@ -16,7 +16,7 @@ Original created by [yunity](https://github.com/yunity/fritzinfluxdb) and change
 ```
 sudo apt-get install virtualenv python3-lxml
 cd /opt
-git clone https://github.com/yunity/fritzinfluxdb.git
+git clone https://github.com/multigestern/fritzinfluxdb.git
 cd fritzinfluxdb
 virtualenv --system-site-packages -p python3 .venv
 . .venv/bin/activate
@@ -27,7 +27,7 @@ pip3 install -r requirements.txt
 ```
 yum install git python36-virtualenv python36-lxml
 cd /opt
-git clone https://github.com/yunity/fritzinfluxdb.git
+git clone https://github.com/multigestern/fritzinfluxdb.git
 cd fritzinfluxdb
 virtualenv-3 --system-site-packages .venv
 . .venv/bin/activate
