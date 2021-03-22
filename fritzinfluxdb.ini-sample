@@ -1,9 +1,18 @@
 [influxdb]
 host = 127.0.0.1
 port = 8086
-username = bla
-password = blub
+version = 2
+
+# InfluxDB version 1.x client
+username = user 
+password = pw
 database = db
+
+# InfluxDB version 2.x client
+token = XXX
+org = my_Org
+bucket = my_Bucket
+
 ssl = false
 verify_ssl = true
 measurement_name = Fritzbox
