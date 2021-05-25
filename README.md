@@ -62,17 +62,21 @@ systemctl enable fritzinfluxdb
 ```
 git clone <this_repo_url>
 cd fritzinfluxdb
-docker build -t fritzinfluxdb .
 ```
 
-Copy the config from the [example](default.ini) to ```my-fritzinfluxdb.ini``` and edit
+Copy the config from the [example](fritzinfluxdb.ini-sample) to ```my-fritzinfluxdb.ini``` and edit
 the settings.
 
-Now you should be able to run the image with following command
+Now you should be able to build and run the image with following commands
 ```
+docker build -t fritzinfluxdb .
 docker run -d -v /PATH/TO/my-fritzinfluxdb.ini:/app/fritzinfluxdb.ini --name fritzinfluxdb fritzinfluxdb
 ```
 
+You can alternatively use the provided [docker-compose.yml](docker-compose.yml):
+```
+docker-compose up -d
+```
 If you're running the influxdb in a docker on the same host you need to add `--link` to the run command.
 
 ### Example:

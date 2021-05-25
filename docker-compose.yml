@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  fritzinfluxdb:
+      build:
+          context: .
+          dockerfile: Dockerfile
+      container_name: fritzinfluxdb
+      network_mode: host
+      restart: unless-stopped
+      volumes:
+        - ./my-fritzinfluxdb.ini:/app/fritzinfluxdb.ini
