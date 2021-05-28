@@ -55,6 +55,12 @@ systemctl start fritzinfluxdb
 systemctl enable fritzinfluxdb
 ```
 
+## Setup taskchecker
+As some routers may fail to report data from time to time I created a ```taskchecker.sh``` which contains a simple lookup for the running tasks against an integer. This integer has to be changed to the number of routers plus the base task. So in my case three routers and the base task is a four.
+
+If the tasks are less, then the service gets restarted and every routerdata is collected again.
+I run this as a cronjob.
+
 ## Run with Docker
 ```
 git clone <this_repo_url>
