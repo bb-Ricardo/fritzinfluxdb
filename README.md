@@ -7,6 +7,7 @@ It is equal capable as fritzcollectd and directly writing to influxdb.
 * python3.6 or newer
 * influxdb
 * fritzconnection >= 1.3.3
+* Grafana >= 8.4.0
 
 ## Python 2.7
 If you still need to run it with Python 2 check out the the branch

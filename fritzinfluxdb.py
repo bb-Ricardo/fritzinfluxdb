@@ -321,10 +321,10 @@ def main():
         if influx_version == 1:
             influx_params["host"] = config.get('influxdb', 'host')
             influx_params["port"] = config.getint('influxdb', 'port', fallback=8086)
-            influx_params["username"] = config.get('influxdb', 'username'),
-            influx_params["password"] = config.get('influxdb', 'password'),
-            influx_params["database"] = config.get('influxdb', 'database'),
-            influx_params["ssl"] = config.getboolean('influxdb', 'ssl', fallback=False),
+            influx_params["username"] = config.get('influxdb', 'username')
+            influx_params["password"] = config.get('influxdb', 'password')
+            influx_params["database"] = config.get('influxdb', 'database')
+            influx_params["ssl"] = config.getboolean('influxdb', 'ssl', fallback=False)
             influx_params["verify_ssl"] = config.getboolean('influxdb', 'verify_ssl', fallback=False)
 
         else:

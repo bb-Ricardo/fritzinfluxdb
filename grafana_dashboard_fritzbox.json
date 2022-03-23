@@ -1,25 +1,48 @@
 {
   "__inputs": [
     {
-      "name": "DS_INFLUXDB_HOME",
-      "label": "InfluxDB Home",
+      "name": "DS_INFLUXDB",
+      "label": "InfluxDB",
       "description": "",
       "type": "datasource",
       "pluginId": "influxdb",
       "pluginName": "InfluxDB"
+    },
+    {
+      "name": "VAR_MEASUREMENT",
+      "type": "constant",
+      "label": "InfluxDB measurement",
+      "value": "fritzbox",
+      "description": ""
+    },
+    {
+      "name": "VAR_TIMEZONE",
+      "type": "constant",
+      "label": "specify your timezone",
+      "value": "Europe/Berlin",
+      "description": ""
     }
   ],
+  "__elements": [
+
+  ],
   "__requires": [
+    {
+      "type": "panel",
+      "id": "gauge",
+      "name": "Gauge",
+      "version": ""
+    },
     {
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "7.3.4"
+      "version": "8.4.4"
     },
     {
       "type": "panel",
       "id": "graph",
-      "name": "Graph",
+      "name": "Graph (old)",
       "version": ""
     },
     {
@@ -30,14 +53,20 @@
     },
     {
       "type": "panel",
-      "id": "singlestat",
-      "name": "Singlestat",
+      "id": "stat",
+      "name": "Stat",
       "version": ""
     },
     {
       "type": "panel",
       "id": "table-old",
       "name": "Table (old)",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
       "version": ""
     }
   ],
@@ -50,93 +79,216 @@
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [
+
+          ],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
-  "description": "Monitor FRITZ!Box routers.",
+  "description": "Monitor FRITZ!Box routers",
   "editable": true,
+  "fiscalYearStartMonth": 0,
   "gnetId": 713,
   "graphTooltip": 2,
   "id": null,
-  "links": [],
+  "iteration": 1648073187465,
+  "links": [
+
+  ],
+  "liveNow": false,
   "panels": [
     {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "${DS_INFLUXDB_HOME}",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
-          "links": []
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "DSL Speed",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "links": [
+
+          ],
+          "mappings": [
+
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bps"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/UP.*/"
+            },
+            "properties": [
+              {
+                "id": "custom.transform",
+                "value": "negative-Y"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*Physical Max/"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#64b0c8",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*DSL Sync/"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#3f6833",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*netto Max/"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#890f02",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*rror.*/"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 100
+              },
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "Errors"
+              }
+            ]
+          }
+        ]
       },
-      "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
         "h": 13,
         "w": 24,
         "x": 0,
         "y": 0
       },
-      "hiddenSeries": false,
       "id": 22,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "links": [],
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.3.4",
-      "pointradius": 5,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [
-        {
-          "alias": "/UP.*/",
-          "transform": "negative-Y"
-        },
-        {
-          "alias": "/.*Physical Max/",
-          "color": "#64b0c8",
-          "fill": 0
-        },
-        {
-          "alias": "/.*DSL Sync/",
-          "color": "#3f6833",
-          "fill": 0
-        },
-        {
-          "alias": "/.*netto Max/",
-          "color": "#890f02",
-          "fill": 0
-        },
-        {
-          "alias": "/.*rror.*/",
-          "bars": true,
-          "yaxis": 2
-        }
+      "links": [
+
       ],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
+      "options": {
+        "legend": {
+          "calcs": [
+
+          ],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "8.4.4",
       "targets": [
         {
           "alias": "UP",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "groupBy": [
             {
               "params": [
@@ -152,7 +304,7 @@
             }
           ],
           "hide": false,
-          "measurement": "fritzbox",
+          "measurement": "/^$measurement$/",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -166,7 +318,9 @@
                 "type": "field"
               },
               {
-                "params": [],
+                "params": [
+
+                ],
                 "type": "mean"
               },
               {
@@ -177,50 +331,16 @@
               }
             ]
           ],
-          "tags": []
-        },
-        {
-          "alias": "UP (derivat)",
-          "groupBy": [
-            {
-              "params": [
-                "10s"
-              ],
-              "type": "time"
-            }
-          ],
-          "hide": true,
-          "measurement": "fritzbox",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT non_negative_derivative(\"totalbytesreceived\", 10s) FROM \"fritzbox\" WHERE $timeFilter",
-          "rawQuery": false,
-          "refId": "J",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "totalbytessent"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "last"
-              },
-              {
-                "params": [
-                  "10s"
-                ],
-                "type": "non_negative_derivative"
-              }
-            ]
-          ],
-          "tags": []
+          "tags": [
+
+          ]
         },
         {
           "alias": "DOWN",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "groupBy": [
             {
               "params": [
@@ -236,7 +356,7 @@
             }
           ],
           "hide": false,
-          "measurement": "fritzbox",
+          "measurement": "/^$measurement$/",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "B",
@@ -250,7 +370,9 @@
                 "type": "field"
               },
               {
-                "params": [],
+                "params": [
+
+                ],
                 "type": "mean"
               },
               {
@@ -261,48 +383,16 @@
               }
             ]
           ],
-          "tags": []
-        },
-        {
-          "alias": "DOWN (derivat)",
-          "groupBy": [
-            {
-              "params": [
-                "1s"
-              ],
-              "type": "time"
-            }
-          ],
-          "hide": true,
-          "measurement": "fritzbox",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "I",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "totalbytesreceived"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "min"
-              },
-              {
-                "params": [
-                  "7s"
-                ],
-                "type": "non_negative_derivative"
-              }
-            ]
-          ],
-          "tags": []
+          "tags": [
+
+          ]
         },
         {
           "alias": "DOWN netto Max",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "groupBy": [
             {
               "params": [
@@ -318,7 +408,7 @@
             }
           ],
           "hide": false,
-          "measurement": "fritzbox",
+          "measurement": "/^$measurement$/",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "C",
@@ -332,15 +422,23 @@
                 "type": "field"
               },
               {
-                "params": [],
+                "params": [
+
+                ],
                 "type": "last"
               }
             ]
           ],
-          "tags": []
+          "tags": [
+
+          ]
         },
         {
           "alias": "DOWN Physical Max",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "groupBy": [
             {
               "params": [
@@ -356,7 +454,7 @@
             }
           ],
           "hide": false,
-          "measurement": "fritzbox",
+          "measurement": "/^$measurement$/",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "D",
@@ -370,15 +468,23 @@
                 "type": "field"
               },
               {
-                "params": [],
+                "params": [
+
+                ],
                 "type": "last"
               }
             ]
           ],
-          "tags": []
+          "tags": [
+
+          ]
         },
         {
           "alias": "DOWN DSL Sync",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "groupBy": [
             {
               "params": [
@@ -394,10 +500,10 @@
             }
           ],
           "hide": false,
-          "measurement": "fritzbox",
+          "measurement": "/^$measurement$/",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT last(\"NewDownstreamCurrRate\") *1000 FROM \"fritzbox\" WHERE $timeFilter GROUP BY time($__interval) fill(linear)",
+          "query": "SELECT last(\"NewDownstreamCurrRate\") *1000 FROM /^$measurement$/ WHERE $timeFilter GROUP BY time($__interval) fill(linear)",
           "rawQuery": false,
           "refId": "E",
           "resultFormat": "time_series",
@@ -410,7 +516,9 @@
                 "type": "field"
               },
               {
-                "params": [],
+                "params": [
+
+                ],
                 "type": "mean"
               },
               {
@@ -421,10 +529,16 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+
+          ]
         },
         {
           "alias": "UP netto Max",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "groupBy": [
             {
               "params": [
@@ -440,10 +554,10 @@
             }
           ],
           "hide": false,
-          "measurement": "fritzbox",
+          "measurement": "/^$measurement$/",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT mean(\"sendrate\") FROM \"fritzbox\" WHERE $timeFilter GROUP BY time($__interval) fill(linear)",
+          "query": "SELECT mean(\"sendrate\") FROM /^$measurement$/ WHERE $timeFilter GROUP BY time($__interval) fill(linear)",
           "rawQuery": false,
           "refId": "F",
           "resultFormat": "time_series",
@@ -456,15 +570,23 @@
                 "type": "field"
               },
               {
-                "params": [],
+                "params": [
+
+                ],
                 "type": "mean"
               }
             ]
           ],
-          "tags": []
+          "tags": [
+
+          ]
         },
         {
           "alias": "UP Physical Max",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "groupBy": [
             {
               "params": [
@@ -480,10 +602,10 @@
             }
           ],
           "hide": false,
-          "measurement": "fritzbox",
+          "measurement": "/^$measurement$/",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT mean(\"sendrate\") FROM \"fritzbox\" WHERE $timeFilter GROUP BY time($__interval) fill(linear)",
+          "query": "SELECT mean(\"sendrate\") FROM /^$measurement$/ WHERE $timeFilter GROUP BY time($__interval) fill(linear)",
           "rawQuery": false,
           "refId": "G",
           "resultFormat": "time_series",
@@ -496,15 +618,23 @@
                 "type": "field"
               },
               {
-                "params": [],
+                "params": [
+
+                ],
                 "type": "mean"
               }
             ]
           ],
-          "tags": []
+          "tags": [
+
+          ]
         },
         {
           "alias": "UP DSL Sync",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "groupBy": [
             {
               "params": [
@@ -520,10 +650,10 @@
             }
           ],
           "hide": false,
-          "measurement": "fritzbox",
+          "measurement": "/^$measurement$/",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT last(\"NewUpstreamCurrRate\") *1000 FROM \"fritzbox\" WHERE $timeFilter GROUP BY time($__interval) fill(linear)",
+          "query": "SELECT last(\"NewUpstreamCurrRate\") *1000 FROM /^$measurement$/ WHERE $timeFilter GROUP BY time($__interval) fill(linear)",
           "rawQuery": false,
           "refId": "H",
           "resultFormat": "time_series",
@@ -536,7 +666,9 @@
                 "type": "field"
               },
               {
-                "params": [],
+                "params": [
+
+                ],
                 "type": "mean"
               },
               {
@@ -547,10 +679,16 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+
+          ]
         },
         {
           "alias": "CRC Errors",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "groupBy": [
             {
               "params": [
@@ -559,7 +697,7 @@
               "type": "time"
             }
           ],
-          "measurement": "fritzbox",
+          "measurement": "/^$measurement$/",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "K",
@@ -573,7 +711,9 @@
                 "type": "field"
               },
               {
-                "params": [],
+                "params": [
+
+                ],
                 "type": "last"
               },
               {
@@ -584,10 +724,16 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+
+          ]
         },
         {
           "alias": "Errored Seconds",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "groupBy": [
             {
               "params": [
@@ -596,10 +742,10 @@
               "type": "time"
             }
           ],
-          "measurement": "fritzbox",
+          "measurement": "/^$measurement$/",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT non_negative_derivative(last(\"crc_errors\"), 10s) FROM \"fritzbox\" WHERE $timeFilter GROUP BY time(10s)",
+          "query": "SELECT non_negative_derivative(last(\"crc_errors\"), 10s) FROM /^$measurement$/ WHERE $timeFilter GROUP BY time(10s)",
           "rawQuery": false,
           "refId": "L",
           "resultFormat": "time_series",
@@ -612,7 +758,9 @@
                 "type": "field"
               },
               {
-                "params": [],
+                "params": [
+
+                ],
                 "type": "last"
               },
               {
@@ -623,10 +771,16 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+
+          ]
         },
         {
           "alias": "Severely Errored Seconds",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "groupBy": [
             {
               "params": [
@@ -635,10 +789,10 @@
               "type": "time"
             }
           ],
-          "measurement": "fritzbox",
+          "measurement": "/^$measurement$/",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT non_negative_derivative(last(\"crc_errors\"), 10s) FROM \"fritzbox\" WHERE $timeFilter GROUP BY time(10s)",
+          "query": "SELECT non_negative_derivative(last(\"crc_errors\"), 10s) FROM /^$measurement$/ WHERE $timeFilter GROUP BY time(10s)",
           "rawQuery": false,
           "refId": "M",
           "resultFormat": "time_series",
@@ -651,7 +805,9 @@
                 "type": "field"
               },
               {
-                "params": [],
+                "params": [
+
+                ],
                 "type": "last"
               },
               {
@@ -662,75 +818,65 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+
+          ]
         }
       ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
       "title": "Current UP/DOWN",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "decimals": null,
-          "format": "bps",
-          "label": "DSL Speed",
-          "logBase": 1,
-          "max": "142000000",
-          "min": "-40000000",
-          "show": true
-        },
-        {
-          "decimals": 0,
-          "format": "short",
-          "label": "Errors",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
+      "type": "timeseries"
     },
     {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": true,
-      "colors": [
-        "#6ed0e0",
-        "#508642",
-        "#1f78c1"
-      ],
-      "datasource": "${DS_INFLUXDB_HOME}",
+      "description": "Is There a Fritz!OS update available",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "text": "No"
+                },
+                "1": {
+                  "text": "Yes"
+                }
+              },
+              "type": "value"
+            },
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#6ed0e0",
+                "value": null
+              },
+              {
+                "color": "#1f78c1",
+                "value": 0
+              },
+              {
+                "color": "#508642",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "none"
         },
-        "overrides": []
-      },
-      "format": "none",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
+        "overrides": [
+
+        ]
       },
       "gridPos": {
         "h": 4,
@@ -739,42 +885,31 @@
         "y": 13
       },
       "id": 10,
-      "interval": null,
-      "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
+      "links": [
+
       ],
       "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
       },
-      "tableColumn": "",
+      "pluginVersion": "8.4.4",
       "targets": [
         {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -784,9 +919,11 @@
               "type": "time"
             }
           ],
-          "measurement": "fritzbox",
+          "measurement": "/^$measurement$/",
           "orderByTime": "ASC",
           "policy": "default",
+          "query": "SELECT last(\"upgrade_available\") FROM /^$measurement$/",
+          "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -798,119 +935,116 @@
                 "type": "field"
               },
               {
-                "params": [],
+                "params": [
+
+                ],
                 "type": "last"
               }
             ]
           ],
-          "tags": [],
+          "tags": [
+
+          ],
           "target": ""
         }
       ],
-      "thresholds": "1,0",
-      "title": "Update Available",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        },
-        {
-          "op": "=",
-          "text": "No",
-          "value": "0"
-        },
-        {
-          "op": "=",
-          "text": "Yes",
-          "value": "1"
-        }
-      ],
-      "valueName": "current"
+      "title": "Update",
+      "type": "stat"
     },
     {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "rgba(245, 54, 54, 0.9)",
-        "rgba(237, 129, 40, 0.89)",
-        "#1f78c1"
-      ],
-      "datasource": "${DS_INFLUXDB_HOME}",
-      "decimals": 2,
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "text": "Disconnected"
+                },
+                "1": {
+                  "text": "Connected"
+                }
+              },
+              "type": "value"
+            },
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgba(245, 54, 54, 0.9)",
+                "value": null
+              },
+              {
+                "color": "rgba(237, 129, 40, 0.89)",
+                "value": 1
+              },
+              {
+                "color": "#1f78c1",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "dtdurations"
         },
-        "overrides": []
-      },
-      "format": "dtdurations",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
+        "overrides": [
+
+        ]
       },
       "gridPos": {
-        "h": 4,
-        "w": 3,
+        "h": 2,
+        "w": 6,
         "x": 2,
         "y": 13
       },
       "hideTimeOverride": true,
       "id": 9,
-      "interval": null,
-      "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
+      "links": [
+
       ],
       "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
       },
-      "tableColumn": "",
+      "pluginVersion": "8.4.4",
       "targets": [
         {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "dsType": "influxdb",
           "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            }
+
           ],
-          "measurement": "fritzbox",
+          "measurement": "/^$measurement$/",
           "orderByTime": "ASC",
           "policy": "default",
+          "query": "SELECT \"linkuptime\" FROM /^$measurement$/",
+          "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -920,193 +1054,52 @@
                   "linkuptime"
                 ],
                 "type": "field"
-              },
-              {
-                "params": [],
-                "type": "last"
               }
             ]
           ],
-          "tags": [],
+          "tags": [
+
+          ],
           "target": ""
         }
       ],
-      "thresholds": "1,1",
       "timeFrom": "5m",
-      "timeShift": null,
       "title": "DSL Link Uptime",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        },
-        {
-          "op": "=",
-          "text": "Disconnected",
-          "value": "0"
-        },
-        {
-          "op": "=",
-          "text": "Connected",
-          "value": "1"
-        }
-      ],
-      "valueName": "current"
+      "type": "stat"
     },
     {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "rgba(245, 54, 54, 0.9)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
-      ],
-      "datasource": "${DS_INFLUXDB_HOME}",
-      "decimals": 2,
       "fieldConfig": {
         "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "format": "dtdurations",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 3,
-        "x": 5,
-        "y": 13
-      },
-      "hideTimeOverride": true,
-      "id": 13,
-      "interval": null,
-      "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
-      "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false
-      },
-      "tableColumn": "",
-      "targets": [
-        {
-          "dsType": "influxdb",
-          "groupBy": [
+          "color": {
+            "mode": "continuous-GrYlRd"
+          },
+          "decimals": 1,
+          "mappings": [
             {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
             }
           ],
-          "measurement": "fritzbox",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT last(\"value\") FROM \"fritzbox\" WHERE (\"type_instance\" = 'uptime') AND $timeFilter GROUP BY time($__interval)",
-          "rawQuery": false,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
               {
-                "params": [
-                  "systemuptime"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "last"
+                "color": "rgba(245, 54, 54, 0.9)",
+                "value": null
               }
             ]
-          ],
-          "tags": [],
-          "target": ""
-        }
-      ],
-      "thresholds": "1,1",
-      "timeFrom": "5m",
-      "title": "System Uptime",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
+          },
+          "unit": "Bps"
         },
-        {
-          "op": "=",
-          "text": "Disconnected",
-          "value": "0"
-        },
-        {
-          "op": "=",
-          "text": "Connected",
-          "value": "1"
-        }
-      ],
-      "valueName": "current"
-    },
-    {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "rgba(245, 54, 54, 0.9)",
-        "rgba(237, 129, 40, 0.89)",
-        "#1f78c1"
-      ],
-      "datasource": "${DS_INFLUXDB_HOME}",
-      "decimals": 1,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "format": "Bps",
-      "gauge": {
-        "maxValue": 14263750,
-        "minValue": 0,
-        "show": true,
-        "thresholdLabels": false,
-        "thresholdMarkers": false
+        "overrides": [
+
+        ]
       },
       "gridPos": {
         "h": 4,
@@ -1115,42 +1108,29 @@
         "y": 13
       },
       "id": 11,
-      "interval": null,
-      "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
+      "links": [
+
       ],
       "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false
+      "options": {
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/.*\\.current$/",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false
       },
-      "tableColumn": "",
+      "pluginVersion": "8.4.4",
       "targets": [
         {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -1160,9 +1140,11 @@
               "type": "time"
             }
           ],
-          "measurement": "fritzbox",
+          "measurement": "/^$measurement$/",
           "orderByTime": "ASC",
           "policy": "default",
+          "query": "SELECT last(\"receiverate\")*8 AS \"current\", last(\"downstreammax\") AS \"max\" FROM /^$measurement$/",
+          "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -1174,52 +1156,55 @@
                 "type": "field"
               },
               {
-                "params": [],
+                "params": [
+
+                ],
                 "type": "last"
               }
             ]
           ],
-          "tags": [],
+          "tags": [
+
+          ],
           "target": ""
         }
       ],
-      "thresholds": "1,1",
       "title": "Current Download",
-      "type": "singlestat",
-      "valueFontSize": "50%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "current"
+      "type": "gauge"
     },
     {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "rgba(245, 54, 54, 0.9)",
-        "rgba(237, 129, 40, 0.89)",
-        "#e24d42"
-      ],
-      "datasource": "${DS_INFLUXDB_HOME}",
-      "decimals": 1,
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "color": {
+            "mode": "continuous-YlBl"
+          },
+          "decimals": 1,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgba(245, 54, 54, 0.9)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "Bps"
         },
-        "overrides": []
-      },
-      "format": "Bps",
-      "gauge": {
-        "maxValue": 4163375,
-        "minValue": 0,
-        "show": true,
-        "thresholdLabels": false,
-        "thresholdMarkers": false
+        "overrides": [
+
+        ]
       },
       "gridPos": {
         "h": 4,
@@ -1228,54 +1213,38 @@
         "y": 13
       },
       "id": 12,
-      "interval": null,
-      "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
+      "links": [
+
       ],
       "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false
+      "options": {
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/.*\\.current$/",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false
       },
-      "tableColumn": "",
+      "pluginVersion": "8.4.4",
       "targets": [
         {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "dsType": "influxdb",
           "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            }
+
           ],
-          "measurement": "fritzbox",
+          "measurement": "/^$measurement$/",
           "orderByTime": "ASC",
           "policy": "default",
+          "query": "SELECT last(\"sendrate\")*8 AS \"current\", last(\"upstreammax\") AS \"max\" FROM /^$measurement$/",
+          "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -1287,52 +1256,76 @@
                 "type": "field"
               },
               {
-                "params": [],
-                "type": "last"
+                "params": [
+                  "alias"
+                ],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "upstreammax"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [
+                  "alias"
+                ],
+                "type": "alias"
               }
             ]
           ],
-          "tags": [],
+          "tags": [
+
+          ],
           "target": ""
         }
       ],
-      "thresholds": "1,1",
       "title": "Current Upload",
-      "type": "singlestat",
-      "valueFontSize": "50%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
+      "transformations": [
+
       ],
-      "valueName": "current"
+      "type": "gauge"
     },
     {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "rgba(245, 54, 54, 0.9)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
-      ],
-      "datasource": "${DS_INFLUXDB_HOME}",
-      "decimals": 3,
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "color": {
+            "fixedColor": "#e24d42",
+            "mode": "fixed"
+          },
+          "decimals": 3,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
         },
-        "overrides": []
-      },
-      "format": "decbytes",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
+        "overrides": [
+
+        ]
       },
       "gridPos": {
         "h": 4,
@@ -1342,49 +1335,40 @@
       },
       "hideTimeOverride": true,
       "id": 8,
-      "interval": null,
-      "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
+      "links": [
+
       ],
       "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(137, 15, 2, 0.18)",
-        "full": false,
-        "lineColor": "#e24d42",
-        "show": true
+      "options": {
+        "colorMode": "none",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
       },
-      "tableColumn": "",
+      "pluginVersion": "8.4.4",
       "targets": [
         {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "dsType": "influxdb",
-          "groupBy": [],
-          "measurement": "fritzbox",
+          "groupBy": [
+
+          ],
+          "measurement": "/^$measurement$/",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT \"totalbytessent\" FROM \"fritzbox\" WHERE $timeFilter",
-          "rawQuery": true,
+          "query": "SELECT \"totalbytessent\" FROM /^$measurement$/ WHERE $timeFilter",
+          "rawQuery": false,
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -1397,51 +1381,52 @@
               }
             ]
           ],
-          "tags": [],
+          "tags": [
+
+          ],
           "target": ""
         }
       ],
-      "thresholds": "",
       "timeFrom": "24h",
-      "timeShift": null,
       "title": "Total Upload since connection",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "current"
+      "type": "stat"
     },
     {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorPostfix": false,
-      "colorPrefix": false,
-      "colorValue": false,
-      "colors": [
-        "rgba(245, 54, 54, 0.9)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
-      ],
-      "datasource": "${DS_INFLUXDB_HOME}",
-      "decimals": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "color": {
+            "fixedColor": "rgb(31, 120, 193)",
+            "mode": "fixed"
+          },
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
         },
-        "overrides": []
-      },
-      "format": "decbytes",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
+        "overrides": [
+
+        ]
       },
       "gridPos": {
         "h": 4,
@@ -1451,49 +1436,40 @@
       },
       "hideTimeOverride": true,
       "id": 3,
-      "interval": null,
-      "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
+      "links": [
+
       ],
       "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": true
+      "options": {
+        "colorMode": "none",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
       },
-      "tableColumn": "",
+      "pluginVersion": "8.4.4",
       "targets": [
         {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "dsType": "influxdb",
-          "groupBy": [],
-          "measurement": "fritzbox",
+          "groupBy": [
+
+          ],
+          "measurement": "/^$measurement$/",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT \"totalbytesreceived\" FROM \"fritzbox\" WHERE $timeFilter",
-          "rawQuery": true,
+          "query": "SELECT \"totalbytesreceived\" FROM /^$measurement$/ WHERE $timeFilter",
+          "rawQuery": false,
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -1503,55 +1479,183 @@
                   "totalbytesreceived"
                 ],
                 "type": "field"
+              }
+            ]
+          ],
+          "tags": [
+
+          ],
+          "target": ""
+        }
+      ],
+      "timeFrom": "24h",
+      "title": "Total Download since connection",
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "text": "Disconnected"
+                },
+                "1": {
+                  "text": "Connected"
+                }
+              },
+              "type": "value"
+            },
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgba(245, 54, 54, 0.9)",
+                "value": null
               },
               {
-                "params": [],
+                "color": "rgba(237, 129, 40, 0.89)",
+                "value": 1
+              },
+              {
+                "color": "rgba(50, 172, 45, 0.97)",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "dtdurations"
+        },
+        "overrides": [
+
+        ]
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 6,
+        "x": 2,
+        "y": 15
+      },
+      "hideTimeOverride": true,
+      "id": 13,
+      "links": [
+
+      ],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.4.4",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "dsType": "influxdb",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            }
+          ],
+          "measurement": "/^$measurement$/",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT last(\"systemuptime\") FROM /^$measurement$/",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "systemuptime"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [
+
+                ],
                 "type": "last"
               }
             ]
           ],
-          "tags": [],
+          "tags": [
+
+          ],
           "target": ""
         }
       ],
-      "thresholds": "",
-      "timeFrom": "24h",
-      "title": "Total Download since connection",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "current"
+      "timeFrom": "5m",
+      "title": "System Uptime",
+      "type": "stat"
     },
     {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "rgba(245, 54, 54, 0.9)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
-      ],
-      "datasource": "${DS_INFLUXDB_HOME}",
-      "decimals": 3,
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "color": {
+            "fixedColor": "#e24d42",
+            "mode": "fixed"
+          },
+          "decimals": 3,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
         },
-        "overrides": []
-      },
-      "format": "decbytes",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
+        "overrides": [
+
+        ]
       },
       "gridPos": {
         "h": 3,
@@ -1560,42 +1664,31 @@
         "y": 17
       },
       "id": 16,
-      "interval": null,
-      "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
+      "links": [
+
       ],
       "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(137, 15, 2, 0.18)",
-        "full": false,
-        "lineColor": "#e24d42",
-        "show": true
+      "options": {
+        "colorMode": "none",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
       },
-      "tableColumn": "",
+      "pluginVersion": "8.4.4",
       "targets": [
         {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -1614,7 +1707,7 @@
           "measurement": "fritzbox_value",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT cumulative_sum(non_negative_difference(last(\"totalbytessent\"))) FROM \"fritzbox\" WHERE $timeFilter  GROUP BY time($__interval) tz('Europe/Berlin')",
+          "query": "SELECT cumulative_sum(non_negative_difference(last(\"totalbytessent\"))) FROM /^$measurement$/ WHERE $timeFilter  GROUP BY time($__interval) tz(${timezone:singlequote})",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1627,7 +1720,9 @@
                 "type": "field"
               },
               {
-                "params": [],
+                "params": [
+
+                ],
                 "type": "mean"
               }
             ]
@@ -1642,44 +1737,47 @@
           "target": ""
         }
       ],
-      "thresholds": "",
       "timeFrom": "1d",
       "title": "Last 24h Upload",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "current"
+      "type": "stat"
     },
     {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "rgba(245, 54, 54, 0.9)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
-      ],
-      "datasource": "${DS_INFLUXDB_HOME}",
-      "decimals": 3,
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "color": {
+            "fixedColor": "rgb(31, 120, 193)",
+            "mode": "fixed"
+          },
+          "decimals": 3,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
         },
-        "overrides": []
-      },
-      "format": "decbytes",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
+        "overrides": [
+
+        ]
       },
       "gridPos": {
         "h": 3,
@@ -1689,42 +1787,31 @@
       },
       "hideTimeOverride": false,
       "id": 15,
-      "interval": null,
-      "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
+      "links": [
+
       ],
       "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": true
+      "options": {
+        "colorMode": "none",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
       },
-      "tableColumn": "",
+      "pluginVersion": "8.4.4",
       "targets": [
         {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -1743,7 +1830,7 @@
           "measurement": "fritzbox_value",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT cumulative_sum(non_negative_difference(last(\"totalbytesreceived\"))) FROM \"fritzbox\" WHERE  $timeFilter GROUP BY time($__interval) tz('Europe/Berlin')",
+          "query": "SELECT cumulative_sum(non_negative_difference(last(\"totalbytesreceived\"))) FROM /^$measurement$/ WHERE  $timeFilter GROUP BY time($__interval) tz(${timezone:singlequote})",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1756,7 +1843,9 @@
                 "type": "field"
               },
               {
-                "params": [],
+                "params": [
+
+                ],
                 "type": "mean"
               }
             ]
@@ -1771,20 +1860,9 @@
           "target": ""
         }
       ],
-      "thresholds": "",
       "timeFrom": "1d",
-      "timeShift": null,
       "title": "Last 24h Download",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "current"
+      "type": "stat"
     },
     {
       "aliasColors": {
@@ -1797,18 +1875,22 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_INFLUXDB_HOME}",
       "editable": true,
       "fieldConfig": {
         "defaults": {
-          "custom": {},
-          "links": []
+          "links": [
+
+          ]
         },
-        "overrides": []
+        "overrides": [
+
+        ]
       },
       "fill": 0,
       "fillGradient": 0,
-      "grid": {},
+      "grid": {
+
+      },
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -1829,25 +1911,33 @@
       },
       "lines": false,
       "linewidth": 1,
-      "links": [],
+      "links": [
+
+      ],
       "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.4",
+      "pluginVersion": "8.4.4",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "resolution": 100,
       "scale": 1,
-      "seriesOverrides": [],
+      "seriesOverrides": [
+
+      ],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": true,
       "targets": [
         {
           "alias": "download",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "dsType": "influxdb",
           "fields": [
             {
@@ -1869,11 +1959,13 @@
               "type": "fill"
             }
           ],
-          "groupByTags": [],
+          "groupByTags": [
+
+          ],
           "measurement": "fritzbox_value",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(\"totalbytesreceived\"))) FROM \"fritzbox\" WHERE $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time($__interval) tz('Europe/Berlin')",
+          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(\"totalbytesreceived\"))) FROM /^$measurement$/ WHERE $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time($__interval) tz(${timezone:singlequote})",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1886,7 +1978,9 @@
                 "type": "field"
               },
               {
-                "params": [],
+                "params": [
+
+                ],
                 "type": "mean"
               }
             ]
@@ -1902,6 +1996,10 @@
         },
         {
           "alias": "upload",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "dsType": "influxdb",
           "fields": [
             {
@@ -1924,12 +2022,14 @@
               "type": "fill"
             }
           ],
-          "groupByTags": [],
+          "groupByTags": [
+
+          ],
           "hide": false,
           "measurement": "fritzbox_value",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(\"totalbytessent\"))) FROM \"fritzbox\" WHERE $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time($__interval) tz('Europe/Berlin')",
+          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(\"totalbytessent\"))) FROM /^$measurement$/ WHERE $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time($__interval) tz(${timezone:singlequote})",
           "rawQuery": true,
           "refId": "B",
           "resultFormat": "time_series",
@@ -1942,7 +2042,9 @@
                 "type": "field"
               },
               {
-                "params": [],
+                "params": [
+
+                ],
                 "type": "mean"
               }
             ]
@@ -1957,10 +2059,13 @@
           "target": "alias(summarize(nonNegativeDerivative(collectd.squirrel.fritzbox.bytes-totalbytessent,0),'1h','sum'),'upload')"
         }
       ],
-      "thresholds": [],
+      "thresholds": [
+
+      ],
       "timeFrom": "1d",
-      "timeRegions": [],
-      "timeShift": null,
+      "timeRegions": [
+
+      ],
       "title": "Current Traffic",
       "tooltip": {
         "msResolution": false,
@@ -1971,31 +2076,29 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
-        "values": []
+        "values": [
+
+        ]
       },
       "yaxes": [
         {
+          "$$hashKey": "object:790",
           "format": "decbytes",
           "logBase": 1,
-          "max": null,
           "min": 0,
           "show": true
         },
         {
+          "$$hashKey": "object:791",
           "format": "short",
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       },
       "zerofill": true
     },
@@ -2009,13 +2112,15 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_INFLUXDB_HOME}",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
-          "links": []
+          "links": [
+
+          ]
         },
-        "overrides": []
+        "overrides": [
+
+        ]
       },
       "fill": 1,
       "fillGradient": 0,
@@ -2043,23 +2148,31 @@
       },
       "lines": false,
       "linewidth": 1,
-      "links": [],
+      "links": [
+
+      ],
       "nullPointMode": "null",
       "options": {
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.4",
+      "pluginVersion": "8.4.4",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
-      "seriesOverrides": [],
+      "seriesOverrides": [
+
+      ],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
       "targets": [
         {
           "alias": "Download",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -2073,7 +2186,7 @@
           "measurement": "fritzbox_value",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(\"totalbytesreceived\"))) FROM \"fritzbox\" WHERE $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time(1d) tz('Europe/Berlin')",
+          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(\"totalbytesreceived\"))) FROM /^$measurement$/ WHERE $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time(1d) tz(${timezone:singlequote})",
           "rawQuery": true,
           "refId": "F",
           "resultFormat": "time_series",
@@ -2086,7 +2199,9 @@
                 "type": "field"
               },
               {
-                "params": [],
+                "params": [
+
+                ],
                 "type": "max"
               },
               {
@@ -2108,6 +2223,10 @@
         },
         {
           "alias": "Upload",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -2121,7 +2240,7 @@
           "measurement": "fritzbox_value",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(totalbytessent))) FROM \"fritzbox\" WHERE $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time(1d) tz('Europe/Berlin')",
+          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(totalbytessent))) FROM /^$measurement$/ WHERE $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time(1d) tz(${timezone:singlequote})",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -2134,7 +2253,9 @@
                 "type": "field"
               },
               {
-                "params": [],
+                "params": [
+
+                ],
                 "type": "max"
               },
               {
@@ -2155,10 +2276,13 @@
           "target": ""
         }
       ],
-      "thresholds": [],
+      "thresholds": [
+
+      ],
       "timeFrom": "7d",
-      "timeRegions": [],
-      "timeShift": null,
+      "timeRegions": [
+
+      ],
       "title": "Daily Traffic",
       "tooltip": {
         "shared": true,
@@ -2167,44 +2291,39 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
-        "values": []
+        "values": [
+
+        ]
       },
       "yaxes": [
         {
+          "$$hashKey": "object:858",
           "decimals": 2,
           "format": "decbytes",
           "label": "",
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
+          "$$hashKey": "object:859",
           "format": "decbytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
-      "columns": [],
-      "datasource": "${DS_INFLUXDB_HOME}",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
+      "columns": [
+
+      ],
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB}"
       },
       "fontSize": "100%",
       "gridPos": {
@@ -2216,8 +2335,9 @@
       "hideTimeOverride": true,
       "id": 20,
       "interval": "",
-      "links": [],
-      "pageSize": null,
+      "links": [
+
+      ],
       "scroll": true,
       "showHeader": true,
       "sort": {
@@ -2236,7 +2356,6 @@
         {
           "alias": "",
           "align": "auto",
-          "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
             "rgba(237, 129, 40, 0.89)",
@@ -2256,7 +2375,6 @@
         {
           "alias": "Key",
           "align": "auto",
-          "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
             "rgba(237, 129, 40, 0.89)",
@@ -2274,10 +2392,10 @@
           "groupBy": [],
           "hide": false,
           "limit": "1",
-          "measurement": "fritzbox",
+          "measurement": "/^$measurement$/",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT \"model\" AS \"Model\", \"serialnumber\" AS \"Serial\", \"softwareversion\" AS \"SW Version\", \"external_ip\" AS \"IP\", \"external_ipv6\" AS \"IPv6\", \"number_of_hosts\" AS \"Number of network hosts\", \"connection_status\" AS \"PPP Connection Status\", \"physicallinkstatus\" AS \"Link Status\", \"physicallinktype\" AS \"Link Type\", \"remote_pop\" AS \"Remote POP\", \"last_connection_error\" AS \"Last Connect Error\" FROM \"fritzbox\" WHERE $timeFilter LIMIT 1",
+          "query": "SELECT \"model\" AS \"Model\", \"serialnumber\" AS \"Serial\", \"softwareversion\" AS \"SW Version\", \"external_ip\" AS \"IP\", \"external_ipv6\" AS \"IPv6\", \"number_of_hosts\" AS \"Number of network hosts\", \"connection_status\" AS \"PPP Connection Status\", \"physicallinkstatus\" AS \"Link Status\", \"physicallinktype\" AS \"Link Type\", \"remote_pop\" AS \"Remote POP\", \"last_connection_error\" AS \"Last Connect Error\" FROM /^$measurement$/ WHERE $timeFilter LIMIT 1",
           "rawQuery": false,
           "refId": "A",
           "resultFormat": "time_series",
@@ -2445,20 +2563,12 @@
         }
       ],
       "timeFrom": "1m",
-      "timeShift": null,
       "title": "FritzBox Info",
       "transform": "timeseries_to_rows",
       "type": "table-old"
     },
     {
       "columns": [],
-      "datasource": "${DS_INFLUXDB_HOME}",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
       "fontSize": "100%",
       "gridPos": {
         "h": 8,
@@ -2468,7 +2578,6 @@
       },
       "id": 14,
       "links": [],
-      "pageSize": null,
       "scroll": true,
       "showHeader": true,
       "sort": {
@@ -2486,7 +2595,6 @@
         {
           "alias": "",
           "align": "auto",
-          "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
             "rgba(237, 129, 40, 0.89)",
@@ -2502,6 +2610,10 @@
       "targets": [
         {
           "alias": "Download",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -2514,7 +2626,7 @@
           "measurement": "fritzbox_value",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(\"totalbytesreceived\"))) FROM \"fritzbox\" WHERE $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time(1d) tz('Europe/Berlin')",
+          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(\"totalbytesreceived\"))) FROM /^$measurement$/ WHERE $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time(1d) tz(${timezone:singlequote})",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -2549,6 +2661,10 @@
         },
         {
           "alias": "Upload",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -2561,7 +2677,7 @@
           "measurement": "fritzbox_value",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(\"totalbytessent\"))) FROM \"fritzbox\" WHERE $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time(1d) tz('Europe/Berlin')",
+          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(\"totalbytessent\"))) FROM /^$measurement$/ WHERE $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time(1d) tz(${timezone:singlequote})",
           "rawQuery": true,
           "refId": "B",
           "resultFormat": "time_series",
@@ -2596,18 +2712,59 @@
         }
       ],
       "timeFrom": "7d",
-      "timeShift": null,
       "title": "Daily Traffic",
       "transform": "timeseries_to_columns",
       "type": "table-old"
     }
   ],
   "refresh": "10s",
-  "schemaVersion": 26,
+  "schemaVersion": 35,
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "description": "Measurement name for the fritzflux data",
+        "hide": 2,
+        "label": "InfluxDB measurement",
+        "name": "measurement",
+        "query": "${VAR_MEASUREMENT}",
+        "skipUrlSync": false,
+        "type": "constant",
+        "current": {
+          "value": "${VAR_MEASUREMENT}",
+          "text": "${VAR_MEASUREMENT}",
+          "selected": false
+        },
+        "options": [
+          {
+            "value": "${VAR_MEASUREMENT}",
+            "text": "${VAR_MEASUREMENT}",
+            "selected": false
+          }
+        ]
+      },
+      {
+        "hide": 2,
+        "label": "specify your timezone",
+        "name": "timezone",
+        "query": "${VAR_TIMEZONE}",
+        "skipUrlSync": false,
+        "type": "constant",
+        "current": {
+          "value": "${VAR_TIMEZONE}",
+          "text": "${VAR_TIMEZONE}",
+          "selected": false
+        },
+        "options": [
+          {
+            "value": "${VAR_TIMEZONE}",
+            "text": "${VAR_TIMEZONE}",
+            "selected": false
+          }
+        ]
+      }
+    ]
   },
   "time": {
     "from": "now-6h",
@@ -2640,6 +2797,7 @@
   },
   "timezone": "",
   "title": "FRITZ!Box Router Status",
-  "uid": "000000013",
-  "version": 26
+  "uid": "FritzFlux",
+  "version": 1,
+  "weekStart": ""
 }
