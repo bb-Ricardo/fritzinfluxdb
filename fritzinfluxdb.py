@@ -44,7 +44,7 @@ def parse_args():
         description=self_description + f"\nVersion: {__version__} ({__version_date__})",
         formatter_class=RawDescriptionHelpFormatter)
 
-    parser.add_argument("-c", "--config", dest="config_file", default=default_config,
+    parser.add_argument("-c", "--config", dest="config_file", nargs='+', default=[default_config],
                         help="define config file (default: " + default_config + ")")
     parser.add_argument("-d", "--daemon", action='store_true',
                         help="define if the script is run as a systemd daemon")
@@ -193,9 +193,9 @@ def query_services(fc, services):
     return sanitize_fb_return_data(result)
 
 
-def read_config(filename):
+def read_config(filenames):
     """
-    Read config ini file and return configparser object
+    Read config ini files in the given order and return configparser object
 
     Parameters
     ----------
@@ -210,23 +210,24 @@ def read_config(filename):
     config = None
 
     # check if config file exists
-    if not os.path.isfile(filename):
-        logging.error(f'Config file "{filename}" not found')
-        exit(1)
+    for f in filenames:
+        if not os.path.isfile(f):
+            logging.error(f'Config file "{f}" not found')
+            exit(1)
 
-    # check if config file is readable
-    if not os.access(filename, os.R_OK):
-        logging.error(f'Config file "{filename}" not readable')
-        exit(1)
+        # check if config file is readable
+        if not os.access(f, os.R_OK):
+            logging.error(f'Config file "{f}" not readable')
+            exit(1)
 
     try:
         config = configparser.ConfigParser()
-        config.read(filename)
+        config.read(filenames)
     except configparser.Error as e:
         logging.error("Config Error: %s", str(e))
         exit(1)
 
-    logging.info("Done parsing config file")
+    logging.info("Done parsing config files")
 
     return config
 
