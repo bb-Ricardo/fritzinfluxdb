@@ -203,7 +203,7 @@ def read_config(filenames):
 
     Parameters
     ----------
-    filename: str
+    filenames: str
         path of ini file to parse
 
     Returns
@@ -326,10 +326,10 @@ def main():
         if influx_version == 1:
             influx_params["host"] = config.get('influxdb', 'host')
             influx_params["port"] = config.getint('influxdb', 'port', fallback=8086)
-            influx_params["username"] = config.get('influxdb', 'username'),
-            influx_params["password"] = config.get('influxdb', 'password'),
-            influx_params["database"] = config.get('influxdb', 'database'),
-            influx_params["ssl"] = config.getboolean('influxdb', 'ssl', fallback=False),
+            influx_params["username"] = config.get('influxdb', 'username')
+            influx_params["password"] = config.get('influxdb', 'password')
+            influx_params["database"] = config.get('influxdb', 'database')
+            influx_params["ssl"] = config.getboolean('influxdb', 'ssl', fallback=False)
             influx_params["verify_ssl"] = config.getboolean('influxdb', 'verify_ssl', fallback=False)
 
         else:
@@ -348,6 +348,7 @@ def main():
 
         # test more config options and see if they are present
         _ = config.get('influxdb', 'measurement_name')
+        box_tag = config.get('influxdb', 'box_tag', fallback="fritz.box")
 
     except configparser.Error as e:
         logging.error("Config Error: %s", str(e))
@@ -414,6 +415,7 @@ def main():
         # query data
         data = {
             "measurement": config.get('influxdb', 'measurement_name'),
+            "tags": {"box": box_tag},
             "time": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
             "fields": query_services(fritz_client_auth, services_to_query)
         }
@@ -421,6 +423,8 @@ def main():
         logging.debug("Writing data to InfluxDB")
 
         logging.debug("InfluxDB - measurement: %s" % data.get("measurement"))
+        for k, v in data.get("tags").items():
+            logging.debug(f"InfluxDB - tag: {k} = {v}")
         logging.debug("InfluxDB - time: %s" % data.get("time"))
         for k, v in data.get("fields").items():
             logging.debug(f"InfluxDB - field: {k} = {v}")

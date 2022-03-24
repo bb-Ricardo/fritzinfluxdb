@@ -59,6 +59,7 @@
   "gnetId": 713,
   "graphTooltip": 2,
   "id": null,
+							 
   "links": [],
   "panels": [
     {
@@ -177,7 +178,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
+            }
+          ]
         },
         {
           "alias": "UP (derivat)",
@@ -193,7 +200,7 @@
           "measurement": "fritzbox",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT non_negative_derivative(\"totalbytesreceived\", 10s) FROM \"fritzbox\" WHERE $timeFilter",
+          "query": "SELECT non_negative_derivative(\"totalbytesreceived\", 10s) FROM \"fritzbox\" WHERE \"box\" =~ /^$box$/ AND $timeFilter",
           "rawQuery": false,
           "refId": "J",
           "resultFormat": "time_series",
@@ -217,7 +224,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
+            }
+          ]
         },
         {
           "alias": "DOWN",
@@ -261,7 +274,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
+            }
+          ]
         },
         {
           "alias": "DOWN (derivat)",
@@ -299,7 +318,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
+            }
+          ]
         },
         {
           "alias": "DOWN netto Max",
@@ -337,7 +362,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
+            }
+          ]
         },
         {
           "alias": "DOWN Physical Max",
@@ -375,7 +406,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
+            }
+          ]
         },
         {
           "alias": "DOWN DSL Sync",
@@ -397,7 +434,7 @@
           "measurement": "fritzbox",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT last(\"NewDownstreamCurrRate\") *1000 FROM \"fritzbox\" WHERE $timeFilter GROUP BY time($__interval) fill(linear)",
+          "query": "SELECT last(\"NewDownstreamCurrRate\") *1000 FROM \"fritzbox\" WHERE \"box\" =~ /^$box$/ AND $timeFilter GROUP BY time($__interval) fill(linear)",
           "rawQuery": false,
           "refId": "E",
           "resultFormat": "time_series",
@@ -421,7 +458,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
+            }
+          ]
         },
         {
           "alias": "UP netto Max",
@@ -443,7 +486,7 @@
           "measurement": "fritzbox",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT mean(\"sendrate\") FROM \"fritzbox\" WHERE $timeFilter GROUP BY time($__interval) fill(linear)",
+          "query": "SELECT mean(\"sendrate\") FROM \"fritzbox\" WHERE \"box\" =~ /^$box$/ AND $timeFilter GROUP BY time($__interval) fill(linear)",
           "rawQuery": false,
           "refId": "F",
           "resultFormat": "time_series",
@@ -461,7 +504,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
+            }
+          ]
         },
         {
           "alias": "UP Physical Max",
@@ -483,7 +532,7 @@
           "measurement": "fritzbox",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT mean(\"sendrate\") FROM \"fritzbox\" WHERE $timeFilter GROUP BY time($__interval) fill(linear)",
+          "query": "SELECT mean(\"sendrate\") FROM \"fritzbox\" WHERE \"box\" =~ /^$box$/ AND $timeFilter GROUP BY time($__interval) fill(linear)",
           "rawQuery": false,
           "refId": "G",
           "resultFormat": "time_series",
@@ -501,7 +550,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
+            }
+          ]
         },
         {
           "alias": "UP DSL Sync",
@@ -523,7 +578,7 @@
           "measurement": "fritzbox",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT last(\"NewUpstreamCurrRate\") *1000 FROM \"fritzbox\" WHERE $timeFilter GROUP BY time($__interval) fill(linear)",
+          "query": "SELECT last(\"NewUpstreamCurrRate\") *1000 FROM \"fritzbox\" WHERE \"box\" =~ /^$box$/ AND $timeFilter GROUP BY time($__interval) fill(linear)",
           "rawQuery": false,
           "refId": "H",
           "resultFormat": "time_series",
@@ -547,7 +602,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
+            }
+          ]
         },
         {
           "alias": "CRC Errors",
@@ -584,7 +645,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
+            }
+          ]
         },
         {
           "alias": "Errored Seconds",
@@ -599,7 +666,7 @@
           "measurement": "fritzbox",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT non_negative_derivative(last(\"crc_errors\"), 10s) FROM \"fritzbox\" WHERE $timeFilter GROUP BY time(10s)",
+          "query": "SELECT non_negative_derivative(last(\"crc_errors\"), 10s) FROM \"fritzbox\" WHERE \"box\" =~ /^$box$/ AND $timeFilter GROUP BY time(10s)",
           "rawQuery": false,
           "refId": "L",
           "resultFormat": "time_series",
@@ -623,7 +690,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
+            }
+          ]
         },
         {
           "alias": "Severely Errored Seconds",
@@ -638,7 +711,7 @@
           "measurement": "fritzbox",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT non_negative_derivative(last(\"crc_errors\"), 10s) FROM \"fritzbox\" WHERE $timeFilter GROUP BY time(10s)",
+          "query": "SELECT non_negative_derivative(last(\"crc_errors\"), 10s) FROM \"fritzbox\" WHERE \"box\" =~ /^$box$/ AND $timeFilter GROUP BY time(10s)",
           "rawQuery": false,
           "refId": "M",
           "resultFormat": "time_series",
@@ -662,7 +735,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
+            }
+          ]
         }
       ],
       "thresholds": [],
@@ -803,7 +882,13 @@
               }
             ]
           ],
-          "tags": [],
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
+            }
+          ],
           "target": ""
         }
       ],
@@ -927,7 +1012,13 @@
               }
             ]
           ],
-          "tags": [],
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
+            }
+          ],
           "target": ""
         }
       ],
@@ -1037,7 +1128,7 @@
           "measurement": "fritzbox",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT last(\"value\") FROM \"fritzbox\" WHERE (\"type_instance\" = 'uptime') AND $timeFilter GROUP BY time($__interval)",
+          "query": "SELECT last(\"value\") FROM \"fritzbox\" WHERE \"box\" =~ /^$box$/ AND $timeFilter GROUP BY time($__interval)",
           "rawQuery": false,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1055,7 +1146,13 @@
               }
             ]
           ],
-          "tags": [],
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
+            }
+          ],
           "target": ""
         }
       ],
@@ -1179,7 +1276,13 @@
               }
             ]
           ],
-          "tags": [],
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
+            }
+          ],
           "target": ""
         }
       ],
@@ -1292,7 +1395,13 @@
               }
             ]
           ],
-          "tags": [],
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
+            }
+          ],
           "target": ""
         }
       ],
@@ -1383,7 +1492,7 @@
           "measurement": "fritzbox",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT \"totalbytessent\" FROM \"fritzbox\" WHERE $timeFilter",
+          "query": "SELECT \"totalbytessent\" FROM \"fritzbox\" WHERE \"box\" =~ /^$box$/ AND $timeFilter",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1397,7 +1506,13 @@
               }
             ]
           ],
-          "tags": [],
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
+            }
+          ],
           "target": ""
         }
       ],
@@ -1492,7 +1607,7 @@
           "measurement": "fritzbox",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT \"totalbytesreceived\" FROM \"fritzbox\" WHERE $timeFilter",
+          "query": "SELECT \"totalbytesreceived\" FROM \"fritzbox\" WHERE \"box\" =~ /^$box$/ AND $timeFilter",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1510,7 +1625,13 @@
               }
             ]
           ],
-          "tags": [],
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
+            }
+          ],
           "target": ""
         }
       ],
@@ -1614,7 +1735,7 @@
           "measurement": "fritzbox_value",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT cumulative_sum(non_negative_difference(last(\"totalbytessent\"))) FROM \"fritzbox\" WHERE $timeFilter  GROUP BY time($__interval) tz('Europe/Berlin')",
+          "query": "SELECT cumulative_sum(non_negative_difference(last(\"totalbytessent\"))) FROM \"fritzbox\" WHERE \"box\" =~ /^$box$/ AND $timeFilter  GROUP BY time($__interval) tz('Europe/Berlin')",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1634,9 +1755,9 @@
           ],
           "tags": [
             {
-              "key": "type_instance",
-              "operator": "=",
-              "value": "totalbytesreceived"
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
             }
           ],
           "target": ""
@@ -1743,7 +1864,7 @@
           "measurement": "fritzbox_value",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT cumulative_sum(non_negative_difference(last(\"totalbytesreceived\"))) FROM \"fritzbox\" WHERE  $timeFilter GROUP BY time($__interval) tz('Europe/Berlin')",
+          "query": "SELECT cumulative_sum(non_negative_difference(last(\"totalbytesreceived\"))) FROM \"fritzbox\" WHERE \"box\" =~ /^$box$/ AND $timeFilter GROUP BY time($__interval) tz('Europe/Berlin')",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1763,9 +1884,9 @@
           ],
           "tags": [
             {
-              "key": "type_instance",
-              "operator": "=",
-              "value": "totalbytesreceived"
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
             }
           ],
           "target": ""
@@ -1873,7 +1994,7 @@
           "measurement": "fritzbox_value",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(\"totalbytesreceived\"))) FROM \"fritzbox\" WHERE $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time($__interval) tz('Europe/Berlin')",
+          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(\"totalbytesreceived\"))) FROM \"fritzbox\" WHERE \"box\" =~ /^$box$/ AND $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time($__interval) tz('Europe/Berlin')",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1893,9 +2014,9 @@
           ],
           "tags": [
             {
-              "key": "type_instance",
-              "operator": "=",
-              "value": "totalbytesreceived"
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
             }
           ],
           "target": "alias(summarize(nonNegativeDerivative(collectd.squirrel.fritzbox.bytes-totalbytesreceived, 0), '1h', 'sum'), 'download')"
@@ -1929,7 +2050,7 @@
           "measurement": "fritzbox_value",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(\"totalbytessent\"))) FROM \"fritzbox\" WHERE $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time($__interval) tz('Europe/Berlin')",
+          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(\"totalbytessent\"))) FROM \"fritzbox\" WHERE \"box\" =~ /^$box$/ AND $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time($__interval) tz('Europe/Berlin')",
           "rawQuery": true,
           "refId": "B",
           "resultFormat": "time_series",
@@ -1949,9 +2070,9 @@
           ],
           "tags": [
             {
-              "key": "type_instance",
-              "operator": "=",
-              "value": "totalbytessent"
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
             }
           ],
           "target": "alias(summarize(nonNegativeDerivative(collectd.squirrel.fritzbox.bytes-totalbytessent,0),'1h','sum'),'upload')"
@@ -1979,6 +2100,7 @@
       },
       "yaxes": [
         {
+									
           "format": "decbytes",
           "logBase": 1,
           "max": null,
@@ -1986,6 +2108,7 @@
           "show": true
         },
         {
+									
           "format": "short",
           "logBase": 1,
           "max": null,
@@ -2073,7 +2196,7 @@
           "measurement": "fritzbox_value",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(\"totalbytesreceived\"))) FROM \"fritzbox\" WHERE $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time(1d) tz('Europe/Berlin')",
+          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(\"totalbytesreceived\"))) FROM \"fritzbox\" WHERE \"box\" =~ /^$box$/ AND $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time(1d) tz('Europe/Berlin')",
           "rawQuery": true,
           "refId": "F",
           "resultFormat": "time_series",
@@ -2099,9 +2222,9 @@
           ],
           "tags": [
             {
-              "key": "type_instance",
-              "operator": "=",
-              "value": "totalbytesreceived"
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
             }
           ],
           "target": ""
@@ -2121,7 +2244,7 @@
           "measurement": "fritzbox_value",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(totalbytessent))) FROM \"fritzbox\" WHERE $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time(1d) tz('Europe/Berlin')",
+          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(totalbytessent))) FROM \"fritzbox\" WHERE \"box\" =~ /^$box$/ AND $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time(1d) tz('Europe/Berlin')",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -2147,9 +2270,9 @@
           ],
           "tags": [
             {
-              "key": "type_instance",
-              "operator": "=",
-              "value": "totalbytesreceived"
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
             }
           ],
           "target": ""
@@ -2175,6 +2298,7 @@
       },
       "yaxes": [
         {
+									
           "decimals": 2,
           "format": "decbytes",
           "label": "",
@@ -2184,6 +2308,7 @@
           "show": true
         },
         {
+									
           "format": "decbytes",
           "label": null,
           "logBase": 1,
@@ -2277,7 +2402,7 @@
           "measurement": "fritzbox",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT \"model\" AS \"Model\", \"serialnumber\" AS \"Serial\", \"softwareversion\" AS \"SW Version\", \"external_ip\" AS \"IP\", \"external_ipv6\" AS \"IPv6\", \"number_of_hosts\" AS \"Number of network hosts\", \"connection_status\" AS \"PPP Connection Status\", \"physicallinkstatus\" AS \"Link Status\", \"physicallinktype\" AS \"Link Type\", \"remote_pop\" AS \"Remote POP\", \"last_connection_error\" AS \"Last Connect Error\" FROM \"fritzbox\" WHERE $timeFilter LIMIT 1",
+          "query": "SELECT \"model\" AS \"Model\", \"serialnumber\" AS \"Serial\", \"softwareversion\" AS \"SW Version\", \"external_ip\" AS \"IP\", \"external_ipv6\" AS \"IPv6\", \"number_of_hosts\" AS \"Number of network hosts\", \"connection_status\" AS \"PPP Connection Status\", \"physicallinkstatus\" AS \"Link Status\", \"physicallinktype\" AS \"Link Type\", \"remote_pop\" AS \"Remote POP\", \"last_connection_error\" AS \"Last Connect Error\" FROM \"fritzbox\" WHERE \"box\" =~ /^$box$/ AND $timeFilter LIMIT 1",
           "rawQuery": false,
           "refId": "A",
           "resultFormat": "time_series",
@@ -2441,7 +2566,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
+            }
+          ]
         }
       ],
       "timeFrom": "1m",
@@ -2514,7 +2645,7 @@
           "measurement": "fritzbox_value",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(\"totalbytesreceived\"))) FROM \"fritzbox\" WHERE $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time(1d) tz('Europe/Berlin')",
+          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(\"totalbytesreceived\"))) FROM \"fritzbox\" WHERE \"box\" =~ /^$box$/ AND $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time(1d) tz('Europe/Berlin')",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -2540,9 +2671,9 @@
           ],
           "tags": [
             {
-              "key": "type_instance",
-              "operator": "=",
-              "value": "totalbytesreceived"
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
             }
           ],
           "target": ""
@@ -2561,7 +2692,7 @@
           "measurement": "fritzbox_value",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(\"totalbytessent\"))) FROM \"fritzbox\" WHERE $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time(1d) tz('Europe/Berlin')",
+          "query": "SELECT non_negative_difference(last(cumulative_sum)) FROM (\nSELECT cumulative_sum(non_negative_difference(last(\"totalbytessent\"))) FROM \"fritzbox\" WHERE \"box\" =~ /^$box$/ AND $timeFilter GROUP BY time($__interval)\n) WHERE $timeFilter GROUP BY time(1d) tz('Europe/Berlin')",
           "rawQuery": true,
           "refId": "B",
           "resultFormat": "time_series",
@@ -2587,9 +2718,9 @@
           ],
           "tags": [
             {
-              "key": "type_instance",
-              "operator": "=",
-              "value": "totalbytesreceived"
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$box$/"
             }
           ],
           "target": ""
@@ -2607,7 +2738,36 @@
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "allValue": null,
+        "current": {},
+						   
+						   
+						   
+		  
+        "datasource": "${DS_INFLUXDB_HOME}",
+        "definition": "",
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": "Box",
+        "multi": false,
+        "name": "box",
+        "options": [],
+        "query": "SHOW TAG VALUES FROM fritzbox WITH KEY=box",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": null,
+        "tags": [],
+        "tagsQuery": null,
+        "type": "query",
+        "useTags": false
+      }
+    ]
   },
   "time": {
     "from": "now-6h",
@@ -2638,7 +2798,7 @@
       "30d"
     ]
   },
-  "timezone": "",
+  "timezone": "browser",
   "title": "FRITZ!Box Router Status",
   "uid": "000000013",
   "version": 26
