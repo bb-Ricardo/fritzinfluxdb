@@ -137,13 +137,17 @@ def query_services(fc, services):
         """
 
         call_result = None
-        logging.debug(f"Requesting {service_called} : {action_called}")
+        actions = action_called.split(',')
+        parameters = {s.split('=')[0]: s.split('=')[1] for s in actions[1:]}
+        action = actions[0]
+
+        logging.debug(f"Requesting {service_called} : {action} ({parameters})")
         try:
-            call_result = fc.call_action(service_called, action_called)
+            call_result = fc.call_action(service_called, action, **parameters)
         except fritzconnection.core.exceptions.FritzServiceError:
             logging.error(f"Requested invalid service: {service_called}")
         except fritzconnection.core.exceptions.FritzActionError:
-            logging.error(f"Requested invalid action '{action_called}' for service: {service_called}")
+            logging.error(f"Requested invalid action '{action}' for service: {service_called}")
 
         if call_result is not None:
             logging.debug("Request returned successfully")
