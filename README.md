@@ -1,22 +1,40 @@
-# Fritz InfluxDb
+# Fritz InfluxDB
 
-Fritz InfluxDb is a tiny daemon written in python to fetch data from a fritz box router and writes it to influxdb.
-It is equal capable as fritzcollectd and directly writing to influxdb.
+"fritzinfluxdb" is a tool written in python to fetch data from a FritzBox router and writes it to InfluxDB.
+It is equal capable as fritzcollectd and directly writing to InfluxDB.
 
-# Requirements
+Both influxDB 1 and InfluxDB 2 are supported
+
+![Grafana Dashboard](grafana_dashboard.png)
+
+
+## IMPORTANT:
+In order work properly you need to enable "permit access for applications" and "state data via UPnP"
+
+
+## Requirements
 * python3.6 or newer
-* influxdb
-* fritzconnection >= 1.3.3
+* influxdb (InfluxDB 1)
+* influxdb_client (InfluxDB 2)
+* fritzconnection
+* pytz
+
+### Environment
 * Grafana >= 8.4.0
 
-## Python 2.7
-If you still need to run it with Python 2 check out the the branch
+### Python 2.7
+If you still need to run it with Python 2 check out the branch
 [python2.7](https://github.com/yunity/fritzinfluxdb/tree/python2.7)
 
-# Setup
+## Setup
 * here we assume we install in ```/opt```
 
-## Ubuntu 18.04
+### Configuration
+
+After cloning the repo copy the config from the [example](fritzinfluxdb-sample.ini)
+to ```my-fritzinfluxdb.ini``` and edit the settings. All settings are described inside the file.
+
+### Ubuntu 18.04
 ```
 sudo apt-get install virtualenv python3-lxml
 cd /opt
@@ -27,7 +45,7 @@ virtualenv --system-site-packages -p python3 .venv
 pip3 install -r requirements.txt
 ```
 
-## RHEL/CentOS 7 with EPEL
+### RHEL/CentOS 7 with EPEL
 ```
 yum install git python36-virtualenv python36-lxml
 cd /opt
@@ -43,7 +61,7 @@ pip3 install -r requirements.txt
 ./fritzinfluxdb.py
 ```
 
-## Install as systemd service
+### Install as systemd service
 Ubuntu
 ```
 cp /opt/fritzinfluxdb/fritzinfluxdb.service /etc/systemd/system
@@ -59,14 +77,13 @@ systemctl start fritzinfluxdb
 systemctl enable fritzinfluxdb
 ```
 
-## Run with Docker
+### Run with Docker
 ```
 git clone <this_repo_url>
 cd fritzinfluxdb
 ```
 
-Copy the config from the [example](fritzinfluxdb.ini-sample) to ```my-fritzinfluxdb.ini``` and edit
-the settings.
+Copy the config file and change the settings
 
 Now you should be able to build and run the image with following commands
 ```
@@ -91,30 +108,40 @@ docker run --name=influxdb -d -p 8086:8086 influxdb
 docker run --link influxdb -d -v /PATH/TO/my-fritzinfluxdb.ini:/app/fritzinfluxdb.ini --name fritzinfluxdb fritzinfluxdb
 ```
 
-## Upgrading
+### Upgrading
 If you upgrade from a version < 0.3 make sure to perform following steps
 
 * update your virtual env `pip3 install -r requirements.txt`
 * use the updated config and add the credentials and addresses from your old config
 
-# Grafana
+## Running the script
+```
+usage: fritzinfluxdb.py [-h] [-c fritzinfluxdb.ini [fritzinfluxdb.ini ...]] [-d] [-v]
+
+fritzinfluxdb
+Version: 0.4.0 (2020-08-03)
+Project URL: https://github.com/karrot-dev/fritzinfluxdb
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c fritzinfluxdb.ini [fritzinfluxdb.ini ...], --config fritzinfluxdb.ini [fritzinfluxdb.ini ...]
+                        points to the config file to read config data from which is not installed
+                        under the default path './fritzinfluxdb.ini'
+  -d, --daemon          define if the script is run as a systemd daemon
+  -v, --verbose         turn on verbose output to get debug logging
+```
+
+## Grafana
 
 Use ```grafana_dashboard_fritzbox.json``` to import this dashboard.
 This was heavily inspired from: https://grafana.com/dashboards/713
 
-![Grafan Dashboard](grafana_dashboard.jpg)
-
 # Configure more attributes
 
-check here to find a overview of more attributes which probaly could be added
+check here to find an overview of more attributes which probably could be added
 https://wiki.fhem.de/w/index.php?title=FRITZBOX
 
-To specify service actions that need parameters, you can put it like this:
-
-```
-service = WANCommonInterfaceConfig
-actions = X_AVM-DE_GetOnlineMonitor,NewSyncGroupIndex=0
-```
+New services can be defined in [fritzinfluxdb/classes/fritzbox/services.py](fritzinfluxdb/classes/fritzbox/services.py)
 
 # License
 >You can check out the full license [here](LICENSE.txt)
