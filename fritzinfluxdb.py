@@ -58,15 +58,16 @@ def main():
     log = setup_logging("DEBUG" if args.verbose is True else "INFO", args.daemon)
 
     log.propagate = False
-#    logging.getLogger("urllib3").propagate = False
-#    logging.getLogger('urllib3').setLevel(logging.ERROR)
 
     # read config from ini file
-    config = import_config(args.config_file)
+    config = import_config(args.config_file, default_config)
 
     # initialize handler
     influx_connection = InfluxHandler(config)
     fritzbox_connection = FritzBoxHandler(config)
+
+    if True in [influx_connection.config.parser_error, fritzbox_connection.config.parser_error]:
+        exit(1)
 
     log.info("Successfully parsed config")
 

@@ -84,7 +84,6 @@ class InfluxDBConfig(ConfigBase):
         super().parse_config(config_data)
 
         # validate data
-        parser_error = False
         mandatory_keys = list()
         if self.version == 1:
             mandatory_keys = ["hostname", "username", "password", "database"]
@@ -92,12 +91,9 @@ class InfluxDBConfig(ConfigBase):
             mandatory_keys = ["hostname", "token", "organisation", "bucket"]
         else:
             log.error(f"Invalid InfluxDB version '{self.version}'.")
-            parser_error = True
+            self.parser_error = True
 
         for key in mandatory_keys:
             if getattr(self, key) is None or len(getattr(self, key)) == 0:
-                parser_error = True
+                self.parser_error = True
                 log.error(f"InfluxDB {key} not defined")
-
-        if parser_error is True:
-            exit(1)

@@ -65,11 +65,7 @@ class FritzBoxConfig(ConfigBase):
             self.request_interval = min_request_interval
 
         # validate data
-        parser_error = False
         for key in ["username", "password"]:
             if getattr(self, key) is None or len(getattr(self, key)) == 0:
-                parser_error = True
+                self.parser_error = True
                 log.error(f"FritzBox {key} not defined")
-
-        if parser_error is True:
-            exit(1)

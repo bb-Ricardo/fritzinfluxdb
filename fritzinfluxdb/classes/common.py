@@ -61,6 +61,8 @@ class ConfigBase:
         "__doc__"
     ]
 
+    parser_error = False
+
     def __init__(self, config_data: configparser.ConfigParser):
 
         if not isinstance(config_data, configparser.ConfigParser):
@@ -113,12 +115,14 @@ class ConfigBase:
                 except ValueError:
                     log.error(f"Unable to parse '{config_value}' for '{config_option}' as bool")
                     config_value = var_default
+
             elif config_value is not None and var_type == int:
                 try:
                     config_value = int(config_value)
                 except ValueError:
                     log.error(f"Unable to parse '{config_value}' for '{config_option}' as int")
                     config_value = var_default
+
             else:
                 if config_value is None:
                     config_value = var_default

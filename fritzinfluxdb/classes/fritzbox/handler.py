@@ -126,6 +126,12 @@ class FritzBoxHandler:
                 log.error(f"Requested invalid action '{action.name}' for service: {service.name}")
                 if discover is True:
                     action.available = False
+            except FritzConnectionException as e:
+                if "401" in str(e):
+                    log.error(f"Failed to connect to FritzBox '{self.config.hostname}' using credentials. "
+                              "Check username and password!")
+                else:
+                    log.error(f"Failed to connect to FritzBox '{self.config.hostname}': {e}")
             except Exception as e:
                 log.error(f"Unable to request FritzBox data: {e}")
 

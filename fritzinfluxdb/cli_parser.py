@@ -39,10 +39,10 @@ def parse_command_line(version=None, self_description=None, version_date=None, u
 
     parser = ArgumentParser(description=description, formatter_class=RawDescriptionHelpFormatter)
 
-    parser.add_argument("-c", "--config", default=[default_config_file_path], dest="config_file", nargs='+',
+    parser.add_argument("-c", "--config", default=[], dest="config_file", nargs='+',
                         help=f"points to the config file to read config data from which is not installed "
                              f"under the default path '{default_config_file_path}'",
-                        metavar="fritzinfluxdb.ini")
+                        metavar=os.path.basename(default_config_file_path))
 
     parser.add_argument("-d", "--daemon", action='store_true',
                         help="define if the script is run as a systemd daemon")
