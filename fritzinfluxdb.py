@@ -73,6 +73,14 @@ def main():
 
     influx_connection.connect()
 
+    # DEBUG
+    # import logging
+    # debug_log = logging.getLogger('urllib3')
+    # debug_log.setLevel(logging.DEBUG)
+
+    # from http.client import HTTPConnection
+    # HTTPConnection.debuglevel = 1
+
     if influx_connection.init_successful is False:
         do_error_exit("Initializing connection to InfluxDB failed")
 

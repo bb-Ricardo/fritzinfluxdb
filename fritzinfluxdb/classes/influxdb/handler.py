@@ -191,7 +191,7 @@ class InfluxHandler:
         return {
             "measurement": self.config.measurement_name,
             "tags": {"box": measurement.tag},
-            "time": measurement.timestamp.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            "time": measurement.timestamp,
             "fields": {measurement.name: measurement.value}
         }
 
