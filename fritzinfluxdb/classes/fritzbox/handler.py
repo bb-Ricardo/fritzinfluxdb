@@ -16,13 +16,14 @@ import json
 # import 3rd party modules
 from fritzconnection import FritzConnection
 from fritzconnection.core.exceptions import FritzConnectionException, FritzServiceError, FritzActionError
-# from fritzconnection.lib.fritzhosts import FritzHosts
 
 from fritzinfluxdb.classes.fritzbox.config import FritzBoxConfig
 from fritzinfluxdb.log import get_logger
-from fritzinfluxdb.classes.fritzbox.service_handler import FritzBoxService
-from fritzinfluxdb.classes.fritzbox.services import fritzbox_services
+from fritzinfluxdb.classes.fritzbox.service_handler import FritzBoxTR069Service, FritzBoxLuaService
+from fritzinfluxdb.classes.fritzbox.services_tr069 import fritzbox_services as tr069_services
+from fritzinfluxdb.classes.fritzbox.services_lua import fritzbox_services as lua_services
 from fritzinfluxdb.classes.common import FritzMeasurement
+from fritzinfluxdb.common import grab
 
 log = get_logger()
 
@@ -43,9 +44,9 @@ class FritzBoxHandler:
         self.init_successful = False
         self.services = list()
 
-        # parse services from fritzbox/services.py
-        for fritzbox_service in fritzbox_services:
-            new_service = FritzBoxService(fritzbox_service)
+        # parse services from fritzbox/services_tr069.py
+        for fritzbox_service in tr069_services:
+            new_service = FritzBoxTR069Service(fritzbox_service)
 
             # adjust request interval if necessary
             if self.config.request_interval > new_service.interval:
@@ -100,8 +101,8 @@ class FritzBoxHandler:
 
         return_data = list()
 
-        if not isinstance(service, FritzBoxService):
-            log.error("Query service must be of type 'FritzBoxService'")
+        if not isinstance(service, FritzBoxTR069Service):
+            log.error("Query service must be of type 'FritzBoxTR069Service'")
 
         if discover is False and service.available is False:
             log.debug(f"Skipping disabled service: {service.name}")
@@ -137,14 +138,14 @@ class FritzBoxHandler:
                 log.error(f"Unable to request FritzBox data: {e}")
 
             if call_result is not None:
-                log.debug("Request returned successfully")
+                #log.debug("Request returned successfully")
 
                 # set time stamp of this query
                 if discover is False:
                     service.set_last_query_now()
 
                 for key, value in call_result.items():
-                    log.debug(f"Response: {key} = {value}")
+                    #log.debug(f"Response: {key} = {value}")
 
                     metric_name = service.value_instances.get(key, None)
 
@@ -171,6 +172,7 @@ class FritzboxLuaHandler:
     config = None
     session = None
     init_successful = False
+    services = None
 
     def __init__(self, config):
         if isinstance(config, FritzBoxConfig):
@@ -181,6 +183,8 @@ class FritzboxLuaHandler:
         self.init_successful = False
         self.url = None
         self.sid = None
+
+        self.current_result_list = list()
 
         proto = "http"
         if self.config.tls_enabled is True:
@@ -194,6 +198,18 @@ class FritzboxLuaHandler:
 
         self.session = requests.Session()
         self.session.verify = self.config.verify_tls
+
+        self.services = list()
+
+        # parse services from fritzbox/services_tr069.py
+        for fritzbox_service in lua_services:
+            new_service = FritzBoxLuaService(fritzbox_service)
+
+            # adjust request interval if necessary
+            if self.config.request_interval > new_service.interval:
+                new_service.interval = self.config.request_interval
+
+            self.services.append(new_service)
 
     def connect(self):
 
@@ -290,12 +306,95 @@ class FritzboxLuaHandler:
         self.session.close()
         log.info("Closed FritzBox Lua connection")
 
+    def discover_available_services(self):
+
+        for service in self.services:
+            self.query_service_data(service, True)
+
+    def extract_value(self, data, metric_name, metric_params):
+
+        data_path = metric_params.get("data_path")
+        data_type = metric_params.get("type")
+        data_next = metric_params.get("next")
+        data_tags = metric_params.get("tags")
+
+        metric_value = grab(data, data_path)
+
+        metric_tags = dict()
+        for data_tag in data_tags or list():
+            tag_value = grab(data, data_tag)
+            if tag_value is not None:
+                metric_tags[data_tag] = tag_value
+
+        if metric_value is None:
+            # this would be ok, but eventually confuse people as it will show up on every request
+            log.debug(f"Unable to extract '{data_path}' form '{data}', got '{type(metric_value)}'")
+            return
+
+        if data_type in [int, bool, str]:
+            try:
+                metric_value = data_type(grab(data, data_path))
+            except Exception as e:
+                log.error(f"Unable to convert FritzBox Lua value '{metric_value}' to '{data_type}': {e}")
+
+            metric = FritzMeasurement(metric_name, metric_value, self.config.box_tag, additional_tags=metric_tags)
+
+            log.debug(metric)
+
+            self.current_result_list.append(metric)
+            return
+
+        if type(metric_value) != data_type:
+            log.error(f"FritzBox metric type '{data_type}' does not match data: {type(metric_value)}")
+            return
+
+        if data_type == list and data_next is not None:
+            [self.extract_value(next_metric_value, metric_name, data_next) for next_metric_value in metric_value]
+            return
+
+        log.error(f"Unknown metric '{data_path}' form '{data}', with type '{type(metric_value)}' "
+                  f"and defined type '{data_type}'")
+
+    def query_service_data(self, service, discover=False):
+
+        if not isinstance(service, FritzBoxLuaService):
+            log.error("Query service must be of type 'FritzBoxLuaService'")
+            return
+
+        if discover is False and (service.available is False or service.should_service_be_requested() is False):
+            return
+
+        # request data
+        result = self.request(service.page)
+
+        if result is None:
+            log.error(f"Unable to request FritzBox service '{service.name}'")
+            if discover is True:
+                log.info(f"FritzBox service '{service.name}'. Service will be disabled.")
+                service.available = False
+            return
+
+        log.debug(f"Request FritzBox service '{service.name}' returned successfully")
+
+        # set time stamp of this query
+        service.set_last_query_now()
+
+        # Request every param
+        for metric_name, metric_params in service.value_instances.items():
+
+            self.extract_value(result, metric_name, metric_params)
+
+        return
+
     async def query_loop(self, queue):
         while True:
 
-#            for service in self.services:
-#                if service.available is True and service.should_service_be_requested() is True:
-#                    for response in self.query_service_data(service) or list():
-#                        await queue.put(response)
+            # empty list to fill with new results
+            self.current_result_list = list()
+            for service in self.services:
+                if service.available is True and service.should_service_be_requested() is True:
+                    self.query_service_data(service)
+
+            [await queue.put(result) for result in self.current_result_list]
 
             await asyncio.sleep(1)

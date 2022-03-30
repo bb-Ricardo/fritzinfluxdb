@@ -19,17 +19,23 @@ log = get_logger()
 
 class FritzMeasurement:
 
-    __slots__ = ("name", "value", "tag", "timestamp")
+    default_box_tag_key = "box"
 
-    def __init__(self, key, value, tag=None):
+    __slots__ = ("name", "value", "box_tag", "timestamp", "additional_tags")
+
+    def __init__(self, key, value, box_tag=None, additional_tags=None):
 
         self.name = key
         self.value = value
-        self.tag = tag
+        self.box_tag = box_tag
         self.timestamp = datetime.now(pytz.utc)
+        self.additional_tags = None
+
+        if isinstance(additional_tags, dict):
+            self.additional_tags = additional_tags
 
     def __repr__(self):
-        return f"{self.timestamp}: {self.name}={self.value} ({self.tag})"
+        return f"{self.timestamp}: {self.name}={self.value} ({self.tags})"
 
     @staticmethod
     def sanitize_value(value):
@@ -45,6 +51,18 @@ class FritzMeasurement:
             pass
 
         return value
+
+    @property
+    def tags(self):
+
+        tags = dict()
+        if self.box_tag is not None:
+            tags[self.default_box_tag_key] = self.box_tag
+
+        if self.additional_tags is not None:
+            tags = {**tags, **self.additional_tags}
+
+        return tags
 
 
 class ConfigBase:

@@ -42,7 +42,6 @@ class FritzBoxService:
 
     available = True
     name = None
-    actions = None
     value_instances = None
     interval = 10
     last_query = None
@@ -50,40 +49,23 @@ class FritzBoxService:
     def __init__(self, service_data=None):
 
         if not isinstance(service_data, dict):
-            do_error_exit("FritzBoxService service data must be a dict")
+            do_error_exit(f"{self.__class__.name} service data must be a dict")
             return
 
         self.name = service_data.get("name", None)
-        self.actions = list()
-        self.value_instances = list()
+        self.value_instances = dict()
         self.interval = self.interval
 
         if self.name is None:
-            do_error_exit("FritzboxService instance has no name")
+            do_error_exit(f"{self.__class__.name} instance has no name")
             return
-
-        for action in service_data.get("actions", list()):
-            self.add_action(action)
 
         self.add_value_instances(service_data.get("value_instances", dict()))
-
-    def add_action(self, action: Union[AnyStr, Dict] = None) -> None:
-
-        if action is None:
-            log.error(f"Missing action for FritzBoxService '{self.name}'")
-            return
-
-        action_instance = FritzBoxAction(action)
-
-        if action_instance.name is None:
-            log.error(f"Failed to add action to FritzBoxService '{self.name}': {action}")
-        else:
-            self.actions.append(action_instance)
 
     def add_value_instances(self, data: Dict = None) -> None:
 
         if data is None:
-            log.error(f"Missing value instances data for FritzBoxService '{self.name}'")
+            log.error(f"Missing value instances data for {self.__class__.name} '{self.name}'")
             return
 
         if not isinstance(data, dict):
@@ -103,3 +85,57 @@ class FritzBoxService:
             return False
 
         return True
+
+
+class FritzBoxTR069Service(FritzBoxService):
+
+    actions = None
+
+    def __init__(self, service_data=None):
+
+        super().__init__(service_data)
+
+        self.actions = list()
+
+        for action in service_data.get("actions", list()):
+            self.add_action(action)
+
+    def add_action(self, action: Union[AnyStr, Dict] = None) -> None:
+
+        if action is None:
+            log.error(f"Missing action for FritzBoxTR069Service '{self.name}'")
+            return
+
+        action_instance = FritzBoxAction(action)
+
+        if action_instance.name is None:
+            log.error(f"Failed to add action to FritzBoxTR069Service '{self.name}': {action}")
+        else:
+            self.actions.append(action_instance)
+
+
+class FritzBoxLuaService(FritzBoxService):
+
+    page = None
+
+    def __init__(self, service_data=None):
+
+        super().__init__(service_data)
+
+        self.page = service_data.get("page")
+
+        if self.page is None:
+            do_error_exit(f"FritzBoxLuaService '{self.name}' instance has no 'page' defined")
+            return
+
+        self.validate_value_instances()
+
+    def validate_value_instances(self):
+
+        for metric_name, metric_params in self.value_instances.items():
+
+            if metric_params.get("data_path") is None:
+                do_error_exit(f"FritzBoxLuaService '{self.name}' metric {metric_name} has no 'data_path' defined")
+
+            if metric_params.get("type") is None:
+                do_error_exit(f"FritzBoxLuaService '{self.name}' metric {metric_name} has no 'type' defined")

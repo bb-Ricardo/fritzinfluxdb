@@ -141,7 +141,7 @@ This was heavily inspired from: https://grafana.com/dashboards/713
 check here to find an overview of more attributes which probably could be added
 https://wiki.fhem.de/w/index.php?title=FRITZBOX
 
-New services can be defined in [fritzinfluxdb/classes/fritzbox/services.py](fritzinfluxdb/classes/fritzbox/services.py)
+New services can be defined in [fritzinfluxdb/classes/fritzbox/services_tr069.py](fritzinfluxdb/classes/fritzbox/services_tr069.py)
 
 # License
 >You can check out the full license [here](LICENSE.txt)
