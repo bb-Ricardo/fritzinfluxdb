@@ -7,6 +7,11 @@
 #  repository or visit: <https://opensource.org/licenses/MIT>.
 
 import asyncio
+import urllib3
+import requests
+from xml.etree.ElementTree import fromstring
+import hashlib
+import json
 
 # import 3rd party modules
 from fritzconnection import FritzConnection
@@ -30,7 +35,11 @@ class FritzBoxHandler:
     services = None
 
     def __init__(self, config):
-        self.config = FritzBoxConfig(config)
+        if isinstance(config, FritzBoxConfig):
+            self.config = config
+        else:
+            self.config = FritzBoxConfig(config)
+
         self.init_successful = False
         self.services = list()
 
@@ -75,15 +84,7 @@ class FritzBoxHandler:
             log.error(f"Failed to connect to FritzBox '{self.config.hostname}': {e}")
             return
 
-#        import pprint
-
-#        for service, inst in self.session.services.items():
-#            print(service)
-#            for action in inst.actions:
-#                pprint.pprint(action)
-
-#        pprint.pprint(FritzHosts(fc=self.session).get_hosts_info())
-        log.info("Successfully connected to FritzBox")
+        log.info("Successfully connected to FritzBox TR-069 session")
         self.init_successful = True
 
     def close(self):
@@ -161,5 +162,140 @@ class FritzBoxHandler:
                 if service.available is True and service.should_service_be_requested() is True:
                     for response in self.query_service_data(service) or list():
                         await queue.put(response)
+
+            await asyncio.sleep(1)
+
+
+class FritzboxLuaHandler:
+
+    config = None
+    session = None
+    init_successful = False
+
+    def __init__(self, config):
+        if isinstance(config, FritzBoxConfig):
+            self.config = config
+        else:
+            self.config = FritzBoxConfig(config)
+
+        self.init_successful = False
+        self.url = None
+        self.sid = None
+
+        proto = "http"
+        if self.config.tls_enabled is True:
+            proto = "https"
+
+        # disable TLS insecure warnings if user explicitly switched off validation
+        if bool(self.config.verify_tls) is False:
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+        self.url = f"{proto}://{self.config.hostname}"
+
+        self.session = requests.Session()
+        self.session.verify = self.config.verify_tls
+
+    def connect(self):
+
+        if self.sid is not None:
+            return
+
+        login_url = f"{self.url}/login_sid.lua"
+
+        # perform login
+        try:
+            response = self.session.get(login_url, timeout=self.config.connect_timeout)
+        except Exception as e:
+            log.error(f"Unable to create FritzBox Lua session: {e}")
+            return
+
+        try:
+            dom = fromstring(response.content)
+            sid = dom.findtext('./SID')
+            challenge = dom.findtext('./Challenge')
+        except Exception as e:
+            log.error(f"Unable to parse FritzBox login response: {e} {response.content}")
+            return
+
+        if sid != "0000000000000000":
+            log.error(f"Unexpected FritzBox session id: {sid}")
+            return
+
+        md5 = hashlib.md5()
+        md5.update(challenge.encode('utf-16le'))
+        md5.update('-'.encode('utf-16le'))
+        md5.update(self.config.password.encode('utf-16le'))
+
+        login_params = {
+            "username": self.config.username,
+            "response": challenge + '-' + md5.hexdigest()
+        }
+
+        try:
+            response = self.session.get(login_url, timeout=self.config.connect_timeout, params=login_params)
+            sid = fromstring(response.content).findtext('./SID')
+        except Exception as e:
+            log.error(f"Unable to parse FritzBox login response: {e} {response.content}")
+            return
+
+        if sid == "0000000000000000":
+            log.error(f"Failed to connect to FritzBox '{self.config.hostname}' using credentials. "
+                      "Check username and password!")
+            return
+
+        log.info("Successfully connected to FritzBox Lua session")
+
+        self.sid = sid
+        self.init_successful = True
+
+    def request(self, page):
+
+        result = None
+
+        if self.sid is None:
+            self.connect()
+
+        params = {
+            "page": page,
+            "lang": "de",
+            "sid": self.sid
+        }
+
+        data_url = f"{self.url}/data.lua"
+        try:
+            response = self.session.post(data_url, timeout=self.config.connect_timeout, data=params)
+        except Exception as e:
+            log.error(f"Unable to perform request to '{data_url}': {e}")
+            return
+
+        try:
+            result = response.json()
+        except json.decoder.JSONDecodeError:
+            pass
+
+        if response.status_code == 200 and result is not None:
+            log.debug("FritzBox Lua request successful")
+
+        else:
+            log.error(f"FritzBox Lua returned: {response.status_code} : {response.reason}")
+            log.error(f"FritzBox Lua returned body: {result}")
+
+            # invalidate session
+            if response.status_code in [303, 403]:
+                self.sid = None
+
+        return result
+
+    def close(self):
+        self.session.close()
+        log.info("Closed FritzBox Lua connection")
+
+    async def query_loop(self, queue):
+        while True:
+
+#            for service in self.services:
+#                if service.available is True and service.should_service_be_requested() is True:
+#                    for response in self.query_service_data(service) or list():
+#                        await queue.put(response)
 
             await asyncio.sleep(1)

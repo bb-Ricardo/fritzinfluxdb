@@ -38,6 +38,11 @@ class FritzBoxConfig(ConfigBase):
         "alt": "ssl",
         "default": False
     }
+    verify_tls = {
+        "type": bool,
+        "alt": "verify_ssl",
+        "default": False
+    }
     connect_timeout = {
         "type": int,
         "alt": "timeout",
@@ -69,3 +74,6 @@ class FritzBoxConfig(ConfigBase):
             if getattr(self, key) is None or len(getattr(self, key)) == 0:
                 self.parser_error = True
                 log.error(f"FritzBox {key} not defined")
+
+        if self.tls_enabled is True and self.port == self.__class__.port.get("default"):
+            self.port += 443

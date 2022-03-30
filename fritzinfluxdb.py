@@ -22,7 +22,7 @@ from fritzinfluxdb.cli_parser import parse_command_line
 from fritzinfluxdb.log import setup_logging
 from fritzinfluxdb.configparser import import_config
 from fritzinfluxdb.common import do_error_exit
-from fritzinfluxdb.classes.fritzbox.handler import FritzBoxHandler
+from fritzinfluxdb.classes.fritzbox.handler import FritzBoxHandler, FritzboxLuaHandler
 from fritzinfluxdb.classes.influxdb.handler import InfluxHandler
 
 __version__ = "0.4.0"
@@ -59,12 +59,15 @@ def main():
 
     log.propagate = False
 
+    log.info(f"Starting {__description__} v{__version__} ({__version_date__})")
+
     # read config from ini file
     config = import_config(args.config_file, default_config)
 
     # initialize handler
     influx_connection = InfluxHandler(config)
     fritzbox_connection = FritzBoxHandler(config)
+    fritzbox_lua_connection = FritzboxLuaHandler(fritzbox_connection.config)
 
     if True in [influx_connection.config.parser_error, fritzbox_connection.config.parser_error]:
         exit(1)
@@ -81,13 +84,22 @@ def main():
     # from http.client import HTTPConnection
     # HTTPConnection.debuglevel = 1
 
-    if influx_connection.init_successful is False:
-        do_error_exit("Initializing connection to InfluxDB failed")
-
+    fritzbox_lua_connection.connect()
     fritzbox_connection.connect()
 
+    if influx_connection.init_successful is False:
+        log.error("Initializing connection to InfluxDB failed")
+
     if fritzbox_connection.init_successful is False:
-        do_error_exit("Initializing connection to FritzBox failed")
+        log.error("Initializing connection to FritzBox TR-069 failed")
+
+    if fritzbox_lua_connection.init_successful is False:
+        log.error("Initializing connection to FritzBox Lua failed")
+
+    if False in [influx_connection.init_successful,
+                 fritzbox_connection.init_successful,
+                 fritzbox_lua_connection.init_successful]:
+        exit(1)
 
     loop = asyncio.get_event_loop()
 
@@ -101,13 +113,15 @@ def main():
 
     try:
         loop.create_task(fritzbox_connection.query_loop(queue))
+        loop.create_task(fritzbox_lua_connection.query_loop(queue))
         loop.create_task(influx_connection.parse_queue(queue))
         loop.run_forever()
     finally:
         loop.close()
         fritzbox_connection.close()
+        fritzbox_lua_connection.close()
         influx_connection.close()
-        log.info("Successfully shutdown the Mayhem service.")
+        log.info(f"Successfully shutdown stopped {__description__}")
 
     exit(0)
 

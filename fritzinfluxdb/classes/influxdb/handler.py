@@ -153,7 +153,7 @@ class InfluxHandler:
         else:
             log.debug(f"InfluxDB database '{self.config.database}' exists")
 
-        log.info("Connection to InfluxDB established and database present")
+        log.info("Connection to InfluxDB 1 established and database present")
 
         self.init_successful = True
 
@@ -194,7 +194,7 @@ class InfluxHandler:
                 log.error(f"Problem creating InfluxDB bucket: {e}")
                 return
 
-        log.info("Connection to InfluxDB established and bucket is present")
+        log.info("Connection to InfluxDB 2 established and bucket is present")
 
         self.init_successful = True
 
