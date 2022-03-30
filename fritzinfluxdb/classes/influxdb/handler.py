@@ -7,6 +7,8 @@
 #  repository or visit: <https://opensource.org/licenses/MIT>.
 
 import asyncio
+import pytz
+from datetime import datetime
 
 # InfluxDB version 1.x client
 import influxdb
@@ -43,6 +45,16 @@ class InfluxHandler:
     # max number of measurements written with each InfluxDB write
     max_measurements_per_write = 1_000
 
+    # percentage of filled buffer to start issue warnings
+    max_measurements_buffer_warning = 80
+
+    # the number of seconds to retry first unsuccessful write.
+    # The next retry interval is doubled and so on
+    retry_interval = 5
+
+    # max interval between write retries
+    max_retry_interval = 120
+
     # keep track if this instance was initiated successfully
     init_successful = False
 
@@ -55,6 +67,10 @@ class InfluxHandler:
         self.init_successful = False
 
         self.buffer = list()
+
+        self.current_retry_interval = self.retry_interval
+        self.last_write_retry = None
+        self.current_max_measurements_buffer_warning = self.max_measurements_buffer_warning
 
     def connect(self):
 
@@ -195,17 +211,39 @@ class InfluxHandler:
             "fields": {measurement.name: measurement.value}
         }
 
+    def permitted_to_write_data(self):
+
+        # permit writing if no last write retry is known
+        if self.last_write_retry is None:
+            return True
+
+        # limit max retry seconds
+        if self.current_retry_interval > self.max_retry_interval:
+            self.current_retry_interval = self.max_retry_interval
+
+        # check if the next retry is permitted
+        if (datetime.now(pytz.utc)-self.last_write_retry).total_seconds() >= self.current_retry_interval:
+            return True
+
+        return False
+
     async def write_data(self):
+
+        if self.permitted_to_write_data() is False:
+            return
 
         if len(self.buffer) == 0:
             log.debug("InfluxDB data queue: No measurements found in queue")
             return
 
+        # only use max amount of measurements to send to InfluxDB
         local_buffer = self.buffer[0:self.max_measurements_per_write]
 
+        # convert FritzMeasurement to list of dicts
         data = [self.convert_measurement(x) for x in local_buffer]
 
         write_successful = False
+        self.last_write_retry = datetime.now(pytz.utc)
         try:
             if self.config.version == 1:
                 write_successful = self.session_v1.write_points(data, time_precision="ms")
@@ -216,7 +254,7 @@ class InfluxHandler:
         except Exception as e:
             self.connection_lost = True
             log.error(f"Failed to write to InfluxDB '{self.config.hostname}': {e}")
-            return
+            pass
 
         if write_successful is True:
             if self.connection_lost is True:
@@ -227,17 +265,35 @@ class InfluxHandler:
             self.buffer[:] = [x for x in self.buffer if x not in local_buffer]
 
             self.connection_lost = False
+            self.last_write_retry = None
+            self.current_retry_interval = self.retry_interval
+
+        else:
+            if self.connection_lost is True:
+                self.current_retry_interval *= 2
 
     async def check_buffer(self):
 
         length = len(self.buffer)
         max_length = self.max_measurements_buffer_size
 
+        percent_buffer_usage = 100 / max_length * length
+
+        buffer_warning_message = f"InfluxDB measurement buffer currently at {percent_buffer_usage:0.2f}% " \
+                                 f"(current {length}/max {max_length}). If buffer is full the oldest " \
+                                 f"messages will be discarded."
+
         if length > max_length:
-            log.warning(f"InfluxDB measurement buffer length '{length}' "
-                        f"exceeded the maximum of {max_length} items. "
-                        f"Discarding oldest {length - max_length} measurements.")
+            log.critical(f"InfluxDB measurement buffer length '{length}' "
+                         f"exceeded the maximum of {max_length} items. "
+                         f"Discarding oldest {length - max_length} measurements.")
             self.buffer[:] = self.buffer[0 - max_length:]
+
+        elif percent_buffer_usage >= self.current_max_measurements_buffer_warning:
+            log.warning(buffer_warning_message)
+            self.current_max_measurements_buffer_warning += 5
+        elif percent_buffer_usage < self.max_measurements_buffer_warning:
+            self.current_max_measurements_buffer_warning = self.max_measurements_buffer_warning
 
     async def parse_queue(self, queue):
 
