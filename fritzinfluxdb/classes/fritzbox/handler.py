@@ -28,7 +28,7 @@ from fritzinfluxdb.common import grab
 log = get_logger()
 
 
-class FritzBoxHandler:
+class FritzBoxHandlerBase:
 
     config = None
     session = None
@@ -43,16 +43,48 @@ class FritzBoxHandler:
 
         self.init_successful = False
         self.services = list()
+        self.current_result_list = list()
 
-        # parse services from fritzbox/services_tr069.py
-        for fritzbox_service in tr069_services:
-            new_service = FritzBoxTR069Service(fritzbox_service)
+    def add_services(self, class_name, service_definition):
+
+        for fritzbox_service in service_definition:
+            new_service = class_name(fritzbox_service)
 
             # adjust request interval if necessary
             if self.config.request_interval > new_service.interval:
                 new_service.interval = self.config.request_interval
 
             self.services.append(new_service)
+
+    def discover_available_services(self):
+
+        for service in self.services:
+            self.query_service_data(service, True)
+
+    def query_service_data(self, _, __=None):
+        # dummy service to make IDE happy
+        pass
+
+    async def query_loop(self, queue):
+        while True:
+
+            self.current_result_list = list()
+            for service in self.services:
+                self.query_service_data(service)
+
+            [await queue.put(result) for result in self.current_result_list]
+
+            await asyncio.sleep(1)
+
+
+class FritzBoxHandler(FritzBoxHandlerBase):
+
+    def __init__(self, config):
+
+        super().__init__(config)
+
+        # parse services from fritzbox/services_tr069.py
+        self.add_services(FritzBoxTR069Service, tr069_services)
 
     def connect(self):
 
@@ -92,21 +124,14 @@ class FritzBoxHandler:
         self.session.session.close()
         log.info("Closed FritzBox connection")
 
-    def discover_available_services(self):
-
-        for service in self.services:
-            self.query_service_data(service, True)
-
-    def query_service_data(self, service, discover=False) -> list:
-
-        return_data = list()
+    def query_service_data(self, service, discover=False):
 
         if not isinstance(service, FritzBoxTR069Service):
             log.error("Query service must be of type 'FritzBoxTR069Service'")
+            return
 
-        if discover is False and service.available is False:
-            log.debug(f"Skipping disabled service: {service.name}")
-            return return_data
+        if discover is False and (service.available is False or service.should_service_be_requested() is False):
+            return
 
         # Request every action
         for action in service.actions:
@@ -116,100 +141,72 @@ class FritzBoxHandler:
                 continue
 
             # add parameters
-            log.debug(f"Requesting {service.name} : {action.name} ({action.params})")
-            call_result = None
             try:
                 call_result = self.session.call_action(service.name, action.name, **action.params)
             except FritzServiceError:
                 log.error(f"Requested invalid service: {service.name}")
                 if discover is True:
                     service.available = False
+                continue
             except FritzActionError:
                 log.error(f"Requested invalid action '{action.name}' for service: {service.name}")
                 if discover is True:
                     action.available = False
+                continue
             except FritzConnectionException as e:
                 if "401" in str(e):
                     log.error(f"Failed to connect to FritzBox '{self.config.hostname}' using credentials. "
                               "Check username and password!")
                 else:
                     log.error(f"Failed to connect to FritzBox '{self.config.hostname}': {e}")
+                continue
             except Exception as e:
                 log.error(f"Unable to request FritzBox data: {e}")
+                continue
 
-            if call_result is not None:
-                #log.debug("Request returned successfully")
+            if call_result is None:
+                continue
 
-                # set time stamp of this query
-                if discover is False:
-                    service.set_last_query_now()
+            log.debug(f"Request FritzBox service '{service.name}' returned successfully: "
+                      f"{action.name} ({action.params})")
 
-                for key, value in call_result.items():
-                    #log.debug(f"Response: {key} = {value}")
+            # set time stamp of this query
+            service.set_last_query_now()
 
-                    metric_name = service.value_instances.get(key, None)
+            for key, value in call_result.items():
+                metric_name = service.value_instances.get(key)
 
-                    if metric_name is not None:
-                        return_data.append(
-                            FritzMeasurement(metric_name, value, self.config.box_tag)
-                        )
+                if metric_name is not None:
+                    self.current_result_list.append(
+                        FritzMeasurement(metric_name, value, self.config.box_tag)
+                    )
 
-        return return_data
-
-    async def query_loop(self, queue):
-        while True:
-
-            for service in self.services:
-                if service.available is True and service.should_service_be_requested() is True:
-                    for response in self.query_service_data(service) or list():
-                        await queue.put(response)
-
-            await asyncio.sleep(1)
+        return
 
 
-class FritzboxLuaHandler:
-
-    config = None
-    session = None
-    init_successful = False
-    services = None
+class FritzboxLuaHandler(FritzBoxHandlerBase):
 
     def __init__(self, config):
-        if isinstance(config, FritzBoxConfig):
-            self.config = config
-        else:
-            self.config = FritzBoxConfig(config)
+        super().__init__(config)
 
-        self.init_successful = False
         self.url = None
         self.sid = None
-
-        self.current_result_list = list()
-
-        proto = "http"
-        if self.config.tls_enabled is True:
-            proto = "https"
 
         # disable TLS insecure warnings if user explicitly switched off validation
         if bool(self.config.verify_tls) is False:
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+        proto = "http"
+        if self.config.tls_enabled is True:
+            proto = "https"
 
         self.url = f"{proto}://{self.config.hostname}"
 
         self.session = requests.Session()
         self.session.verify = self.config.verify_tls
 
-        self.services = list()
-
-        # parse services from fritzbox/services_tr069.py
-        for fritzbox_service in lua_services:
-            new_service = FritzBoxLuaService(fritzbox_service)
-
-            # adjust request interval if necessary
-            if self.config.request_interval > new_service.interval:
-                new_service.interval = self.config.request_interval
-
-            self.services.append(new_service)
+        # parse services from fritzbox/services_lua.py
+        self.add_services(FritzBoxLuaService, lua_services)
 
     def connect(self):
 
@@ -306,11 +303,6 @@ class FritzboxLuaHandler:
         self.session.close()
         log.info("Closed FritzBox Lua connection")
 
-    def discover_available_services(self):
-
-        for service in self.services:
-            self.query_service_data(service, True)
-
     def extract_value(self, data, metric_name, metric_params):
 
         data_path = metric_params.get("data_path")
@@ -381,20 +373,6 @@ class FritzboxLuaHandler:
 
         # Request every param
         for metric_name, metric_params in service.value_instances.items():
-
             self.extract_value(result, metric_name, metric_params)
 
         return
-
-    async def query_loop(self, queue):
-        while True:
-
-            # empty list to fill with new results
-            self.current_result_list = list()
-            for service in self.services:
-                if service.available is True and service.should_service_be_requested() is True:
-                    self.query_service_data(service)
-
-            [await queue.put(result) for result in self.current_result_list]
-
-            await asyncio.sleep(1)
