@@ -72,7 +72,9 @@ class FritzBoxHandlerBase:
             for service in self.services:
                 self.query_service_data(service)
 
-            [await queue.put(result) for result in self.current_result_list]
+            for result in self.current_result_list:
+                log.debug(result)
+                await queue.put(result)
 
             await asyncio.sleep(1)
 
@@ -330,8 +332,6 @@ class FritzboxLuaHandler(FritzBoxHandlerBase):
                 log.error(f"Unable to convert FritzBox Lua value '{metric_value}' to '{data_type}': {e}")
 
             metric = FritzMeasurement(metric_name, metric_value, self.config.box_tag, additional_tags=metric_tags)
-
-            log.debug(metric)
 
             self.current_result_list.append(metric)
             return

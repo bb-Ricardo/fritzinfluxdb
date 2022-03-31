@@ -18,17 +18,28 @@ log = get_logger()
 
 
 class FritzMeasurement:
+    """
+        This class holds measurements which should be sanitized to this specification
+        https://docs.influxdata.com/influxdb/v2.1/reference/syntax/line-protocol/
+    """
 
     default_box_tag_key = "box"
 
     __slots__ = ("name", "value", "box_tag", "timestamp", "additional_tags")
 
-    def __init__(self, key, value, box_tag=None, additional_tags=None):
+    def __init__(self, key, value, box_tag=None, additional_tags=None, timestamp=None):
 
-        self.name = key
-        self.value = value
-        self.box_tag = box_tag
-        self.timestamp = datetime.now(pytz.utc)
+        # name and primary tag should always be
+        self.name = str(key)
+        self.box_tag = str(box_tag)
+
+        self.value = self.sanitize_value(value)
+
+        if timestamp is not None and isinstance(timestamp, datetime):
+            self.timestamp = timestamp
+        else:
+            self.timestamp = datetime.now(pytz.utc)
+
         self.additional_tags = None
 
         if isinstance(additional_tags, dict):
@@ -37,20 +48,35 @@ class FritzMeasurement:
     def __repr__(self):
         return f"{self.timestamp}: {self.name}={self.value} ({self.tags})"
 
-    @staticmethod
-    def sanitize_value(value):
+    def sanitize_value(self, value):
 
         if value is None:
             return 0
 
+        if isinstance(value, (int, bool, float)):
+            return value
+
+        if not isinstance(value, str):
+            log.error(f"Returned value '{value}' for '{self.name}' has incompatible type '{type(value)}', "
+                      f"returning '0'")
+            return 0
+
+        if "." in value:
+            # noinspection PyBroadException
+            try:
+                # try to convert value to int
+                return float(value)
+            except Exception:
+                pass
+
         # noinspection PyBroadException
         try:
-            # try tpo convert value to int
+            # try to convert value to int
             return int(value)
         except Exception:
             pass
 
-        return value
+        return value.strip()
 
     @property
     def tags(self):

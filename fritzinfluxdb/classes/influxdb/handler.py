@@ -173,23 +173,32 @@ class InfluxHandler:
             log.error(f"Problem reading configured InfluxDB buckets: {e}")
             return
 
-        self.config.bucket_data = None
+        if buckets is None or len(buckets) == 0:
+            log.debug("Unable to read existing buckets. Assuming this is a token with "
+                      "insufficient permissions to perform this action. Assuming the configured bucket is present.")
+
+            self.init_successful = True
+            log.info("Connection to InfluxDB 2 established")
+            return
+
+        bucket_data = None
         for bucket in buckets or list():
             if self.config.bucket in [bucket.name, bucket.id]:
                 log.debug(f"InfluxDB Bucket '{self.config.bucket}' exists")
-                self.config.bucket_data = bucket
+                bucket_data = bucket
 
         # create new bucket
-        if self.config.bucket_data is None:
+        if bucket_data is None:
             log.info(f"InfluxDB bucket '{self.config.bucket}' not found, trying to create it")
             try:
                 retention_rules = BucketRetentionRules(type="expire",
                                                        every_seconds=3600 * 24 * self.bucket_retention_days)
-                self.config.bucket_data = \
-                    buckets_api.create_bucket(bucket_name=self.config.bucket,
-                                              retention_rules=retention_rules,
-                                              org=self.config.organisation,
-                                              description="FritzInfluxDB bucket")
+
+                buckets_api.create_bucket(bucket_name=self.config.bucket,
+                                          retention_rules=retention_rules,
+                                          org=self.config.organisation,
+                                          description="FritzInfluxDB bucket")
+
             except Exception as e:
                 log.error(f"Problem creating InfluxDB bucket: {e}")
                 return
