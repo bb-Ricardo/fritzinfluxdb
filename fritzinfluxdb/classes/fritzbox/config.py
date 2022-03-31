@@ -7,6 +7,7 @@
 #  repository or visit: <https://opensource.org/licenses/MIT>.
 
 import configparser
+import pytz
 
 from fritzinfluxdb.log import get_logger
 from fritzinfluxdb.classes.common import ConfigBase
@@ -57,6 +58,10 @@ class FritzBoxConfig(ConfigBase):
         "type": str,
         "default": "fritz.box"
     }
+    timezone = {
+        "type": str,
+        "default": "Europe/Berlin"
+    }
 
     config_section_name = "fritzbox"
 
@@ -75,5 +80,13 @@ class FritzBoxConfig(ConfigBase):
                 self.parser_error = True
                 log.error(f"FritzBox {key} not defined")
 
+        # noinspection PyBroadException
+        try:
+            self.timezone = pytz.timezone(self.timezone)
+        except Exception as e:
+            log.error(f"Defined FritzBox time zone '{self.timezone}' is invalid/unknown")
+            self.parser_error = True
+
+        # set TR-069 TLS port if undefined
         if self.tls_enabled is True and self.port == self.__class__.port.get("default"):
             self.port += 443

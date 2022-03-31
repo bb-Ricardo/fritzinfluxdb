@@ -52,9 +52,10 @@ class FritzBoxService:
             do_error_exit(f"{self.__class__.name} service data must be a dict")
             return
 
-        self.name = service_data.get("name", None)
+        self.name = service_data.get("name")
+        self.params = service_data.get("params")
         self.value_instances = dict()
-        self.interval = self.interval
+        self.interval = service_data.get("interval", self.interval)
 
         if self.name is None:
             do_error_exit(f"{self.__class__.name} instance has no name")
@@ -129,6 +130,10 @@ class FritzBoxLuaService(FritzBoxService):
             return
 
         self.validate_value_instances()
+
+        if self.page == "log":
+            # ToDo: keep track of last log entries
+            pass
 
     def validate_value_instances(self):
 

@@ -6,6 +6,9 @@
 #  For a copy, see file LICENSE.txt included in this
 #  repository or visit: <https://opensource.org/licenses/MIT>.
 
+from datetime import datetime
+
+
 fritzbox_services = [
     {
         "name": "System Stats",
@@ -41,11 +44,136 @@ fritzbox_services = [
                 "data_path": "data.drain",
                 "type": list,
                 "next": {
-                    "data_path": "actPerc",
+                    # data struct type: dict
                     "type": int,
-                    "tags": [
-                        "name"
-                    ]
+                    "tags_function": lambda data: {"name": data.get("name")},
+                    "value_function": lambda data: data.get("actPerc"),
+                    "exclude_filter_function": lambda data: "lan" in data.keys()
+                }
+            }
+        }
+    },
+    {
+        "name": "System logs",
+        "page": "log",
+        "params": {
+            "filter": 1
+        },
+        "interval": 60,
+        "value_instances": {
+            "log_entry": {
+                "data_path": "data.log",
+                "type": list,
+                "next": {
+                    # data struct type: list
+                    "type": str,
+                    "tags": {
+                        "log_type": "System"
+                    },
+                    "timestamp_function": lambda data:
+                        datetime.strptime(f'{data[0]} {data[1]}', '%d.%m.%y %H:%M:%S'),
+                    "value_function": lambda data: data[2],
+                    "tags_function": None
+                }
+            }
+        }
+    },
+    {
+        "name": "Internet connection logs",
+        "page": "log",
+        "params": {
+            "filter": 2
+        },
+        "interval": 60,
+        "value_instances": {
+            "log_entry": {
+                "data_path": "data.log",
+                "type": list,
+                "next": {
+                    # data struct type: list
+                    "type": str,
+                    "tags": {
+                        "log_type": "Internet connection"
+                    },
+                    "timestamp_function": lambda data:
+                        datetime.strptime(f'{data[0]} {data[1]}', '%d.%m.%y %H:%M:%S'),
+                    "value_function": lambda data: data[2],
+                    "tags_function": None
+                }
+            }
+        }
+    },
+    {
+        "name": "Telephony logs",
+        "page": "log",
+        "params": {
+            "filter": 3
+        },
+        "interval": 60,
+        "value_instances": {
+            "log_entry": {
+                "data_path": "data.log",
+                "type": list,
+                "next": {
+                    # data struct type: list
+                    "type": str,
+                    "tags": {
+                        "log_type": "Telephony"
+                    },
+                    "timestamp_function": lambda data:
+                        datetime.strptime(f'{data[0]} {data[1]}', '%d.%m.%y %H:%M:%S'),
+                    "value_function": lambda data: data[2],
+                    "tags_function": None
+                }
+            }
+        }
+    },
+    {
+        "name": "WLAN logs",
+        "page": "log",
+        "params": {
+            "filter": 4
+        },
+        "interval": 60,
+        "value_instances": {
+            "log_entry": {
+                "data_path": "data.log",
+                "type": list,
+                "next": {
+                    # data struct type: list
+                    "type": str,
+                    "tags": {
+                        "log_type": "WLAN"
+                    },
+                    "timestamp_function": lambda data:
+                        datetime.strptime(f'{data[0]} {data[1]}', '%d.%m.%y %H:%M:%S'),
+                    "value_function": lambda data: data[2],
+                    "tags_function": None
+                }
+            }
+        }
+    },
+    {
+        "name": "USB Devices logs",
+        "page": "log",
+        "params": {
+            "filter": 5
+        },
+        "interval": 60,
+        "value_instances": {
+            "log_entry": {
+                "data_path": "data.log",
+                "type": list,
+                "next": {
+                    # data struct type: list
+                    "type": str,
+                    "tags": {
+                        "log_type": "USB Devices"
+                    },
+                    "timestamp_function": lambda data:
+                    datetime.strptime(f'{data[0]} {data[1]}', '%d.%m.%y %H:%M:%S'),
+                    "value_function": lambda data: data[2],
+                    "tags_function": None
                 }
             }
         }

@@ -263,7 +263,7 @@ class FritzboxLuaHandler(FritzBoxHandlerBase):
         self.sid = sid
         self.init_successful = True
 
-    def request(self, page):
+    def request(self, page, additional_params):
 
         result = None
 
@@ -275,6 +275,9 @@ class FritzboxLuaHandler(FritzBoxHandlerBase):
             "lang": "de",
             "sid": self.sid
         }
+
+        if isinstance(additional_params, dict):
+            params = {**params, **additional_params}
 
         data_url = f"{self.url}/data.lua"
         try:
@@ -307,18 +310,64 @@ class FritzboxLuaHandler(FritzBoxHandlerBase):
 
     def extract_value(self, data, metric_name, metric_params):
 
+        # read config
         data_path = metric_params.get("data_path")
         data_type = metric_params.get("type")
         data_next = metric_params.get("next")
         data_tags = metric_params.get("tags")
+        value_function = metric_params.get("value_function")
+        tags_function = metric_params.get("tags_function")                      # needs to return a dict
+        timestamp_function = metric_params.get("timestamp_function")            # needs to return a datetime
+        exclude_filter_function = metric_params.get("exclude_filter_function")  # needs to return a bool
 
-        metric_value = grab(data, data_path)
-
+        # define defaults
+        metric_value = None
+        timestamp = None
         metric_tags = dict()
-        for data_tag in data_tags or list():
-            tag_value = grab(data, data_tag)
-            if tag_value is not None:
-                metric_tags[data_tag] = tag_value
+
+        # noinspection PyBroadException
+        try:
+            if exclude_filter_function(data) is True:
+                return
+        except Exception:
+            pass
+
+        if data_path is not None and value_function is not None:
+            log.error("Attributes 'data_path' and 'value_function' cant be defined for the same entry"
+                      f"at the same time: {metric_params}")
+            return
+
+        # first we try to use the value_function
+        if value_function is not None:
+            # noinspection PyBroadException
+            try:
+                metric_value = value_function(data)
+            except Exception:
+                pass
+
+        elif data_path is not None:
+            metric_value = grab(data, data_path)
+
+        # try to add tags
+        if isinstance(data_tags, dict):
+            metric_tags = data_tags
+
+        # noinspection PyBroadException
+        try:
+            metric_tags = {**metric_tags, **tags_function(data)}
+        except Exception:
+            pass
+
+        # noinspection PyBroadException
+        try:
+            timestamp = timestamp_function(data)
+
+            # make timestamp time zone aware if time zone is missing
+            if timestamp.tzinfo is None or timestamp.tzinfo.utcoffset(timestamp) is None:
+                timestamp = self.config.timezone.localize(timestamp)
+
+        except Exception:
+            pass
 
         if metric_value is None:
             # this would be ok, but eventually confuse people as it will show up on every request
@@ -327,11 +376,12 @@ class FritzboxLuaHandler(FritzBoxHandlerBase):
 
         if data_type in [int, bool, str]:
             try:
-                metric_value = data_type(grab(data, data_path))
+                metric_value = data_type(metric_value)
             except Exception as e:
                 log.error(f"Unable to convert FritzBox Lua value '{metric_value}' to '{data_type}': {e}")
 
-            metric = FritzMeasurement(metric_name, metric_value, self.config.box_tag, additional_tags=metric_tags)
+            metric = FritzMeasurement(metric_name, metric_value, self.config.box_tag, additional_tags=metric_tags,
+                                      timestamp=timestamp)
 
             self.current_result_list.append(metric)
             return
@@ -357,7 +407,7 @@ class FritzboxLuaHandler(FritzBoxHandlerBase):
             return
 
         # request data
-        result = self.request(service.page)
+        result = self.request(service.page, additional_params=service.params)
 
         if result is None:
             log.error(f"Unable to request FritzBox service '{service.name}'")

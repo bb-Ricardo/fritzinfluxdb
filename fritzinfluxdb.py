@@ -112,7 +112,7 @@ def main():
     log.info("Starting main loop")
 
     try:
-        loop.create_task(fritzbox_connection.query_loop(queue))
+#        loop.create_task(fritzbox_connection.query_loop(queue))
         loop.create_task(fritzbox_lua_connection.query_loop(queue))
         loop.create_task(influx_connection.parse_queue(queue))
         loop.run_forever()
