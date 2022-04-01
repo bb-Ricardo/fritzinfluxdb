@@ -85,7 +85,8 @@ fritzbox_services = [
         "name": "WANDSLInterfaceConfig",
         "actions": [
             "GetInfo",
-            "GetStatisticsTotal"
+            "GetStatisticsTotal",
+            "X_AVM-DE_GetDSLInfo"
         ],
         "value_instances": {
             "NewDownstreamMaxRate": "maxBitRate_downstream",
@@ -98,7 +99,9 @@ fritzbox_services = [
             "NewUpstreamAttenuation": "attenuation_upstream",
             "NewSeverelyErroredSecs": "severely_errored_seconds",
             "NewErroredSecs": "errored_seconds",
-            "NewCRCErrors": "crc_errors"
+            "NewCRCErrors": "crc_errors",
+            "NewDownstreamPower": "power_downstream",
+            "NewUpstreamPower": "power_upstream"
         }
     },
     {
