@@ -27,6 +27,8 @@ log = get_logger()
 
 class InfluxHandler:
 
+    name = "InfluxDB"
+
     config = None
     session_v1 = None
     session_v2 = None
@@ -64,6 +66,7 @@ class InfluxHandler:
     def __init__(self, config):
 
         self.config = InfluxDBConfig(config)
+        self.version = str(self.config.version)
         self.init_successful = False
 
         self.buffer = list()
@@ -76,6 +79,9 @@ class InfluxHandler:
 
         if self.config.version == 1:
 
+            if self.session_v1 is not None:
+                return
+
             self.session_v1 = influxdb.InfluxDBClient(
                 host=self.config.hostname,
                 port=self.config.port,
@@ -87,9 +93,14 @@ class InfluxHandler:
                 timeout=self.connection_timeout_v1
             )
 
+            self.version = str(self.session_v1.ping())
+
             # check influx db status
             self.check_db_status()
         else:
+
+            if self.session_v2 is not None:
+                return
 
             proto = "http"
             if self.config.tls_enabled:
@@ -105,6 +116,10 @@ class InfluxHandler:
                 timeout=self.connection_timeout_v2 * 1000,
                 debug=False
             )
+
+            self.version = str(self.session_v2.version().split(",")[0])
+
+            # check status on influxdb buckets, if possible
             self.check_bucket_status()
 
             self.session_v2_write_api = self.session_v2.write_api(write_options=SYNCHRONOUS)
@@ -153,7 +168,7 @@ class InfluxHandler:
         else:
             log.debug(f"InfluxDB database '{self.config.database}' exists")
 
-        log.info("Connection to InfluxDB 1 established and database present")
+        log.info(f"Connection to InfluxDB {self.version} established and database present")
 
         self.init_successful = True
 
@@ -203,7 +218,7 @@ class InfluxHandler:
                 log.error(f"Problem creating InfluxDB bucket: {e}")
                 return
 
-        log.info("Connection to InfluxDB 2 established and bucket is present")
+        log.info(f"Connection to InfluxDB {self.version} established and bucket is present")
 
         self.init_successful = True
 
@@ -304,7 +319,7 @@ class InfluxHandler:
         elif percent_buffer_usage < self.max_measurements_buffer_warning:
             self.current_max_measurements_buffer_warning = self.max_measurements_buffer_warning
 
-    async def parse_queue(self, queue):
+    async def task_loop(self, queue):
 
         while True:
 

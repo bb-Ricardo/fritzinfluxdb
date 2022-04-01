@@ -21,12 +21,11 @@ import asyncio
 from fritzinfluxdb.cli_parser import parse_command_line
 from fritzinfluxdb.log import setup_logging
 from fritzinfluxdb.configparser import import_config
-from fritzinfluxdb.common import do_error_exit
 from fritzinfluxdb.classes.fritzbox.handler import FritzBoxHandler, FritzboxLuaHandler
 from fritzinfluxdb.classes.influxdb.handler import InfluxHandler
 
-__version__ = "0.4.0"
-__version_date__ = "2020-08-03"
+__version__ = "1.0.0-alpha1"
+__version_date__ = "2022-04-01"
 __description__ = "fritzinfluxdb"
 __license__ = "MIT"
 __url__ = "https://github.com/karrot-dev/fritzinfluxdb"
@@ -34,6 +33,7 @@ __url__ = "https://github.com/karrot-dev/fritzinfluxdb"
 
 # default vars
 running = True
+exit_code = 0
 default_config = os.path.join(os.path.dirname(__file__), 'fritzinfluxdb.ini')
 
 
@@ -48,6 +48,23 @@ async def shutdown(shutdown_signal, loop, log):
     log.info(f"Cancelling {len(tasks)} outstanding tasks")
     await asyncio.gather(*tasks, return_exceptions=True)
     loop.stop()
+
+
+def handle_task_result(task: asyncio.Task) -> None:
+    global exit_code
+
+    # noinspection PyBroadException
+    try:
+        task.result()
+    except asyncio.CancelledError:
+        pass  # Task cancellation should not be logged as an error.
+    except Exception:
+        import logging
+        logging.exception('Exception raised by task = %r', task)
+
+        # we kill ourself to shut down gracefully
+        exit_code = 1
+        os.kill(os.getpid(), signal.SIGTERM)
 
 
 def main():
@@ -69,11 +86,15 @@ def main():
     fritzbox_connection = FritzBoxHandler(config)
     fritzbox_lua_connection = FritzboxLuaHandler(fritzbox_connection.config)
 
-    if True in [influx_connection.config.parser_error, fritzbox_connection.config.parser_error]:
-        exit(1)
+    handler_list = [influx_connection, fritzbox_connection, fritzbox_lua_connection]
+
+    for handler in handler_list:
+        if handler.config.parser_error is True:
+            exit(1)
 
     log.info("Successfully parsed config")
 
+    # start influx handler first to be able to add debug loggging for all handlers using urllib3
     influx_connection.connect()
 
     # DEBUG
@@ -84,21 +105,16 @@ def main():
     # from http.client import HTTPConnection
     # HTTPConnection.debuglevel = 1
 
-    fritzbox_lua_connection.connect()
-    fritzbox_connection.connect()
+    # init connection on all handlers
+    [handler.connect() for handler in handler_list]
 
-    if influx_connection.init_successful is False:
-        log.error("Initializing connection to InfluxDB failed")
+    init_errors = False
+    for handler in handler_list:
+        if handler.init_successful is False:
+            log.error(f"Initializing connection to {handler.name} failed")
+            init_errors = True
 
-    if fritzbox_connection.init_successful is False:
-        log.error("Initializing connection to FritzBox TR-069 failed")
-
-    if fritzbox_lua_connection.init_successful is False:
-        log.error("Initializing connection to FritzBox Lua failed")
-
-    if False in [influx_connection.init_successful,
-                 fritzbox_connection.init_successful,
-                 fritzbox_lua_connection.init_successful]:
+    if init_errors is True:
         exit(1)
 
     loop = asyncio.get_event_loop()
@@ -112,18 +128,18 @@ def main():
     log.info("Starting main loop")
 
     try:
-#        loop.create_task(fritzbox_connection.query_loop(queue))
-        loop.create_task(fritzbox_lua_connection.query_loop(queue))
-        loop.create_task(influx_connection.parse_queue(queue))
+        for handler in handler_list:
+            task = loop.create_task(handler.task_loop(queue), name=handler.name)
+            task.add_done_callback(handle_task_result)
         loop.run_forever()
     finally:
         loop.close()
         fritzbox_connection.close()
         fritzbox_lua_connection.close()
         influx_connection.close()
-        log.info(f"Successfully shutdown stopped {__description__}")
+        log.info(f"Successfully shutdown {__description__}")
 
-    exit(0)
+    exit(exit_code)
 
 
 if __name__ == "__main__":

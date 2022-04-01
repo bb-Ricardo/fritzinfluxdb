@@ -45,6 +45,8 @@ class FritzBoxHandlerBase:
         self.services = list()
         self.current_result_list = list()
 
+        self.version = None
+
     def add_services(self, class_name, service_definition):
 
         for fritzbox_service in service_definition:
@@ -65,7 +67,7 @@ class FritzBoxHandlerBase:
         # dummy service to make IDE happy
         pass
 
-    async def query_loop(self, queue):
+    async def task_loop(self, queue):
         while True:
 
             self.current_result_list = list()
@@ -80,6 +82,8 @@ class FritzBoxHandlerBase:
 
 
 class FritzBoxHandler(FritzBoxHandlerBase):
+
+    name = "FritzBox TR-069"
 
     def __init__(self, config):
 
@@ -100,8 +104,10 @@ class FritzBoxHandler(FritzBoxHandlerBase):
                 use_tls=self.config.tls_enabled
             )
 
+            self.version = self.session.system_version
+
         except BaseException as e:
-            log.error(f"Failed to connect to FritzBox '{e}'")
+            log.error(f"Failed to connect to FritzBox via TR-069 '{e}'")
             return
 
         # test connection
@@ -109,22 +115,23 @@ class FritzBoxHandler(FritzBoxHandlerBase):
             self.session.call_action("DeviceInfo", "GetInfo")
         except FritzConnectionException as e:
             if "401" in str(e):
-                log.error(f"Failed to connect to FritzBox '{self.config.hostname}' using credentials. "
+                log.error(f"Failed to connect to {self.name} '{self.config.hostname}' using credentials. "
                           "Check username and password!")
             else:
-                log.error(f"Failed to connect to FritzBox '{self.config.hostname}': {e}")
+                log.error(f"Failed to connect to {self.name} '{self.config.hostname}': {e}")
 
             return
         except BaseException as e:
-            log.error(f"Failed to connect to FritzBox '{self.config.hostname}': {e}")
+            log.error(f"Failed to connect to {self.name} '{self.config.hostname}': {e}")
             return
 
-        log.info("Successfully connected to FritzBox TR-069 session")
+        log.info(f"Successfully established {self.name} (version: {self.version}) session")
+
         self.init_successful = True
 
     def close(self):
         self.session.session.close()
-        log.info("Closed FritzBox connection")
+        log.info(f"Closed {self.name} connection")
 
     def query_service_data(self, service, discover=False):
 
@@ -157,19 +164,19 @@ class FritzBoxHandler(FritzBoxHandlerBase):
                 continue
             except FritzConnectionException as e:
                 if "401" in str(e):
-                    log.error(f"Failed to connect to FritzBox '{self.config.hostname}' using credentials. "
+                    log.error(f"Failed to connect to {self.name} '{self.config.hostname}' using credentials. "
                               "Check username and password!")
                 else:
-                    log.error(f"Failed to connect to FritzBox '{self.config.hostname}': {e}")
+                    log.error(f"Failed to connect to {self.name} '{self.config.hostname}': {e}")
                 continue
             except Exception as e:
-                log.error(f"Unable to request FritzBox data: {e}")
+                log.error(f"Unable to request {self.name} data: {e}")
                 continue
 
             if call_result is None:
                 continue
 
-            log.debug(f"Request FritzBox service '{service.name}' returned successfully: "
+            log.debug(f"Request {self.name} service '{service.name}' returned successfully: "
                       f"{action.name} ({action.params})")
 
             # set time stamp of this query
@@ -187,6 +194,8 @@ class FritzBoxHandler(FritzBoxHandlerBase):
 
 
 class FritzboxLuaHandler(FritzBoxHandlerBase):
+
+    name = "FritzBox Lua"
 
     def __init__(self, config):
         super().__init__(config)
@@ -221,7 +230,7 @@ class FritzboxLuaHandler(FritzBoxHandlerBase):
         try:
             response = self.session.get(login_url, timeout=self.config.connect_timeout)
         except Exception as e:
-            log.error(f"Unable to create FritzBox Lua session: {e}")
+            log.error(f"Unable to create {self.name} session: {e}")
             return
 
         try:
@@ -229,11 +238,11 @@ class FritzboxLuaHandler(FritzBoxHandlerBase):
             sid = dom.findtext('./SID')
             challenge = dom.findtext('./Challenge')
         except Exception as e:
-            log.error(f"Unable to parse FritzBox login response: {e} {response.content}")
+            log.error(f"Unable to parse {self.name} login response: {e} {response.content}")
             return
 
         if sid != "0000000000000000":
-            log.error(f"Unexpected FritzBox session id: {sid}")
+            log.error(f"Unexpected {self.name} session id: {sid}")
             return
 
         md5 = hashlib.md5()
@@ -250,15 +259,15 @@ class FritzboxLuaHandler(FritzBoxHandlerBase):
             response = self.session.get(login_url, timeout=self.config.connect_timeout, params=login_params)
             sid = fromstring(response.content).findtext('./SID')
         except Exception as e:
-            log.error(f"Unable to parse FritzBox login response: {e} {response.content}")
+            log.error(f"Unable to parse {self.name} login response: {e} {response.content}")
             return
 
         if sid == "0000000000000000":
-            log.error(f"Failed to connect to FritzBox '{self.config.hostname}' using credentials. "
+            log.error(f"Failed to connect to {self.name} '{self.config.hostname}' using credentials. "
                       "Check username and password!")
             return
 
-        log.info("Successfully connected to FritzBox Lua session")
+        log.info(f"Successfully established {self.name} session")
 
         self.sid = sid
         self.init_successful = True
@@ -292,11 +301,11 @@ class FritzboxLuaHandler(FritzBoxHandlerBase):
             pass
 
         if response.status_code == 200 and result is not None:
-            log.debug("FritzBox Lua request successful")
+            log.debug(f"{self.name} request successful")
 
         else:
-            log.error(f"FritzBox Lua returned: {response.status_code} : {response.reason}")
-            log.error(f"FritzBox Lua returned body: {result}")
+            log.error(f"{self.name} returned: {response.status_code} : {response.reason}")
+            log.error(f"{self.name} returned body: {result}")
 
             # invalidate session
             if response.status_code in [303, 403]:
@@ -306,9 +315,9 @@ class FritzboxLuaHandler(FritzBoxHandlerBase):
 
     def close(self):
         self.session.close()
-        log.info("Closed FritzBox Lua connection")
+        log.info(f"Closed {self.name} connection")
 
-    def extract_value(self, data, metric_name, metric_params):
+    def extract_value(self, service, data, metric_name, metric_params):
 
         # read config
         data_path = metric_params.get("data_path")
@@ -370,18 +379,24 @@ class FritzboxLuaHandler(FritzBoxHandlerBase):
             pass
 
         if metric_value is None:
-            # this would be ok, but eventually confuse people as it will show up on every request
-            log.debug(f"Unable to extract '{data_path}' form '{data}', got '{type(metric_value)}'")
+            log.error(f"Unable to extract '{data_path}' form '{data}', got '{type(metric_value)}'")
             return
 
-        if data_type in [int, bool, str]:
+        if data_type in [int, float, bool, str]:
             try:
                 metric_value = data_type(metric_value)
             except Exception as e:
-                log.error(f"Unable to convert FritzBox Lua value '{metric_value}' to '{data_type}': {e}")
+                log.error(f"Unable to convert {self.name} value '{metric_value}' to '{data_type}': {e}")
 
             metric = FritzMeasurement(metric_name, metric_value, self.config.box_tag, additional_tags=metric_tags,
                                       timestamp=timestamp)
+
+            # check if measurement is tracked and already reported
+            if service.skip_tracked_measurement(metric) is True:
+                return
+
+            # track measurement (if configured)
+            service.add_tracked_measurement(metric)
 
             self.current_result_list.append(metric)
             return
@@ -391,7 +406,9 @@ class FritzboxLuaHandler(FritzBoxHandlerBase):
             return
 
         if data_type == list and data_next is not None:
-            [self.extract_value(next_metric_value, metric_name, data_next) for next_metric_value in metric_value]
+            for next_metric_value in metric_value:
+                self.extract_value(service, next_metric_value, metric_name, data_next)
+
             return
 
         log.error(f"Unknown metric '{data_path}' form '{data}', with type '{type(metric_value)}' "
@@ -410,19 +427,19 @@ class FritzboxLuaHandler(FritzBoxHandlerBase):
         result = self.request(service.page, additional_params=service.params)
 
         if result is None:
-            log.error(f"Unable to request FritzBox service '{service.name}'")
+            log.error(f"Unable to request {self.name} service '{service.name}'")
             if discover is True:
-                log.info(f"FritzBox service '{service.name}'. Service will be disabled.")
+                log.info(f"{self.name} service '{service.name}'. Service will be disabled.")
                 service.available = False
             return
 
-        log.debug(f"Request FritzBox service '{service.name}' returned successfully")
+        log.debug(f"Request {self.name} service '{service.name}' returned successfully")
 
         # set time stamp of this query
         service.set_last_query_now()
 
         # Request every param
         for metric_name, metric_params in service.value_instances.items():
-            self.extract_value(result, metric_name, metric_params)
+            self.extract_value(service, result, metric_name, metric_params)
 
         return

@@ -59,6 +59,7 @@ fritzbox_services = [
         "params": {
             "filter": 1
         },
+        "track": True,
         "interval": 60,
         "value_instances": {
             "log_entry": {
@@ -84,7 +85,8 @@ fritzbox_services = [
         "params": {
             "filter": 2
         },
-        "interval": 60,
+        "track": True,
+        "interval": 61,
         "value_instances": {
             "log_entry": {
                 "data_path": "data.log",
@@ -109,7 +111,8 @@ fritzbox_services = [
         "params": {
             "filter": 3
         },
-        "interval": 60,
+        "track": True,
+        "interval": 62,
         "value_instances": {
             "log_entry": {
                 "data_path": "data.log",
@@ -134,7 +137,8 @@ fritzbox_services = [
         "params": {
             "filter": 4
         },
-        "interval": 60,
+        "track": True,
+        "interval": 63,
         "value_instances": {
             "log_entry": {
                 "data_path": "data.log",
@@ -159,7 +163,8 @@ fritzbox_services = [
         "params": {
             "filter": 5
         },
-        "interval": 60,
+        "track": True,
+        "interval": 64,
         "value_instances": {
             "log_entry": {
                 "data_path": "data.log",

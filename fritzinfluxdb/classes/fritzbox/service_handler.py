@@ -131,9 +131,9 @@ class FritzBoxLuaService(FritzBoxService):
 
         self.validate_value_instances()
 
-        if self.page == "log":
-            # ToDo: keep track of last log entries
-            pass
+        # used for services parsing log entries
+        self.track_measurements = bool(service_data.get("track", False))
+        self.tracked_measurements = set()
 
     def validate_value_instances(self):
 
@@ -144,3 +144,15 @@ class FritzBoxLuaService(FritzBoxService):
 
             if metric_params.get("type") is None:
                 do_error_exit(f"FritzBoxLuaService '{self.name}' metric {metric_name} has no 'type' defined")
+
+    def skip_tracked_measurement(self, measurement):
+
+        if self.track_measurements is True and hash(measurement) in self.tracked_measurements:
+            return True
+
+        return False
+
+    def add_tracked_measurement(self, measurement):
+
+        if self.track_measurements is True:
+            self.tracked_measurements.add(hash(measurement))

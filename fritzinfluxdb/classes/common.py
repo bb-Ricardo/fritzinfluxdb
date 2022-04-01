@@ -90,6 +90,9 @@ class FritzMeasurement:
 
         return tags
 
+    def __hash__(self):
+        return hash(self.__repr__())
+
 
 class ConfigBase:
 
