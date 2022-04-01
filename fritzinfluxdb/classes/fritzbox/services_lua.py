@@ -8,8 +8,9 @@
 
 from datetime import datetime
 
+fritzbox_services = list()
 
-fritzbox_services = [
+fritzbox_services.append(
     {
         "name": "System Stats",
         "page": "ecoStat",
@@ -35,7 +36,9 @@ fritzbox_services = [
                 "type": int
             }
         }
-    },
+    })
+
+fritzbox_services.append(
     {
         "name": "Energy Stats",
         "page": "energy",
@@ -52,7 +55,9 @@ fritzbox_services = [
                 }
             }
         }
-    },
+    })
+
+fritzbox_services.append(
     {
         "name": "System logs",
         "page": "log",
@@ -78,7 +83,9 @@ fritzbox_services = [
                 }
             }
         }
-    },
+    })
+
+fritzbox_services.append(
     {
         "name": "Internet connection logs",
         "page": "log",
@@ -104,7 +111,9 @@ fritzbox_services = [
                 }
             }
         }
-    },
+    })
+
+fritzbox_services.append(
     {
         "name": "Telephony logs",
         "page": "log",
@@ -130,7 +139,9 @@ fritzbox_services = [
                 }
             }
         }
-    },
+    })
+
+fritzbox_services.append(
     {
         "name": "WLAN logs",
         "page": "log",
@@ -156,7 +167,9 @@ fritzbox_services = [
                 }
             }
         }
-    },
+    })
+
+fritzbox_services.append(
     {
         "name": "USB Devices logs",
         "page": "log",
@@ -182,5 +195,78 @@ fritzbox_services = [
                 }
             }
         }
+    })
+
+
+extract_single_host = {
+    # data struct type: dict
+    "type": str,
+    "tags_function": lambda data: {
+        "name": data.get("name"),
+        "mac": data.get("mac"),
+        "type": data.get("type"),
+        "parent": data.get("parent", dict()).get("name"),
+        "port": data.get("port"),
+        "ipv4": data.get("ipv4", dict()).get("ip"),
+        "ipv4_last_used": data.get("ipv4", dict()).get("lastused", 0),
+
+        # need this construct to deal with an empty "properties" list
+        "additional_text": (lambda x:
+                            x[0].get("txt", "") if len(x) != 0 else ""
+                            )(
+            data.get("properties", [{"txt": ""}])
+        )
+    },
+    "value_function": lambda data: data.get("UID"),
+    "exclude_filter_function": None
+}
+
+# every 2 minutes
+fritzbox_services.append(
+    {
+        "name": "Active network hosts",
+        "page": "netDev",
+        "params": {
+            "useajax": 1,
+            "xhrId": "all",
+            "xhr": 1,
+            "initial": True
+        },
+        "interval": 120,
+        "value_instances": {
+            "active_host": {
+                "data_path": "data.active",
+                "type": list,
+                "next": extract_single_host
+            },
+            "num_active_host": {
+                "type": int,
+                "value_function": lambda data: len(data.get("data", {}).get("active", [])),
+            }
+        }
     }
-]
+)
+
+# every 10 minutes
+fritzbox_services.append({
+        "name": "Passive network hosts",
+        "page": "netDev",
+        "params": {
+            "useajax": 1,
+            "xhrId": "cleanup",
+            "xhr": 1,
+        },
+        "interval": 600,
+        "value_instances": {
+            "passive_host": {
+                "data_path": "data.passive",
+                "type": list,
+                "next": extract_single_host
+            },
+            "num_passive_host": {
+                "type": int,
+                "value_function": lambda data: len(data.get("data", {}).get("passive", [])),
+            }
+        }
+    }
+)

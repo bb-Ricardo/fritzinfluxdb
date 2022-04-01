@@ -139,8 +139,9 @@ class FritzBoxLuaService(FritzBoxService):
 
         for metric_name, metric_params in self.value_instances.items():
 
-            if metric_params.get("data_path") is None:
-                do_error_exit(f"FritzBoxLuaService '{self.name}' metric {metric_name} has no 'data_path' defined")
+            if metric_params.get("data_path") is None and metric_params.get("value_function") is None:
+                do_error_exit(f"FritzBoxLuaService '{self.name}' metric '{metric_name}' "
+                              f"has no 'data_path' and no 'value_function' defined")
 
             if metric_params.get("type") is None:
                 do_error_exit(f"FritzBoxLuaService '{self.name}' metric {metric_name} has no 'type' defined")
