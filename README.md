@@ -5,7 +5,7 @@ It is equal capable as fritzcollectd and directly writing to InfluxDB.
 
 Both influxDB 1 and InfluxDB 2 are supported
 
-![Grafana Dashboard](grafana_dashboard.png)
+![Grafana Dashboard](grafana/grafana_dashboard.png)
 
 
 ## IMPORTANT:
@@ -133,8 +133,11 @@ optional arguments:
 
 ## Grafana
 
-Use ```grafana_dashboard_fritzbox.json``` to import this dashboard.
-This was heavily inspired from: https://grafana.com/dashboards/713
+There are following Dashboards included:
+* [fritzbox_system_dashboard.json](grafana/fritzbox_system_dashboard.json)
+* [firtzbox_logs_dashboard.json](grafana/firtzbox_logs_dashboard.json)
+
+*This was heavily inspired from: https://grafana.com/dashboards/713*
 
 # Configure more attributes
 
