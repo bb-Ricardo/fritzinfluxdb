@@ -13,7 +13,7 @@ from datetime import datetime
 # InfluxDB version 1.x client
 import influxdb
 # InfluxDB version 2.x client
-from influxdb_client import InfluxDBClient, BucketRetentionRules
+from influxdb_client import InfluxDBClient, BucketRetentionRules, DBRPCreate, DBRPsService
 from influxdb_client.rest import ApiException
 from influxdb_client.client.write_api import SYNCHRONOUS
 from influxdb_client.domain.write_precision import WritePrecision
@@ -181,6 +181,7 @@ class InfluxHandler:
         try:
             buckets_api = self.session_v2.buckets_api()
             buckets = buckets_api.find_buckets().buckets
+            dbrp_api = DBRPsService(api_client=self.session_v2.api_client)
         except ApiException as e:
             log.error(f"Problem reading configured InfluxDB buckets: {e.status}: {e.reason}")
             return
@@ -199,7 +200,7 @@ class InfluxHandler:
         bucket_data = None
         for bucket in buckets or list():
             if self.config.bucket in [bucket.name, bucket.id]:
-                log.debug(f"InfluxDB Bucket '{self.config.bucket}' exists")
+                log.debug(f"InfluxDB bucket '{self.config.bucket}' exists")
                 bucket_data = bucket
 
         # create new bucket
@@ -207,16 +208,45 @@ class InfluxHandler:
             log.info(f"InfluxDB bucket '{self.config.bucket}' not found, trying to create it")
             try:
                 retention_rules = BucketRetentionRules(type="expire",
-                                                       every_seconds=3600 * 24 * self.bucket_retention_days)
+                                                       every_seconds=3600 * 24 * self.bucket_retention_days,
+                                                       shard_group_duration_seconds=3600 * 24)
 
-                buckets_api.create_bucket(bucket_name=self.config.bucket,
-                                          retention_rules=retention_rules,
-                                          org=self.config.organisation,
-                                          description="FritzInfluxDB bucket")
+                bucket_data = buckets_api.create_bucket(bucket_name=self.config.bucket,
+                                                        retention_rules=retention_rules,
+                                                        org=self.config.organisation,
+                                                        description="FritzInfluxDB bucket")
 
             except Exception as e:
                 log.error(f"Problem creating InfluxDB bucket: {e}")
                 return
+
+            log.info(f"Successfully create InfluxDB bucket '{self.config.bucket}'")
+
+        # create new bucket
+        if bucket_data is not None:
+            log.debug(f"InfluxDB bucket '{self.config.bucket}' present, checking database name mapping")
+            try:
+                bucket_dbrp_data = dbrp_api.get_dbr_ps(bucket_id=bucket_data.id, org=self.config.organisation)
+            except Exception as e:
+                log.error(f"Problem requesting InfluxDB DBRP data: {e}")
+                return
+
+            if len(bucket_dbrp_data.content) > 0:
+                log.debug(f"InfluxDB bucket '{self.config.bucket}' has a database mapping: "
+                          f"{bucket_dbrp_data.content[0].database}")
+            else:
+                try:
+                    dbrp_api.post_dbrp(DBRPCreate(
+                        org=self.config.organisation,
+                        bucket_id=bucket_data.id,
+                        database=bucket_data.name,
+                        retention_policy="1year"
+                    ))
+                except Exception as e:
+                    log.error(f"Problem creating InfluxDB DBRP data: {e}")
+                    return
+
+                log.info(f"Successfully create InfluxDB database mapping '{self.config.bucket}'")
 
         log.info(f"Connection to InfluxDB {self.version} established and bucket is present")
 
