@@ -47,7 +47,7 @@ def parse_command_line(version=None, self_description=None, version_date=None, u
     parser.add_argument("-d", "--daemon", action='store_true',
                         help="define if the script is run as a systemd daemon")
 
-    parser.add_argument("-v", "--verbose", action='store_true',
+    parser.add_argument("-v", "--verbose", action='count', default=0,
                         help="turn on verbose output to get debug logging")
 
     args = parser.parse_args()

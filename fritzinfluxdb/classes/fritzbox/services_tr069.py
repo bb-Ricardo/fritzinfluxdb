@@ -69,7 +69,6 @@ fritzbox_services = [
             "NewSerialNumber": "serialnumber",
             "NewModelName": "model",
             "NewSoftwareVersion": "softwareversion",
-            # ToDo: "NewDeviceLog"
         },
         "interval": 60
     },
@@ -105,13 +104,6 @@ fritzbox_services = [
         }
     },
     {
-        "name": "Hosts:1",
-        "actions": ["GetHostNumberOfEntries"],
-        "value_instances": {
-            "NewHostNumberOfEntries": "number_of_hosts"
-        }
-    },
-    {
         "name": "UserInterface:1",
         "actions": ["GetInfo"],
         "value_instances": {
@@ -132,6 +124,18 @@ fritzbox_services = [
         }
     },
     {
+        "name": "WanIPConnection:1",
+        "actions": ["GetInfo"],
+        "value_instances": {
+            "NewExternalIPAddress": "external_ip",
+            "NewLastAuthErrorInfo": "last_auth_error",
+            "NewPPPoEACName": "remote_pop",
+            "NewUptime": "linkuptime",
+            "NewConnectionStatus": "connection_status",
+            "NewLastConnectionError": "last_connection_error"
+        }
+    },
+    {
         "name": "LANHostConfigManagement",
         "actions": ["GetInfo"],
         "value_instances": {
@@ -140,32 +144,44 @@ fritzbox_services = [
     },
     {
         "name": "WLANConfiguration:1",
-        "actions": ["GetInfo"],
+        "actions": [
+            "GetInfo",
+            "GetTotalAssociations"
+        ],
         "value_instances": {
             "NewStatus": "wlan1_status",
             "NewChannel": "wlan1_channel",
             "NewSSID": "wlan1_ssid",
-            "NewStandard": "wlan1_802.11_standard"
+            "NewStandard": "wlan1_802.11_standard",
+            "NewTotalAssociations": "wlan1_associations"
         }
     },
     {
         "name": "WLANConfiguration:2",
-        "actions": ["GetInfo"],
+        "actions": [
+            "GetInfo",
+            "GetTotalAssociations"
+        ],
         "value_instances": {
             "NewStatus": "wlan2_status",
             "NewChannel": "wlan2_channel",
             "NewSSID": "wlan2_ssid",
-            "NewStandard": "wlan2_802.11_standard"
+            "NewStandard": "wlan2_802.11_standard",
+            "NewTotalAssociations": "wlan2_associations"
         }
     },
     {
         "name": "WLANConfiguration:3",
-        "actions": ["GetInfo"],
+        "actions": [
+            "GetInfo",
+            "GetTotalAssociations"
+        ],
         "value_instances": {
             "NewStatus": "wlan3_status",
             "NewChannel": "wlan3_channel",
             "NewSSID": "wlan3_ssid",
-            "NewStandard": "wlan3_802.11_standard"
+            "NewStandard": "wlan3_802.11_standard",
+            "NewTotalAssociations": "wlan3_associations"
         }
     },
     {

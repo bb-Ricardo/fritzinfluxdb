@@ -9,11 +9,14 @@
 import asyncio
 import pytz
 from datetime import datetime
+from http.client import HTTPConnection
+
+import requests
 
 # InfluxDB version 1.x client
-import influxdb
+from influxdb import InfluxDBClient as InfluxDBClientV1
 # InfluxDB version 2.x client
-from influxdb_client import InfluxDBClient, BucketRetentionRules, DBRPCreate, DBRPsService
+from influxdb_client import InfluxDBClient as InfluxDBClientV2, BucketRetentionRules, DBRPCreate, DBRPsService
 from influxdb_client.rest import ApiException
 from influxdb_client.client.write_api import SYNCHRONOUS
 from influxdb_client.domain.write_precision import WritePrecision
@@ -63,7 +66,7 @@ class InfluxHandler:
     # set to true if connection to InfluxDB got lost
     connection_lost = False
 
-    def __init__(self, config):
+    def __init__(self, config, user_agent=None):
 
         self.config = InfluxDBConfig(config)
         self.version = str(self.config.version)
@@ -73,16 +76,12 @@ class InfluxHandler:
 
         self.current_retry_interval = self.retry_interval
         self.last_write_retry = None
+        self.session_v1_requests_session = requests.Session()
         self.current_max_measurements_buffer_warning = self.max_measurements_buffer_warning
-
-    def connect(self):
 
         if self.config.version == 1:
 
-            if self.session_v1 is not None:
-                return
-
-            self.session_v1 = influxdb.InfluxDBClient(
+            self.session_v1 = InfluxDBClientV1(
                 host=self.config.hostname,
                 port=self.config.port,
                 username=self.config.username,
@@ -90,23 +89,21 @@ class InfluxHandler:
                 database=self.config.database,
                 ssl=self.config.tls_enabled,
                 verify_ssl=self.config.verify_tls,
-                timeout=self.connection_timeout_v1
+                timeout=self.connection_timeout_v1,
+                session=self.session_v1_requests_session
             )
 
-            self.version = str(self.session_v1.ping())
-
-            # check influx db status
-            self.check_db_status()
         else:
-
-            if self.session_v2 is not None:
-                return
 
             proto = "http"
             if self.config.tls_enabled:
                 proto = "https"
 
-            self.session_v2 = InfluxDBClient(
+            debug = False
+            if HTTPConnection.debuglevel > 0:
+                debug = True
+
+            self.session_v2 = InfluxDBClientV2(
                 url=f"{proto}://{self.config.hostname}:{self.config.port}",
                 port=self.config.port,
                 token=self.config.token,
@@ -114,10 +111,41 @@ class InfluxHandler:
                 ssl=self.config.tls_enabled,
                 verify_ssl=self.config.verify_tls,
                 timeout=self.connection_timeout_v2 * 1000,
-                debug=False
+                debug=debug
             )
 
-            self.version = str(self.session_v2.version().split(",")[0])
+        if user_agent is not None:
+            if self.session_v1 is not None:
+                self.session_v1_requests_session.headers.update({"User-Agent": user_agent})
+
+            if self.session_v2 is not None:
+                self.session_v2.api_client.user_agent = user_agent
+
+    def connect(self):
+
+        if self.init_successful is True:
+            return
+
+        if self.config.version == 1:
+
+            try:
+                self.version = str(self.session_v1.ping())
+
+            except Exception as e:
+                log.error(f"Failed to connect to InfluxDB: {e}")
+                return
+
+            # check influx db status
+            self.check_db_status()
+
+        else:
+
+            try:
+                self.version = str(self.session_v2.version().split(",")[0])
+
+            except Exception as e:
+                log.error(f"Failed to connect to InfluxDB: {e}")
+                return
 
             # check status on influxdb buckets, if possible
             self.check_bucket_status()

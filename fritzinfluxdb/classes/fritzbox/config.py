@@ -65,6 +65,13 @@ class FritzBoxConfig(ConfigBase):
 
     config_section_name = "fritzbox"
 
+    def __init__(self, config_data):
+
+        super().__init__(config_data)
+
+        self._fw_version = None
+        self.model = None
+
     def parse_config(self, config_data: configparser.ConfigParser):
 
         super().parse_config(config_data)
@@ -90,3 +97,17 @@ class FritzBoxConfig(ConfigBase):
         # set TR-069 TLS port if undefined
         if self.tls_enabled is True and self.port == self.__class__.port.get("default"):
             self.port += 443
+
+    @property
+    def fw_version(self):
+        return self._fw_version
+
+    @fw_version.setter
+    def fw_version(self, version):
+
+        # noinspection PyBroadException
+        try:
+            _, major, minor = f"{version}".split(".")
+            self._fw_version = f"{int(major)}.{int(minor)}"
+        except Exception:
+            pass

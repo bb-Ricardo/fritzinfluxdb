@@ -34,6 +34,7 @@ class FritzBoxHandlerBase:
     session = None
     init_successful = False
     services = None
+    discovery_done = False
 
     def __init__(self, config):
         if isinstance(config, FritzBoxConfig):
@@ -58,12 +59,7 @@ class FritzBoxHandlerBase:
 
             self.services.append(new_service)
 
-    def discover_available_services(self):
-
-        for service in self.services:
-            self.query_service_data(service, True)
-
-    def query_service_data(self, _, __=None):
+    def query_service_data(self, _):
         # dummy service to make IDE happy
         pass
 
@@ -80,6 +76,9 @@ class FritzBoxHandlerBase:
 
             await asyncio.sleep(1)
 
+            # first discovery run is done
+            self.discovery_done = True
+
 
 class FritzBoxHandler(FritzBoxHandlerBase):
 
@@ -94,13 +93,18 @@ class FritzBoxHandler(FritzBoxHandlerBase):
 
     def connect(self):
 
+        if self.init_successful is True:
+            return
+
+        log.debug(f"Initiating established {self.name} session")
+
         try:
             self.session = FritzConnection(
                 address=self.config.hostname,
                 port=self.config.port,
                 user=self.config.username,
                 password=self.config.password,
-                timeout=self.config.connect_timeout,
+                timeout=(self.config.connect_timeout, self.config.connect_timeout * 4),
                 use_tls=self.config.tls_enabled
             )
 
@@ -112,7 +116,7 @@ class FritzBoxHandler(FritzBoxHandlerBase):
 
         # test connection
         try:
-            self.session.call_action("DeviceInfo", "GetInfo")
+            device_info = self.session.call_action("DeviceInfo", "GetInfo")
         except FritzConnectionException as e:
             if "401" in str(e):
                 log.error(f"Failed to connect to {self.name} '{self.config.hostname}' using credentials. "
@@ -125,27 +129,33 @@ class FritzBoxHandler(FritzBoxHandlerBase):
             log.error(f"Failed to connect to {self.name} '{self.config.hostname}': {e}")
             return
 
-        log.info(f"Successfully established {self.name} (version: {self.version}) session")
+        if isinstance(device_info, dict):
+            self.config.model = device_info.get("NewModelName")
+            self.config.fw_version = device_info.get("NewSoftwareVersion")
+
+        log.info(f"Successfully established {self.name} session")
 
         self.init_successful = True
 
     def close(self):
         self.session.session.close()
-        log.info(f"Closed {self.name} connection")
+        if self.init_successful is True:
+            log.info(f"Closed {self.name} connection")
 
-    def query_service_data(self, service, discover=False):
+    def query_service_data(self, service):
 
         if not isinstance(service, FritzBoxTR069Service):
             log.error("Query service must be of type 'FritzBoxTR069Service'")
             return
 
-        if discover is False and (service.available is False or service.should_service_be_requested() is False):
+        if self.discovery_done is True and \
+                (service.available is False or service.should_service_be_requested() is False):
             return
 
         # Request every action
         for action in service.actions:
 
-            if discover is False and action.available is False:
+            if self.discovery_done is True and action.available is False:
                 log.debug(f"Skipping disabled action: {action.name}")
                 continue
 
@@ -154,12 +164,14 @@ class FritzBoxHandler(FritzBoxHandlerBase):
                 call_result = self.session.call_action(service.name, action.name, **action.params)
             except FritzServiceError:
                 log.error(f"Requested invalid service: {service.name}")
-                if discover is True:
+                if self.discovery_done is False:
+                    log.info(f"Querying service '{service.name}' will be disabled")
                     service.available = False
                 continue
             except FritzActionError:
                 log.error(f"Requested invalid action '{action.name}' for service: {service.name}")
-                if discover is True:
+                if self.discovery_done is False:
+                    log.info(f"Querying action '{action.name}' will be disabled")
                     action.available = False
                 continue
             except FritzConnectionException as e:
@@ -183,6 +195,7 @@ class FritzBoxHandler(FritzBoxHandlerBase):
             service.set_last_query_now()
 
             for key, value in call_result.items():
+                log.debug(f"{self.name} result: {key} = {value}")
                 metric_name = service.value_instances.get(key)
 
                 if metric_name is not None:
@@ -226,9 +239,11 @@ class FritzboxLuaHandler(FritzBoxHandlerBase):
 
         login_url = f"{self.url}/login_sid.lua"
 
+        log.debug(f"Initiating established {self.name} session")
+
         # perform login
         try:
-            response = self.session.get(login_url, timeout=self.config.connect_timeout)
+            response = self.session.get(login_url, timeout=(self.config.connect_timeout, self.config.connect_timeout*4))
         except Exception as e:
             log.error(f"Unable to create {self.name} session: {e}")
             return
@@ -315,7 +330,8 @@ class FritzboxLuaHandler(FritzBoxHandlerBase):
 
     def close(self):
         self.session.close()
-        log.info(f"Closed {self.name} connection")
+        if self.init_successful is True:
+            log.info(f"Closed {self.name} connection")
 
     def extract_value(self, service, data, metric_name, metric_params):
 
@@ -414,13 +430,14 @@ class FritzboxLuaHandler(FritzBoxHandlerBase):
         log.error(f"Unknown metric '{data_path}' form '{data}', with type '{type(metric_value)}' "
                   f"and defined type '{data_type}'")
 
-    def query_service_data(self, service, discover=False):
+    def query_service_data(self, service):
 
         if not isinstance(service, FritzBoxLuaService):
             log.error("Query service must be of type 'FritzBoxLuaService'")
             return
 
-        if discover is False and (service.available is False or service.should_service_be_requested() is False):
+        if self.discovery_done is True and \
+                (service.available is False or service.should_service_be_requested() is False):
             return
 
         # request data
@@ -428,7 +445,7 @@ class FritzboxLuaHandler(FritzBoxHandlerBase):
 
         if result is None:
             log.error(f"Unable to request {self.name} service '{service.name}'")
-            if discover is True:
+            if self.discovery_done is False:
                 log.info(f"{self.name} service '{service.name}'. Service will be disabled.")
                 service.available = False
             return

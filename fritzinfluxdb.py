@@ -16,6 +16,7 @@ writes it to an InfluxDB instance.
 import os
 import signal
 import asyncio
+from http.client import HTTPConnection
 
 
 from fritzinfluxdb.cli_parser import parse_command_line
@@ -24,15 +25,14 @@ from fritzinfluxdb.configparser import import_config
 from fritzinfluxdb.classes.fritzbox.handler import FritzBoxHandler, FritzboxLuaHandler
 from fritzinfluxdb.classes.influxdb.handler import InfluxHandler
 
-__version__ = "1.0.0-alpha1"
-__version_date__ = "2022-04-01"
+__version__ = "1.0.0-alpha2"
+__version_date__ = "2022-04-11"
 __description__ = "fritzinfluxdb"
 __license__ = "MIT"
 __url__ = "https://github.com/karrot-dev/fritzinfluxdb"
 
 
 # default vars
-running = True
 exit_code = 0
 default_config = os.path.join(os.path.dirname(__file__), 'fritzinfluxdb.ini')
 
@@ -72,7 +72,7 @@ def main():
     # parse command line arguments
     args = parse_command_line(__version__, __description__, __version_date__, __url__, default_config)
 
-    log = setup_logging("DEBUG" if args.verbose is True else "INFO", args.daemon)
+    log = setup_logging("DEBUG" if args.verbose > 0 else "INFO", args.daemon)
 
     log.propagate = False
 
@@ -81,12 +81,20 @@ def main():
     # read config from ini file
     config = import_config(args.config_file, default_config)
 
+    # switch on http verbose
+    if args.verbose >= 2:
+        HTTPConnection.debuglevel = 1
+
     # initialize handler
-    influx_connection = InfluxHandler(config)
+    influx_connection = InfluxHandler(config, user_agent=f"{__description__}/{__version__}")
     fritzbox_connection = FritzBoxHandler(config)
     fritzbox_lua_connection = FritzboxLuaHandler(fritzbox_connection.config)
 
-    handler_list = [influx_connection, fritzbox_connection, fritzbox_lua_connection]
+    handler_list = [
+        influx_connection,
+        fritzbox_connection,
+        fritzbox_lua_connection
+    ]
 
     for handler in handler_list:
         if handler.config.parser_error is True:
@@ -94,19 +102,16 @@ def main():
 
     log.info("Successfully parsed config")
 
-    # start influx handler first to be able to add debug loggging for all handlers using urllib3
-    influx_connection.connect()
-
-    # DEBUG
-    # import logging
-    # debug_log = logging.getLogger('urllib3')
-    # debug_log.setLevel(logging.DEBUG)
-
-    # from http.client import HTTPConnection
-    # HTTPConnection.debuglevel = 1
-
     # init connection on all handlers
-    [handler.connect() for handler in handler_list]
+    influx_connection.connect()
+    fritzbox_connection.connect()
+
+    # Lua handler is only useful with FritzBox FW >= 7.X
+    if fritzbox_connection.config.fw_version is not None and fritzbox_connection.config.fw_version[0] == "7":
+        fritzbox_lua_connection.connect()
+    else:
+        log.info("Disabling queries via Lua. Fritz!OS version must be at least 7.XX")
+        handler_list.remove(fritzbox_lua_connection)
 
     init_errors = False
     for handler in handler_list:
@@ -116,6 +121,10 @@ def main():
 
     if init_errors is True:
         exit(1)
+
+    log.info(f"Successfully connected to FritzBox '{fritzbox_connection.config.hostname}' "
+             f"({fritzbox_connection.config.box_tag}) Model: {fritzbox_connection.config.model} - "
+             f"FW: {fritzbox_connection.config.fw_version}")
 
     loop = asyncio.get_event_loop()
 
