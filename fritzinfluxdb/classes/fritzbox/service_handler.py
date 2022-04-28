@@ -80,7 +80,10 @@ class FritzBoxService:
     def set_last_query_now(self):
         self.last_query = datetime.now(pytz.utc)
 
-    def should_service_be_requested(self):
+    def should_be_requested(self):
+
+        if self.available is False:
+            return False
 
         if self.last_query and (datetime.now(pytz.utc)-self.last_query).total_seconds() < self.interval:
             return False
