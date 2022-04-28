@@ -148,8 +148,7 @@ class FritzBoxHandler(FritzBoxHandlerBase):
             log.error("Query service must be of type 'FritzBoxTR069Service'")
             return
 
-        if self.discovery_done is True and \
-                (service.available is False or service.should_service_be_requested() is False):
+        if self.discovery_done is True and service.should_be_requested() is False:
             return
 
         # Request every action
@@ -205,6 +204,11 @@ class FritzBoxHandler(FritzBoxHandlerBase):
                     self.current_result_list.append(
                         FritzMeasurement(metric_name, value, self.config.box_tag)
                     )
+
+        if self.discovery_done is False:
+            if True not in [x.available for x in service.actions]:
+                log.info(f"All actions for service '{service.name}' are unavailable. Disabling service.")
+                service.available = False
 
         return
 
@@ -439,8 +443,7 @@ class FritzboxLuaHandler(FritzBoxHandlerBase):
             log.error("Query service must be of type 'FritzBoxLuaService'")
             return
 
-        if self.discovery_done is True and \
-                (service.available is False or service.should_service_be_requested() is False):
+        if self.discovery_done is True and service.should_be_requested() is False:
             return
 
         # request data
