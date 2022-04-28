@@ -124,12 +124,10 @@ fritzbox_services = [
         }
     },
     {
-        "name": "WanIPConnection:1",
+        "name": "WANIPConnection:1",
         "actions": ["GetInfo"],
         "value_instances": {
             "NewExternalIPAddress": "external_ip",
-            "NewLastAuthErrorInfo": "last_auth_error",
-            "NewPPPoEACName": "remote_pop",
             "NewUptime": "linkuptime",
             "NewConnectionStatus": "connection_status",
             "NewLastConnectionError": "last_connection_error"
