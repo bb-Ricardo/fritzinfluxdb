@@ -155,6 +155,9 @@ class FritzBoxHandler(FritzBoxHandlerBase):
         # Request every action
         for action in service.actions:
 
+            if service.available is False:
+                break
+
             if self.discovery_done is True and action.available is False:
                 log.debug(f"Skipping disabled action: {action.name}")
                 continue
@@ -163,13 +166,13 @@ class FritzBoxHandler(FritzBoxHandlerBase):
             try:
                 call_result = self.session.call_action(service.name, action.name, **action.params)
             except FritzServiceError:
-                log.error(f"Requested invalid service: {service.name}")
+                log.info(f"Requested invalid service: {service.name}")
                 if self.discovery_done is False:
                     log.info(f"Querying service '{service.name}' will be disabled")
                     service.available = False
                 continue
             except FritzActionError:
-                log.error(f"Requested invalid action '{action.name}' for service: {service.name}")
+                log.info(f"Requested invalid action '{action.name}' for service: {service.name}")
                 if self.discovery_done is False:
                     log.info(f"Querying action '{action.name}' will be disabled")
                     action.available = False
