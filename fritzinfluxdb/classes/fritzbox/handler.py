@@ -434,6 +434,12 @@ class FritzboxLuaHandler(FritzBoxHandlerBase):
 
             return
 
+        if data_type == dict and data_next is not None:
+            for next_metric_value in metric_value.values():
+                self.extract_value(service, next_metric_value, metric_name, data_next)
+
+            return
+
         log.error(f"Unknown metric '{data_path}' form '{data}', with type '{type(metric_value)}' "
                   f"and defined type '{data_type}'")
 

@@ -8,6 +8,8 @@
 
 from datetime import datetime
 
+from fritzinfluxdb.common import grab
+
 fritzbox_services = list()
 
 fritzbox_services.append(
@@ -266,6 +268,80 @@ fritzbox_services.append({
             "num_passive_host": {
                 "type": int,
                 "value_function": lambda data: len(data.get("data", {}).get("passive", [])),
+            }
+        }
+    }
+)
+
+fritzbox_services.append({
+        # ToDo:
+        #   * Dashboard
+        "name": "VPN Users",
+        "page": "shareVpn",
+        "params": {
+            "xhrId": "all",
+            "xhr": 1,
+        },
+        "value_instances": {
+            "myfritz_host_name": {
+                "data_path": "data.vpnInfo.server",
+                "type": str
+            },
+            "vpn_user": {
+                "data_path": "data.vpnInfo.userConnections",
+                "type": dict,
+                "next": {
+                    "type": str,
+                    "value_function": lambda data: data.get("name"),
+                    "tags_function": lambda data: {
+                        "connected": data.get("connected"),
+                        "active": data.get("active"),
+                        "virtual_address": data.get("virtualAddress"),
+                        "remote_address": data.get("address"),
+                    }
+                }
+            },
+            "num_active_vpn_users": {
+                "type": int,
+                "value_function": (lambda data:
+                                   len(
+                                       [x for x in grab(data, "data.vpnInfo.userConnections", fallback=dict()).values()
+                                        if x.get("connected") is True]
+                                   )
+                                   ),
+
+            }
+        }
+    }
+)
+
+fritzbox_services.append({
+        # ToDo:
+        #   * Dashboard
+        "name": "DSL Info",
+        "page": "dslOv",
+        "params": {
+            "xhrId": "all",
+            "xhr": 1,
+            "useajax": 1
+        },
+        "interval": 600,
+        "value_instances": {
+            "dsl_line_length": {
+                "data_path": "data.connectionData.lineLength",
+                "type": int
+            },
+            "dsl_dslam_vendor": {
+                "data_path": "data.connectionData.dslamId",
+                "type": str
+            },
+            "dsl_dslam_sw_versino": {
+                "data_path": "data.connectionData.version",
+                "type": str
+            },
+            "dsl_line_mode": {
+                "data_path": "data.connectionData.line.0.mode",
+                "type": str
             }
         }
     }
