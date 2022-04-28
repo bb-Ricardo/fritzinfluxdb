@@ -156,7 +156,7 @@ class FritzBoxHandler(FritzBoxHandlerBase):
         for action in service.actions:
 
             if self.discovery_done is True and action.available is False:
-                log.debug(f"Skipping disabled action: {action.name}")
+                log.debug(f"Skipping disabled service action: {service.name} - {action.name}")
                 continue
 
             # add parameters
