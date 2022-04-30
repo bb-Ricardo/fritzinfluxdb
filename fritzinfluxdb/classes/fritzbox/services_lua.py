@@ -335,13 +335,54 @@ fritzbox_services.append({
                 "data_path": "data.connectionData.dslamId",
                 "type": str
             },
-            "dsl_dslam_sw_versino": {
+            "dsl_dslam_sw_version": {
                 "data_path": "data.connectionData.version",
                 "type": str
             },
             "dsl_line_mode": {
                 "data_path": "data.connectionData.line.0.mode",
                 "type": str
+            }
+        }
+    }
+)
+
+fritzbox_services.append({
+        # ToDo:
+        #   * Dashboard
+        "name": "Cable Info",
+        "page": "docOv",
+        "params": {
+            "xhrId": "all",
+            "xhr": 1
+        },
+        "interval": 600,
+        "value_instances": {
+            "cable_cmts_vendor": {
+                "data_path": "data.connectionData.externApValue",
+                "type": str
+            },
+            "cable_modem_version": {
+                "data_path": "data.connectionData.version",
+                "type": str
+            },
+            "cable_line_mode": {
+                "data_path": "data.connectionData.line.0.mode",
+                "type": str
+            },
+            "cable_num_ds_channels": {
+                "type": int,
+                "value_function": (lambda data:
+                                   sum([len(x) for x in grab(data, "data.connectionData.dsFreqs.values",
+                                                             fallback=dict()).values()])
+                                   ),
+            },
+            "cable_num_us_channels": {
+                "type": int,
+                "value_function": (lambda data:
+                                   sum([len(x) for x in grab(data, "data.connectionData.usFreqs.values",
+                                                             fallback=dict()).values()])
+                                   ),
             }
         }
     }
