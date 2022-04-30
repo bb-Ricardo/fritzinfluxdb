@@ -455,7 +455,7 @@ class FritzboxLuaHandler(FritzBoxHandlerBase):
         # request data
         result = self.request(service.page, additional_params=service.params)
 
-        if result is None:
+        if result is None or result.get("pid") != service.page:
             log.error(f"Unable to request {self.name} service '{service.name}'")
             if self.discovery_done is False:
                 log.info(f"{self.name} service '{service.name}'. Service will be disabled.")
