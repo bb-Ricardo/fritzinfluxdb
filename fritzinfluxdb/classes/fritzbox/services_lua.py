@@ -224,54 +224,54 @@ extract_single_host = {
 }
 
 # every 2 minutes
-fritzbox_services.append(
-    {
-        "name": "Active network hosts",
-        "page": "netDev",
-        "params": {
-            "useajax": 1,
-            "xhrId": "all",
-            "xhr": 1,
-            "initial": True
-        },
-        "interval": 120,
-        "value_instances": {
-            "active_host": {
-                "data_path": "data.active",
-                "type": list,
-                "next": extract_single_host
-            },
-            "num_active_host": {
-                "type": int,
-                "value_function": lambda data: len(data.get("data", {}).get("active", [])),
-            }
-        }
-    }
-)
-
-# every 10 minutes
-fritzbox_services.append({
-        "name": "Passive network hosts",
-        "page": "netDev",
-        "params": {
-            "useajax": 1,
-            "xhrId": "cleanup",
-            "xhr": 1,
-        },
-        "interval": 600,
-        "value_instances": {
-            "passive_host": {
-                "data_path": "data.passive",
-                "type": list,
-                "next": extract_single_host
-            },
-            "num_passive_host": {
-                "type": int,
-                "value_function": lambda data: len(data.get("data", {}).get("passive", [])),
-            }
-        }
-    }
-)
+# fritzbox_services.append(
+#     {
+#         "name": "Active network hosts",
+#         "page": "netDev",
+#         "params": {
+#             "useajax": 1,
+#             "xhrId": "all",
+#             "xhr": 1,
+#             "initial": True
+#         },
+#         "interval": 120,
+#         "value_instances": {
+#             "active_host": {
+#                 "data_path": "data.active",
+#                 "type": list,
+#                 "next": extract_single_host
+#             },
+#             "num_active_host": {
+#                 "type": int,
+#                 "value_function": lambda data: len(data.get("data", {}).get("active", [])),
+#             }
+#         }
+#     }
+# )
+#
+# # every 10 minutes
+# fritzbox_services.append({
+#         "name": "Passive network hosts",
+#         "page": "netDev",
+#         "params": {
+#             "useajax": 1,
+#             "xhrId": "cleanup",
+#             "xhr": 1,
+#         },
+#         "interval": 600,
+#         "value_instances": {
+#             "passive_host": {
+#                 "data_path": "data.passive",
+#                 "type": list,
+#                 "next": extract_single_host
+#             },
+#             "num_passive_host": {
+#                 "type": int,
+#                 "value_function": lambda data: len(data.get("data", {}).get("passive", [])),
+#             }
+#         }
+#     }
+# )
 
 fritzbox_services.append({
         # ToDo:
