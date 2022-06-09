@@ -199,83 +199,171 @@ fritzbox_services.append(
         }
     })
 
-
-extract_single_host = {
-    # data struct type: dict
-    "type": str,
-    "tags_function": lambda data: {
-        "name": data.get("name"),
-        "mac": data.get("mac"),
-        "type": data.get("type"),
-        "parent": data.get("parent", dict()).get("name"),
-        "port": data.get("port"),
-        "ipv4": data.get("ipv4", dict()).get("ip"),
-        "ipv4_last_used": data.get("ipv4", dict()).get("lastused", 0),
-
-        # need this construct to deal with an empty "properties" list
-        "additional_text": (lambda x:
-                            x[0].get("txt", "") if len(x) != 0 else ""
-                            )(
-            data.get("properties", [{"txt": ""}])
-        )
-    },
-    "value_function": lambda data: data.get("UID"),
-    "exclude_filter_function": None
-}
-
 # every 2 minutes
-# fritzbox_services.append(
-#     {
-#         "name": "Active network hosts",
-#         "page": "netDev",
-#         "params": {
-#             "useajax": 1,
-#             "xhrId": "all",
-#             "xhr": 1,
-#             "initial": True
-#         },
-#         "interval": 120,
-#         "value_instances": {
-#             "active_host": {
-#                 "data_path": "data.active",
-#                 "type": list,
-#                 "next": extract_single_host
-#             },
-#             "num_active_host": {
-#                 "type": int,
-#                 "value_function": lambda data: len(data.get("data", {}).get("active", [])),
-#             }
-#         }
-#     }
-# )
-#
-# # every 10 minutes
-# fritzbox_services.append({
-#         "name": "Passive network hosts",
-#         "page": "netDev",
-#         "params": {
-#             "useajax": 1,
-#             "xhrId": "cleanup",
-#             "xhr": 1,
-#         },
-#         "interval": 600,
-#         "value_instances": {
-#             "passive_host": {
-#                 "data_path": "data.passive",
-#                 "type": list,
-#                 "next": extract_single_host
-#             },
-#             "num_passive_host": {
-#                 "type": int,
-#                 "value_function": lambda data: len(data.get("data", {}).get("passive", [])),
-#             }
-#         }
-#     }
-# )
+fritzbox_services.append(
+    {
+        "name": "Active network hosts",
+        "page": "netDev",
+        "params": {
+            "useajax": 1,
+            "xhrId": "all",
+            "xhr": 1,
+            "initial": True
+        },
+        "interval": 120,
+        "value_instances": {
+            "active_hosts_name": {
+                "data_path": "data.active",
+                "type": list,
+                "next": {
+                    # data struct type: dict
+                    "type": str,
+                    "tags_function": lambda data: {"uid": data.get("UID")},
+                    "value_function": lambda data: data.get("name")
+                }
+            },
+            "active_hosts_mac": {
+                "data_path": "data.active",
+                "type": list,
+                "next": {
+                    # data struct type: dict
+                    "type": str,
+                    "tags_function": lambda data: {"uid": data.get("UID")},
+                    "value_function": lambda data: data.get("mac")
+                }
+            },
+            "active_hosts_type": {
+                "data_path": "data.active",
+                "type": list,
+                "next": {
+                    # data struct type: dict
+                    "type": str,
+                    "tags_function": lambda data: {"uid": data.get("UID")},
+                    "value_function": lambda data: data.get("type")
+                }
+            },
+            "active_hosts_parent": {
+                "data_path": "data.active",
+                "type": list,
+                "next": {
+                    # data struct type: dict
+                    "type": str,
+                    "tags_function": lambda data: {"uid": data.get("UID")},
+                    "value_function": lambda data: data.get("parent", dict()).get("name")
+                }
+            },
+            "active_hosts_port": {
+                "data_path": "data.active",
+                "type": list,
+                "next": {
+                    # data struct type: dict
+                    "type": str,
+                    "tags_function": lambda data: {"uid": data.get("UID")},
+                    "value_function": lambda data: data.get("port")
+                }
+            },
+            "active_hosts_ipv4": {
+                "data_path": "data.active",
+                "type": list,
+                "next": {
+                    # data struct type: dict
+                    "type": str,
+                    "tags_function": lambda data: {"uid": data.get("UID")},
+                    "value_function": lambda data: data.get("ipv4", dict()).get("ip")
+                }
+            },
+            "active_hosts_ipv4_last_used": {
+                "data_path": "data.active",
+                "type": list,
+                "next": {
+                    # data struct type: dict
+                    "type": str,
+                    "tags_function": lambda data: {"uid": data.get("UID")},
+                    "value_function": lambda data: data.get("ipv4", dict()).get("lastused", 0)
+                }
+            },
+            "active_hosts_additional_text": {
+                "data_path": "data.active",
+                "type": list,
+                "next": {
+                    # data struct type: dict
+                    "type": str,
+                    "tags_function": lambda data: {"uid": data.get("UID")},
+                    "value_function": lambda data: (
+                        lambda x: x[0].get("txt", "") if len(x) != 0 else ""
+                    )(
+                        data.get("properties", [{"txt": ""}])
+                    )
+                }
+            },
+            "num_active_host": {
+                "type": int,
+                "value_function": lambda data: len(data.get("data", {}).get("active", [])),
+            }
+        }
+    }
+)
+
+# every 10 minutes
+fritzbox_services.append({
+        "name": "Passive network hosts",
+        "page": "netDev",
+        "params": {
+            "useajax": 1,
+            "xhrId": "cleanup",
+            "xhr": 1,
+        },
+        "interval": 600,
+        "value_instances": {
+            "passive_hosts_name": {
+                "data_path": "data.passive",
+                "type": list,
+                "next": {
+                    # data struct type: dict
+                    "type": str,
+                    "tags_function": lambda data: {"uid": data.get("UID")},
+                    "value_function": lambda data: data.get("name")
+                }
+            },
+            "passive_hosts_mac": {
+                "data_path": "data.passive",
+                "type": list,
+                "next": {
+                    # data struct type: dict
+                    "type": str,
+                    "tags_function": lambda data: {"uid": data.get("UID")},
+                    "value_function": lambda data: data.get("mac")
+                }
+            },
+            "passive_hosts_port": {
+                "data_path": "data.passive",
+                "type": list,
+                "next": {
+                    # data struct type: dict
+                    "type": str,
+                    "tags_function": lambda data: {"uid": data.get("UID")},
+                    "value_function": lambda data: data.get("port")
+                }
+            },
+            "passive_hosts_ipv4": {
+                "data_path": "data.passive",
+                "type": list,
+                "next": {
+                    # data struct type: dict
+                    "type": str,
+                    "tags_function": lambda data: {"uid": data.get("UID")},
+                    "value_function": lambda data: data.get("ipv4", dict()).get("ip")
+                }
+            },
+            "num_passive_host": {
+                "type": int,
+                "value_function": lambda data: len(data.get("data", {}).get("passive", [])),
+            }
+        }
+    }
+)
 
 fritzbox_services.append({
-        # ToDo:
-        #   * Dashboard
         "name": "VPN Users",
         "page": "shareVpn",
         "params": {
@@ -287,21 +375,47 @@ fritzbox_services.append({
                 "data_path": "data.vpnInfo.server",
                 "type": str
             },
-            "vpn_user": {
+            "vpn_type": {
+                "data_path": "data.vpnInfo.type",
+                "type": str
+            },
+            "vpn_user_connected": {
                 "data_path": "data.vpnInfo.userConnections",
                 "type": dict,
                 "next": {
                     "type": str,
-                    "value_function": lambda data: data.get("name"),
-                    "tags_function": lambda data: {
-                        "connected": data.get("connected"),
-                        "active": data.get("active"),
-                        "virtual_address": data.get("virtualAddress"),
-                        "remote_address": data.get("address"),
-                    }
+                    "value_function": lambda data: data.get("connected"),
+                    "tags_function": lambda data: {"name": data.get("name")}
                 }
             },
-            "num_active_vpn_users": {
+            "vpn_user_active": {
+                "data_path": "data.vpnInfo.userConnections",
+                "type": dict,
+                "next": {
+                    "type": str,
+                    "value_function": lambda data: data.get("active"),
+                    "tags_function": lambda data: {"name": data.get("name")}
+                }
+            },
+            "vpn_user_virtual_address": {
+                "data_path": "data.vpnInfo.userConnections",
+                "type": dict,
+                "next": {
+                    "type": str,
+                    "value_function": lambda data: data.get("virtualAddress"),
+                    "tags_function": lambda data: {"name": data.get("name")}
+                }
+            },
+            "vpn_user_remote_address": {
+                "data_path": "data.vpnInfo.userConnections",
+                "type": dict,
+                "next": {
+                    "type": str,
+                    "value_function": lambda data: data.get("address"),
+                    "tags_function": lambda data: {"name": data.get("name")}
+                }
+            },
+            "vpn_user_num_active": {
                 "type": int,
                 "value_function": (lambda data:
                                    len(

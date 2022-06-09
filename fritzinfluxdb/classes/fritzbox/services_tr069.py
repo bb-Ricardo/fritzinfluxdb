@@ -141,8 +141,6 @@ fritzbox_services = [
         }
     },
     {
-        # ToDo:
-        #   * Dashboard
         "name": "WLANConfiguration:1",
         "actions": [
             "GetInfo",
@@ -157,8 +155,6 @@ fritzbox_services = [
         }
     },
     {
-        # ToDo:
-        #   * Dashboard
         "name": "WLANConfiguration:2",
         "actions": [
             "GetInfo",
@@ -173,8 +169,6 @@ fritzbox_services = [
         }
     },
     {
-        # ToDo:
-        #   * Dashboard
         "name": "WLANConfiguration:3",
         "actions": [
             "GetInfo",
@@ -189,8 +183,6 @@ fritzbox_services = [
         }
     },
     {
-        # ToDo:
-        #   * Dashboard
         "name": "X_AVM-DE_RemoteAccess",
         "actions": ["GetDDNSInfo"],
         "value_instances": {
