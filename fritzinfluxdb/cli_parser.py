@@ -48,7 +48,8 @@ def parse_command_line(version=None, self_description=None, version_date=None, u
                         help="define if the script is run as a systemd daemon")
 
     parser.add_argument("-v", "--verbose", action='count', default=0,
-                        help="turn on verbose output to get debug logging")
+                        help="turn on verbose output to get debug logging. "
+                             "Defining '-vv' will also print out all http calls")
 
     args = parser.parse_args()
 
