@@ -20,6 +20,9 @@ sensitive_keys = [
 
 
 class InfluxDBConfig(ConfigBase):
+    """
+        class which defines the InfluxDB config options
+    """
 
     version = {
         "type": int,

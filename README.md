@@ -22,19 +22,22 @@ In order work properly you need to enable "permit access for applications" and "
 ### Environment
 * Grafana >= 8.4.0
 
-### Python 2.7
-If you still need to run it with Python 2 check out the branch
-[python2.7](https://github.com/yunity/fritzinfluxdb/tree/python2.7)
-
 ## Setup
 * here we assume we install in ```/opt```
+
+ToDo:
+* add part with setting up influxdb2 admin env token
+* describe setting up grafana to use "Authorization: Token XXX" header
 
 ### Configuration
 
 After cloning the repo copy the config from the [example](fritzinfluxdb-sample.ini)
 to ```my-fritzinfluxdb.ini``` and edit the settings. All settings are described inside the file.
 
+ToDo: mention of env var reading
+
 ### Ubuntu 18.04
+ToDo: Update to recent Ubuntu OS
 ```
 sudo apt-get install virtualenv python3-lxml
 cd /opt
@@ -46,6 +49,7 @@ pip3 install -r requirements.txt
 ```
 
 ### RHEL/CentOS 7 with EPEL
+ToDo: Update to recent RHEL OS (rocky)
 ```
 yum install git python36-virtualenv python36-lxml
 cd /opt
@@ -78,6 +82,11 @@ systemctl enable fritzinfluxdb
 ```
 
 ### Run with Docker
+ToDo:
+ * provide docker container
+ * describe usage of ENV vars
+ * update docker-compose file
+
 ```
 git clone <this_repo_url>
 cd fritzinfluxdb
@@ -109,12 +118,12 @@ docker run --link influxdb -d -v /PATH/TO/my-fritzinfluxdb.ini:/app/fritzinfluxd
 ```
 
 ### Upgrading
-If you upgrade from a version < 0.3 make sure to perform following steps
 
 * update your virtual env `pip3 install -r requirements.txt`
 * use the updated config and add the credentials and addresses from your old config
 
 ## Running the script
+ToDo: Update to current version
 ```
 usage: fritzinfluxdb.py [-h] [-c fritzinfluxdb.ini [fritzinfluxdb.ini ...]] [-d] [-v]
 

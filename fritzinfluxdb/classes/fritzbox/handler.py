@@ -29,6 +29,9 @@ log = get_logger()
 
 
 class FritzBoxHandlerBase:
+    """
+        base class to provide common methods to both FritzBox handler classes
+    """
 
     config = None
     session = None
@@ -49,6 +52,16 @@ class FritzBoxHandlerBase:
         self.version = None
 
     def add_services(self, class_name, service_definition):
+        """
+        Adds services from config to handler
+
+        Parameters
+        ----------
+        class_name: FritzBoxTR069Service, FritzBoxLuaService
+            the fritzbox service class
+        service_definition: list
+            list of service definitions
+        """
 
         for fritzbox_service in service_definition:
             new_service = class_name(fritzbox_service)
@@ -64,6 +77,15 @@ class FritzBoxHandlerBase:
         pass
 
     async def task_loop(self, queue):
+        """
+        common task loop which is called in fritzinfluxdb.py
+
+        Parameters
+        ----------
+        queue: asyncio.Queue
+            the result queue object to write measurements to so the influx handler can pick them up
+
+        """
         while True:
 
             self.current_result_list = list()
@@ -96,7 +118,7 @@ class FritzBoxHandler(FritzBoxHandlerBase):
         if self.init_successful is True:
             return
 
-        log.debug(f"Initiating established {self.name} session")
+        log.debug(f"Initiating new {self.name} session")
 
         try:
             self.session = FritzConnection(
@@ -213,7 +235,7 @@ class FritzBoxHandler(FritzBoxHandlerBase):
         return
 
 
-class FritzboxLuaHandler(FritzBoxHandlerBase):
+class FritzBoxLuaHandler(FritzBoxHandlerBase):
 
     name = "FritzBox Lua"
 
@@ -246,7 +268,7 @@ class FritzboxLuaHandler(FritzBoxHandlerBase):
 
         login_url = f"{self.url}/login_sid.lua"
 
-        log.debug(f"Initiating established {self.name} session")
+        log.debug(f"Initiating new {self.name} session")
 
         # perform login
         try:

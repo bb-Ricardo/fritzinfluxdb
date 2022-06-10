@@ -12,11 +12,15 @@ from datetime import datetime
 
 from fritzinfluxdb.common import do_error_exit
 from fritzinfluxdb.log import get_logger
+from fritzinfluxdb.classes.common import FritzMeasurement
 
 log = get_logger()
 
 
 class FritzBoxAction:
+    """
+        defines a single FritzBox query action
+    """
 
     available = True
 
@@ -39,6 +43,10 @@ class FritzBoxAction:
 
 
 class FritzBoxService:
+    """
+        base class to provide a FritzBox service. It is used to manage a single service request interval,
+        keeping track of last query and if this service was enabled/disabled during discovery.
+    """
 
     available = True
     name = None
@@ -46,7 +54,7 @@ class FritzBoxService:
     interval = 10
     last_query = None
 
-    def __init__(self, service_data=None):
+    def __init__(self, service_data: Dict = None):
 
         if not isinstance(service_data, dict):
             do_error_exit(f"{self.__class__.name} service data must be a dict")
@@ -78,9 +86,15 @@ class FritzBoxService:
         return
 
     def set_last_query_now(self):
+        """
+            needs to be called after every successful service query
+        """
         self.last_query = datetime.now(pytz.utc)
 
     def should_be_requested(self):
+        """
+        determines if conditions are fulfilled to request this service again
+        """
 
         if self.available is False:
             return False
@@ -92,6 +106,9 @@ class FritzBoxService:
 
 
 class FritzBoxTR069Service(FritzBoxService):
+    """
+    a single TR069 service
+    """
 
     actions = None
 
@@ -119,6 +136,9 @@ class FritzBoxTR069Service(FritzBoxService):
 
 
 class FritzBoxLuaService(FritzBoxService):
+    """
+    a single Lua service
+    """
 
     page = None
 
@@ -139,6 +159,9 @@ class FritzBoxLuaService(FritzBoxService):
         self.tracked_measurements = set()
 
     def validate_value_instances(self):
+        """
+        validate if necessary information has been provided
+        """
 
         for metric_name, metric_params in self.value_instances.items():
 
@@ -149,14 +172,21 @@ class FritzBoxLuaService(FritzBoxService):
             if metric_params.get("type") is None:
                 do_error_exit(f"FritzBoxLuaService '{self.name}' metric {metric_name} has no 'type' defined")
 
-    def skip_tracked_measurement(self, measurement):
+    def skip_tracked_measurement(self, measurement: FritzMeasurement):
+        """
+        check if measurement has already been generated. This is helpful reading logs and only add logs
+        which have not been seen before
+        """
 
         if self.track_measurements is True and hash(measurement) in self.tracked_measurements:
             return True
 
         return False
 
-    def add_tracked_measurement(self, measurement):
+    def add_tracked_measurement(self, measurement: FritzMeasurement):
+        """
+        adds a measurement to the tracking list
+        """
 
         if self.track_measurements is True:
             self.tracked_measurements.add(hash(measurement))

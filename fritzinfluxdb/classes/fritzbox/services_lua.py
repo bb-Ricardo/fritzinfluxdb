@@ -430,8 +430,6 @@ fritzbox_services.append({
 )
 
 fritzbox_services.append({
-        # ToDo:
-        #   * Dashboard
         "name": "DSL Info",
         "page": "dslOv",
         "params": {
@@ -462,8 +460,6 @@ fritzbox_services.append({
 )
 
 fritzbox_services.append({
-        # ToDo:
-        #   * Dashboard
         "name": "Cable Info",
         "page": "docOv",
         "params": {

@@ -22,7 +22,7 @@ from http.client import HTTPConnection
 from fritzinfluxdb.cli_parser import parse_command_line
 from fritzinfluxdb.log import setup_logging
 from fritzinfluxdb.configparser import import_config
-from fritzinfluxdb.classes.fritzbox.handler import FritzBoxHandler, FritzboxLuaHandler
+from fritzinfluxdb.classes.fritzbox.handler import FritzBoxHandler, FritzBoxLuaHandler
 from fritzinfluxdb.classes.influxdb.handler import InfluxHandler
 
 __version__ = "1.0.0-alpha2"
@@ -88,7 +88,7 @@ def main():
     # initialize handler
     influx_connection = InfluxHandler(config, user_agent=f"{__description__}/{__version__}")
     fritzbox_connection = FritzBoxHandler(config)
-    fritzbox_lua_connection = FritzboxLuaHandler(fritzbox_connection.config)
+    fritzbox_lua_connection = FritzBoxLuaHandler(fritzbox_connection.config)
 
     handler_list = [
         influx_connection,

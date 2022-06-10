@@ -16,6 +16,9 @@ log = get_logger()
 
 
 class FritzBoxConfig(ConfigBase):
+    """
+        class which defines the FritzBox config options
+    """
 
     hostname = {
         "type": str,
@@ -47,7 +50,7 @@ class FritzBoxConfig(ConfigBase):
     connect_timeout = {
         "type": int,
         "alt": "timeout",
-        "default": 5
+        "default": 10
     }
     request_interval = {
         "type": int,

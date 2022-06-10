@@ -29,7 +29,7 @@ class FritzMeasurement:
 
     def __init__(self, key, value, box_tag=None, additional_tags=None, timestamp=None):
 
-        # name and primary tag should always be
+        # name and primary tag should always be present
         self.name = str(key)
         self.box_tag = str(box_tag)
 
@@ -95,6 +95,9 @@ class FritzMeasurement:
 
 
 class ConfigBase:
+    """
+        Base class to parse config data
+    """
 
     sensitive_keys = [
         "password",
@@ -119,9 +122,13 @@ class ConfigBase:
 
     @staticmethod
     def to_bool(value):
-        valid = {'true': True, 't': True, '1': True,
-                 'false': False, 'f': False, '0': False,
-                 }
+        """
+            converts a string to a boolean
+        """
+        valid = {
+             'true': True, 't': True, '1': True,
+             'false': False, 'f': False, '0': False,
+             }
 
         if isinstance(value, bool):
             return value
@@ -133,6 +140,9 @@ class ConfigBase:
         raise ValueError
 
     def parse_config(self, config_data):
+        """
+            generic method to parse config data and also takes care of reading equivalent env var
+        """
 
         config_section_name = getattr(self.__class__, "config_section_name")
 
