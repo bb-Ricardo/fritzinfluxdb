@@ -100,7 +100,7 @@
   "gnetId": 713,
   "graphTooltip": 2,
   "id": null,
-  "iteration": 1649187544957,
+  "iteration": 1654848459802,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -1065,7 +1065,7 @@
           "orderByTime": "ASC",
           "policy": "default",
           "query": "SELECT last(\"sendrate\")*8 AS \"current\", last(\"upstreammax\") AS \"max\" FROM /^$measurement$/ WHERE (\"box\" =~ /^$boxtag$/)",
-          "rawQuery": true,
+          "rawQuery": false,
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -1077,8 +1077,12 @@
                 "type": "field"
               },
               {
+                "params": [],
+                "type": "last"
+              },
+              {
                 "params": [
-                  "alias"
+                  "current"
                 ],
                 "type": "alias"
               }
@@ -1091,14 +1095,24 @@
                 "type": "field"
               },
               {
+                "params": [],
+                "type": "last"
+              },
+              {
                 "params": [
-                  "alias"
+                  "max"
                 ],
                 "type": "alias"
               }
             ]
           ],
-          "tags": [],
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$boxtag$/"
+            }
+          ],
           "target": ""
         }
       ],
@@ -2753,6 +2767,839 @@
         "x": 0,
         "y": 22
       },
+      "id": 58,
+      "panels": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "Num clients",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineStyle": {
+                  "fill": "solid"
+                },
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "decimals": 0,
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Total"
+                },
+                "properties": [
+                  {
+                    "id": "custom.stacking",
+                    "value": {
+                      "group": "A",
+                      "mode": "none"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 3
+          },
+          "id": 55,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [
+                {
+                  "params": [
+                    "$__interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "none"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "query": "SELECT mean(\"wlan1_associations\") AS \"2.4 GHz Clients\", mean(\"wlan2_associations\") AS \"5 GHz Clients\", mean(\"wlan3_associations\") AS \"Guest Clients\" FROM /^$measurement$/ WHERE (\"box\" =~ /^$boxtag$/) AND $timeFilter GROUP BY time($__interval) fill(null)",
+              "rawQuery": false,
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "wlan1_associations"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  },
+                  {
+                    "params": [
+                      "2.4 GHz Clients"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "wlan2_associations"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  },
+                  {
+                    "params": [
+                      "5 GHz Clients"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "wlan3_associations"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  },
+                  {
+                    "params": [
+                      "Guest Clients"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            }
+          ],
+          "title": "WLAN Clients",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "fritzbox.(.*)",
+                "renamePattern": "$1"
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "mode": "reduceRow",
+                "reduce": {
+                  "include": [
+                    "2.4 GHz Clients",
+                    "5 GHz Clients",
+                    "Guest Clients"
+                  ],
+                  "reducer": "sum"
+                },
+                "replaceFields": false
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "WLAN channel",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineStyle": {
+                  "fill": "solid"
+                },
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "decimals": 0,
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "5 GHz"
+                },
+                "properties": [
+                  {
+                    "id": "custom.axisPlacement",
+                    "value": "right"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 3
+          },
+          "id": 56,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [
+                {
+                  "params": [
+                    "$__interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "query": "SELECT mean(\"wlan1_associations\") AS \"2.4 GHz Clients\", mean(\"wlan2_associations\") AS \"5 GHz Clients\", mean(\"wlan3_associations\") AS \"Guest Clients\" FROM /^$measurement$/ WHERE (\"box\" =~ /^$boxtag$/) AND $timeFilter GROUP BY time($__interval) fill(null)",
+              "rawQuery": false,
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "wlan1_channel"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  },
+                  {
+                    "params": [
+                      "2.4 GHz"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "wlan2_channel"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  },
+                  {
+                    "params": [
+                      "5 GHz"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "wlan3_channel"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  },
+                  {
+                    "params": [
+                      "Guest"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            }
+          ],
+          "title": "WLAN Channel",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "fritzbox.(.*)",
+                "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto",
+                "filterable": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Metric"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 160
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 24,
+            "x": 0,
+            "y": 11
+          },
+          "id": 60,
+          "options": {
+            "footer": {
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 0,
+            "showHeader": true
+          },
+          "pluginVersion": "8.4.4",
+          "targets": [
+            {
+              "alias": "2.4 GHz Status",
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "limit": "1",
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "query": "SELECT \"wlan1_status\" AS \"Status\", \"wlan1_802.11_standard\", \"wlan1_ssid\", \"wlan1_ssid\" FROM /^$measurement$/ WHERE (\"box\" =~ /^$boxtag$/) AND $timeFilter LIMIT 1",
+              "rawQuery": false,
+              "refId": "A",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "wlan1_ssid"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [
+                      "Name"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "wlan1_status"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [
+                      "Status"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "wlan1_802.11_standard"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [
+                      "Standard"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "wlan1_channel"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [
+                      "Channel"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "wlan1_associations"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [
+                      "Clients"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "alias": "2.4 GHz Status",
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "limit": "1",
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "query": "SELECT \"wlan1_status\" AS \"Status\", \"wlan1_802.11_standard\", \"wlan1_ssid\", \"wlan1_ssid\" FROM /^$measurement$/ WHERE (\"box\" =~ /^$boxtag$/) AND $timeFilter LIMIT 1",
+              "rawQuery": false,
+              "refId": "B",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "wlan2_ssid"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [
+                      "Name"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "wlan2_status"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [
+                      "Status"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "wlan2_802.11_standard"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [
+                      "Standard"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "wlan2_channel"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [
+                      "Channel"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "wlan2_associations"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [
+                      "Clients"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "alias": "2.4 GHz Status",
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "limit": "1",
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "query": "SELECT \"wlan1_status\" AS \"Status\", \"wlan1_802.11_standard\", \"wlan1_ssid\", \"wlan1_ssid\" FROM /^$measurement$/ WHERE (\"box\" =~ /^$boxtag$/) AND $timeFilter LIMIT 1",
+              "rawQuery": false,
+              "refId": "C",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "wlan3_ssid"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [
+                      "Name"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "wlan3_status"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [
+                      "Status"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "wlan3_802.11_standard"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [
+                      "Standard"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "wlan3_channel"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [
+                      "Channel"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "wlan3_associations"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [
+                      "Clients"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            }
+          ],
+          "title": "WLAN Info",
+          "transformations": [
+            {
+              "disabled": true,
+              "id": "renameByRegex",
+              "options": {
+                "regex": "fritzbox.(.*)",
+                "renamePattern": "$1"
+              }
+            },
+            {
+              "disabled": true,
+              "id": "seriesToRows",
+              "options": {}
+            },
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "include": {
+                  "names": [
+                    "Name",
+                    "Status",
+                    "Standard",
+                    "Channel",
+                    "Clients"
+                  ]
+                }
+              }
+            },
+            {
+              "id": "merge",
+              "options": {}
+            },
+            {
+              "id": "convertFieldType",
+              "options": {
+                "conversions": [
+                  {
+                    "destinationType": "string",
+                    "targetField": "Channel"
+                  },
+                  {
+                    "destinationType": "string",
+                    "targetField": "Clients"
+                  }
+                ],
+                "fields": {}
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "WLAN",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 23
+      },
       "id": 43,
       "panels": [
         {
@@ -2801,7 +3648,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2817,7 +3665,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 19
+            "y": 4
           },
           "id": 45,
           "options": {
@@ -2928,7 +3776,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               },
@@ -2986,7 +3835,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 19
+            "y": 4
           },
           "id": 49,
           "options": {
@@ -3146,7 +3995,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -3159,10 +4009,10 @@
             "overrides": []
           },
           "gridPos": {
-            "h": 11,
-            "w": 8,
+            "h": 9,
+            "w": 12,
             "x": 0,
-            "y": 27
+            "y": 12
           },
           "id": 51,
           "options": {
@@ -3244,7 +4094,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "#EAB839",
@@ -3257,10 +4108,10 @@
             "overrides": []
           },
           "gridPos": {
-            "h": 11,
-            "w": 8,
-            "x": 8,
-            "y": 27
+            "h": 9,
+            "w": 12,
+            "x": 12,
+            "y": 12
           },
           "id": 53,
           "options": {
@@ -3359,7 +4210,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "dark-yellow"
+                    "color": "dark-yellow",
+                    "value": null
                   }
                 ]
               }
@@ -3391,10 +4243,10 @@
             ]
           },
           "gridPos": {
-            "h": 11,
-            "w": 8,
-            "x": 16,
-            "y": 27
+            "h": 9,
+            "w": 12,
+            "x": 0,
+            "y": 21
           },
           "hideTimeOverride": true,
           "id": 20,
@@ -3419,7 +4271,6 @@
               },
               "groupBy": [],
               "hide": false,
-              "limit": "1",
               "measurement": "/^$measurement$/",
               "orderByTime": "ASC",
               "policy": "default",
@@ -3434,8 +4285,1347 @@
                     "type": "field"
                   },
                   {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
                     "params": [
                       "IPv4"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "C",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "external_ipv6"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "IPv6"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "D",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "model"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Model"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "E",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "serialnumber"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Serial"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "F",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "softwareversion"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "SW Version"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "L",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "last_auth_error"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Last Auth Error"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "myfritz_host_name"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "MyFritz Hostname"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            }
+          ],
+          "title": "FritzBox Info",
+          "transformations": [
+            {
+              "id": "seriesToRows",
+              "options": {}
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true
+                },
+                "indexByName": {},
+                "renameByName": {}
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "Metric"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "displayMode": "color-background",
+                "filterable": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "dark-yellow",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Metric"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 200
+                  },
+                  {
+                    "id": "custom.displayMode",
+                    "value": "color-background"
+                  },
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#4991f2",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 12,
+            "y": 21
+          },
+          "hideTimeOverride": true,
+          "id": 74,
+          "interval": "",
+          "links": [],
+          "options": {
+            "footer": {
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": false
+          },
+          "pluginVersion": "8.4.4",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "B",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "physicallinktype"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Link Type"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "dsl_line_length"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "DSL Line Length"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "C",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "dsl_dslam_vendor"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "DSL DSLAM Vendor"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "D",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "dsl_dslam_sw_version"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "DSL Model Version"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "E",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "dsl_line_mode"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "DSL Line Mode"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "F",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "cable_cmts_vendor"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Cable Vendor"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "G",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "cable_line_mode"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Cable Line Mode"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "H",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "cable_modem_version"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Cable Modem Version"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "I",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "cable_num_ds_channels"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Cable Downstream Channels"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "J",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "cable_num_us_channels"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Cable Upstream Channels"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "K",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "connection_status"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Connection Status"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "L",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "last_connection_error"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Last Connection Error"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "M",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "remote_pop"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Remote Pop"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            }
+          ],
+          "title": "Connection Info",
+          "transformations": [
+            {
+              "id": "seriesToRows",
+              "options": {}
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true
+                },
+                "indexByName": {},
+                "renameByName": {}
+              }
+            },
+            {
+              "disabled": true,
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "Metric"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "System Infos",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 24
+      },
+      "id": 70,
+      "panels": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 39,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "decimals": 0,
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 17,
+            "x": 0,
+            "y": 5
+          },
+          "id": 64,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "alias": "Num Users",
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [
+                {
+                  "params": [
+                    "$__interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "vpn_user_num_active"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            }
+          ],
+          "title": "Active VPN User",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 7,
+            "x": 17,
+            "y": 5
+          },
+          "id": 68,
+          "options": {
+            "footer": {
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": false
+          },
+          "pluginVersion": "8.4.4",
+          "targets": [
+            {
+              "alias": "MyFritz Hostname",
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "myfritz_host_name"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "alias": "VPN Type",
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "B",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "vpn_type"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "alias": "VPN User Active",
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "C",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "vpn_user_num_active"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            }
+          ],
+          "title": "VPN Infos",
+          "transformations": [
+            {
+              "id": "seriesToRows",
+              "options": {}
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true
+                },
+                "indexByName": {},
+                "renameByName": {}
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 9,
+            "x": 0,
+            "y": 13
+          },
+          "id": 62,
+          "options": {
+            "footer": {
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": false
+          },
+          "pluginVersion": "8.4.4",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "limit": "1",
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "ddns_domain"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [
+                      "Domain"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [],
+              "hide": false,
+              "limit": "1",
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "B",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "ddns_enabled"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [
+                      "Enabled"
                     ],
                     "type": "alias"
                   }
@@ -3466,13 +5656,13 @@
                 [
                   {
                     "params": [
-                      "external_ipv6"
+                      "ddns_mode"
                     ],
                     "type": "field"
                   },
                   {
                     "params": [
-                      "IPv6"
+                      "Mode"
                     ],
                     "type": "alias"
                   }
@@ -3503,13 +5693,13 @@
                 [
                   {
                     "params": [
-                      "model"
+                      "ddns_provider_name"
                     ],
                     "type": "field"
                   },
                   {
                     "params": [
-                      "Model"
+                      "Provider"
                     ],
                     "type": "alias"
                   }
@@ -3540,13 +5730,13 @@
                 [
                   {
                     "params": [
-                      "serialnumber"
+                      "ddns_status_ipv4"
                     ],
                     "type": "field"
                   },
                   {
                     "params": [
-                      "Serial"
+                      "Status IPv4"
                     ],
                     "type": "alias"
                   }
@@ -3577,235 +5767,13 @@
                 [
                   {
                     "params": [
-                      "softwareversion"
+                      "ddns_status_ipv6"
                     ],
                     "type": "field"
                   },
                   {
                     "params": [
-                      "SW Version"
-                    ],
-                    "type": "alias"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "box",
-                  "operator": "=~",
-                  "value": "/^$boxtag$/"
-                }
-              ]
-            },
-            {
-              "datasource": {
-                "type": "influxdb",
-                "uid": "${DS_INFLUXDB}"
-              },
-              "groupBy": [],
-              "hide": false,
-              "limit": "1",
-              "measurement": "/^$measurement$/",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "refId": "G",
-              "resultFormat": "table",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "remote_pop"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [
-                      "Remote Pop"
-                    ],
-                    "type": "alias"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "box",
-                  "operator": "=~",
-                  "value": "/^$boxtag$/"
-                }
-              ]
-            },
-            {
-              "datasource": {
-                "type": "influxdb",
-                "uid": "${DS_INFLUXDB}"
-              },
-              "groupBy": [],
-              "hide": false,
-              "limit": "1",
-              "measurement": "/^$measurement$/",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "refId": "H",
-              "resultFormat": "table",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "connection_status"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [
-                      "Connection Status"
-                    ],
-                    "type": "alias"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "box",
-                  "operator": "=~",
-                  "value": "/^$boxtag$/"
-                }
-              ]
-            },
-            {
-              "datasource": {
-                "type": "influxdb",
-                "uid": "${DS_INFLUXDB}"
-              },
-              "groupBy": [],
-              "hide": false,
-              "limit": "1",
-              "measurement": "/^$measurement$/",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "refId": "I",
-              "resultFormat": "table",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "physicallinkstatus"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [
-                      "Link Status"
-                    ],
-                    "type": "alias"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "box",
-                  "operator": "=~",
-                  "value": "/^$boxtag$/"
-                }
-              ]
-            },
-            {
-              "datasource": {
-                "type": "influxdb",
-                "uid": "${DS_INFLUXDB}"
-              },
-              "groupBy": [],
-              "hide": false,
-              "limit": "1",
-              "measurement": "/^$measurement$/",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "refId": "J",
-              "resultFormat": "table",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "physicallinktype"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [
-                      "Link Type"
-                    ],
-                    "type": "alias"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "box",
-                  "operator": "=~",
-                  "value": "/^$boxtag$/"
-                }
-              ]
-            },
-            {
-              "datasource": {
-                "type": "influxdb",
-                "uid": "${DS_INFLUXDB}"
-              },
-              "groupBy": [],
-              "hide": false,
-              "limit": "1",
-              "measurement": "/^$measurement$/",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "refId": "K",
-              "resultFormat": "table",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "last_connection_error"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [
-                      "Last Connection Error"
-                    ],
-                    "type": "alias"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "box",
-                  "operator": "=~",
-                  "value": "/^$boxtag$/"
-                }
-              ]
-            },
-            {
-              "datasource": {
-                "type": "influxdb",
-                "uid": "${DS_INFLUXDB}"
-              },
-              "groupBy": [],
-              "hide": true,
-              "limit": "1",
-              "measurement": "/^$measurement$/",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "refId": "L",
-              "resultFormat": "table",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "last_auth_error"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [
-                      "Last Auth Error"
+                      "Status IPv6"
                     ],
                     "type": "alias"
                   }
@@ -3820,8 +5788,7 @@
               ]
             }
           ],
-          "timeFrom": "1m",
-          "title": "FritzBox Info",
+          "title": "DynDNS Info",
           "transformations": [
             {
               "id": "seriesToRows",
@@ -3850,43 +5817,29 @@
             }
           ],
           "type": "table"
-        }
-      ],
-      "title": "System Metrics",
-      "type": "row"
-    },
-    {
-      "collapsed": true,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 23
-      },
-      "id": 28,
-      "panels": [
+        },
         {
           "datasource": {
             "type": "influxdb",
             "uid": "${DS_INFLUXDB}"
           },
+          "description": "",
           "fieldConfig": {
             "defaults": {
               "color": {
-                "fixedColor": "text",
-                "mode": "fixed"
+                "mode": "thresholds"
               },
               "custom": {
                 "align": "auto",
-                "displayMode": "auto",
-                "filterable": true
+                "displayMode": "auto"
               },
               "mappings": [],
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               }
@@ -3895,55 +5848,30 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "MAC"
+                  "options": "Connected"
                 },
                 "properties": [
                   {
-                    "id": "custom.width"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "IP"
-                },
-                "properties": [
+                    "id": "custom.displayMode",
+                    "value": "color-text"
+                  },
                   {
-                    "id": "custom.width"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Port"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Last Seen"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Info"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width"
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "False": {
+                            "color": "light-blue",
+                            "index": 1
+                          },
+                          "True": {
+                            "color": "light-green",
+                            "index": 0
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
                   }
                 ]
               },
@@ -3954,20 +5882,274 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.width"
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "light-yellow",
+                      "mode": "fixed"
+                    }
+                  },
+                  {
+                    "id": "custom.displayMode",
+                    "value": "color-text"
                   }
                 ]
               }
             ]
           },
           "gridPos": {
-            "h": 20,
+            "h": 8,
+            "w": 15,
+            "x": 9,
+            "y": 13
+          },
+          "id": 66,
+          "options": {
+            "footer": {
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true
+          },
+          "pluginVersion": "8.4.4",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "groupBy": [
+                {
+                  "params": [
+                    "name"
+                  ],
+                  "type": "tag"
+                }
+              ],
+              "limit": "1",
+              "measurement": "/^$measurement$/",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "table",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "vpn_user_active"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Active"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "vpn_user_connected"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Connected"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "vpn_user_virtual_address"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Virtual Address"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "vpn_user_remote_address"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Remote Address"
+                    ],
+                    "type": "alias"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "box",
+                  "operator": "=~",
+                  "value": "/^$boxtag$/"
+                }
+              ]
+            }
+          ],
+          "title": "VPN User Overview",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true
+                },
+                "indexByName": {},
+                "renameByName": {
+                  "Active": "",
+                  "name": "Name"
+                }
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "VPN and DynDNS Info",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 25
+      },
+      "id": 28,
+      "panels": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Last seen"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 185
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Type"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 89
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Mac"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 138
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "IPv4"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 131
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Port"
+                },
+                "properties": [
+                  {
+                    "id": "custom.filterable",
+                    "value": true
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 18,
             "w": 24,
             "x": 0,
-            "y": 24
+            "y": 6
           },
-          "id": 24,
-          "interval": "2m",
+          "id": 72,
           "options": {
             "footer": {
               "fields": "",
@@ -3994,30 +6176,11 @@
               "groupBy": [
                 {
                   "params": [
-                    "name"
-                  ],
-                  "type": "tag"
-                },
-                {
-                  "params": [
-                    "ipv4"
-                  ],
-                  "type": "tag"
-                },
-                {
-                  "params": [
-                    "mac"
-                  ],
-                  "type": "tag"
-                },
-                {
-                  "params": [
-                    "port"
+                    "uid"
                   ],
                   "type": "tag"
                 }
               ],
-              "hide": false,
               "measurement": "/^$measurement$/",
               "orderByTime": "ASC",
               "policy": "default",
@@ -4027,111 +6190,133 @@
                 [
                   {
                     "params": [
-                      "active_host"
+                      "active_hosts_name"
                     ],
                     "type": "field"
                   },
                   {
                     "params": [],
                     "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Name"
+                    ],
+                    "type": "alias"
                   }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "box",
-                  "operator": "=~",
-                  "value": "/^$boxtag$/"
-                }
-              ]
-            },
-            {
-              "datasource": {
-                "type": "influxdb",
-                "uid": "${DS_INFLUXDB}"
-              },
-              "groupBy": [
-                {
-                  "params": [
-                    "name"
-                  ],
-                  "type": "tag"
-                },
-                {
-                  "params": [
-                    "ipv4_last_used"
-                  ],
-                  "type": "tag"
-                }
-              ],
-              "hide": false,
-              "measurement": "/^$measurement$/",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "query": "SELECT \"active_host\" FROM /^$measurement$/ WHERE (\"box\" =~ /^$boxtag$/) AND $timeFilter GROUP BY \"name\"\n",
-              "rawQuery": false,
-              "refId": "B",
-              "resultFormat": "table",
-              "select": [
+                ],
                 [
                   {
                     "params": [
-                      "active_host"
+                      "active_hosts_mac"
                     ],
                     "type": "field"
                   },
                   {
                     "params": [],
                     "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Mac"
+                    ],
+                    "type": "alias"
                   }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "box",
-                  "operator": "=~",
-                  "value": "/^$boxtag$/"
-                }
-              ]
-            },
-            {
-              "datasource": {
-                "type": "influxdb",
-                "uid": "${DS_INFLUXDB}"
-              },
-              "groupBy": [
-                {
-                  "params": [
-                    "name"
-                  ],
-                  "type": "tag"
-                },
-                {
-                  "params": [
-                    "additional_text"
-                  ],
-                  "type": "tag"
-                }
-              ],
-              "hide": false,
-              "measurement": "/^$measurement$/",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "query": "SELECT \"active_host\" FROM /^$measurement$/ WHERE (\"box\" =~ /^$boxtag$/) AND $timeFilter GROUP BY \"name\"\n",
-              "rawQuery": false,
-              "refId": "C",
-              "resultFormat": "table",
-              "select": [
+                ],
                 [
                   {
                     "params": [
-                      "active_host"
+                      "active_hosts_type"
                     ],
                     "type": "field"
                   },
                   {
                     "params": [],
                     "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Type"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "active_hosts_port"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Port"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "active_hosts_ipv4"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "IPv4"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "active_hosts_ipv4_last_used"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "*1000"
+                    ],
+                    "type": "math"
+                  },
+                  {
+                    "params": [
+                      "Last seen"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "active_hosts_additional_text"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Info"
+                    ],
+                    "type": "alias"
                   }
                 ]
               ],
@@ -4147,55 +6332,49 @@
           "title": "Active Hosts",
           "transformations": [
             {
-              "id": "seriesToColumns",
-              "options": {
-                "byField": "name"
-              }
-            },
-            {
               "id": "convertFieldType",
               "options": {
                 "conversions": [
                   {
                     "dateFormat": "X",
                     "destinationType": "time",
-                    "targetField": "ipv4_last_used"
+                    "targetField": "Last seen"
                   }
                 ],
                 "fields": {}
               }
             },
             {
+              "id": "seriesToRows",
+              "options": {}
+            },
+            {
               "id": "organize",
               "options": {
                 "excludeByName": {
-                  "Time": false,
-                  "Time 1": true,
-                  "Time 2": true,
-                  "Time 3": true,
-                  "active_host": true,
-                  "last": true,
-                  "last 1": true,
-                  "last 2": true
+                  "Last seen": false,
+                  "Last seen 2": false,
+                  "Parent": true,
+                  "Time": true,
+                  "uid": true
                 },
                 "indexByName": {
+                  "IPv4": 3,
+                  "Info": 9,
+                  "Last seen": 6,
+                  "Last seen * 1000": 5,
+                  "Mac": 4,
+                  "Name": 2,
+                  "Port": 8,
                   "Time": 0,
-                  "ipv4": 2,
-                  "ipv4_last_used": 3,
-                  "last": 6,
-                  "mac": 4,
-                  "name": 1,
-                  "port": 5
+                  "Type": 7,
+                  "uid": 1
                 },
                 "renameByName": {
-                  "Time": "Time",
-                  "additional_text": "Info",
-                  "ipv4": "IP",
-                  "ipv4_last_used": "Last Seen",
-                  "mac": "MAC",
-                  "name": "Name",
-                  "port": "Port",
-                  "type": "Typ"
+                  "Last seen": "",
+                  "Last seen * 1000": "Last Seen",
+                  "Last seen 2": "",
+                  "Type": ""
                 }
               }
             },
@@ -4218,115 +6397,40 @@
             "type": "influxdb",
             "uid": "${DS_INFLUXDB}"
           },
+          "description": "",
           "fieldConfig": {
             "defaults": {
               "color": {
-                "fixedColor": "text",
-                "mode": "fixed"
+                "mode": "thresholds"
               },
               "custom": {
                 "align": "auto",
-                "displayMode": "auto",
-                "filterable": true
+                "displayMode": "auto"
               },
               "mappings": [],
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
                   }
                 ]
               }
             },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "MAC"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "IP"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Port"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Last Seen"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Info"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Name"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "IPv4"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width"
-                  }
-                ]
-              }
-            ]
+            "overrides": []
           },
           "gridPos": {
-            "h": 13,
+            "h": 17,
             "w": 24,
             "x": 0,
-            "y": 44
+            "y": 24
           },
-          "id": 35,
-          "interval": "2m",
+          "id": 73,
           "options": {
             "footer": {
               "fields": "",
@@ -4335,9 +6439,7 @@
               ],
               "show": false
             },
-            "frameIndex": 2,
-            "showHeader": true,
-            "sortBy": []
+            "showHeader": true
           },
           "pluginVersion": "8.4.4",
           "targets": [
@@ -4349,30 +6451,11 @@
               "groupBy": [
                 {
                   "params": [
-                    "name"
-                  ],
-                  "type": "tag"
-                },
-                {
-                  "params": [
-                    "ipv4"
-                  ],
-                  "type": "tag"
-                },
-                {
-                  "params": [
-                    "mac"
-                  ],
-                  "type": "tag"
-                },
-                {
-                  "params": [
-                    "port"
+                    "uid"
                   ],
                   "type": "tag"
                 }
               ],
-              "hide": false,
               "measurement": "/^$measurement$/",
               "orderByTime": "ASC",
               "policy": "default",
@@ -4382,13 +6465,73 @@
                 [
                   {
                     "params": [
-                      "passive_host"
+                      "passive_hosts_name"
                     ],
                     "type": "field"
                   },
                   {
                     "params": [],
                     "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Name"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "passive_hosts_mac"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Mac"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "passive_hosts_port"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "Port"
+                    ],
+                    "type": "alias"
+                  }
+                ],
+                [
+                  {
+                    "params": [
+                      "passive_hosts_ipv4"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
+                    "params": [
+                      "IPv4"
+                    ],
+                    "type": "alias"
                   }
                 ]
               ],
@@ -4404,27 +6547,30 @@
           "title": "Passive Hosts",
           "transformations": [
             {
+              "id": "seriesToRows",
+              "options": {}
+            },
+            {
               "id": "organize",
               "options": {
                 "excludeByName": {
+                  "Parent": true,
                   "Time": true,
-                  "last": true
+                  "uid": true
                 },
                 "indexByName": {
+                  "IPv4": 3,
+                  "Info": 8,
+                  "Last seen": 5,
+                  "Mac": 4,
+                  "Name": 2,
+                  "Parent": 9,
+                  "Port": 7,
                   "Time": 0,
-                  "ipv4": 2,
-                  "last": 5,
-                  "mac": 3,
-                  "name": 1,
-                  "port": 4
+                  "Type": 6,
+                  "uid": 1
                 },
-                "renameByName": {
-                  "ipv4": "IPv4",
-                  "last": "",
-                  "mac": "MAC",
-                  "name": "Name",
-                  "port": "Port"
-                }
+                "renameByName": {}
               }
             },
             {
@@ -4512,30 +6658,11 @@
         "skipUrlSync": false,
         "sort": 0,
         "type": "query"
-      },
-      {
-        "current": {},
-        "datasource": {
-          "type": "influxdb",
-          "uid": "${DS_INFLUXDB}"
-        },
-        "definition": "SELECT last(\"DEV\") FROM(SELECT derivative(last(\"totalbytesreceived\"), 30s) as \"DEV\" FROM /^$measurement$/ WHERE (\"box\" =~ /^$boxtag$/) AND time >= now() - 24h GROUP BY time(30s)) WHERE \"DEV\" < 0",
-        "hide": 0,
-        "includeAll": false,
-        "multi": false,
-        "name": "test",
-        "options": [],
-        "query": "SELECT last(\"DEV\") FROM(SELECT derivative(last(\"totalbytesreceived\"), 30s) as \"DEV\" FROM /^$measurement$/ WHERE (\"box\" =~ /^$boxtag$/) AND time >= now() - 24h GROUP BY time(30s)) WHERE \"DEV\" < 0",
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
       }
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-12h",
     "to": "now"
   },
   "timepicker": {
@@ -4566,6 +6693,6 @@
   "timezone": "",
   "title": "FRITZ!Box Router Status",
   "uid": "FritzFlux",
-  "version": 2,
+  "version": 63,
   "weekStart": ""
 }
