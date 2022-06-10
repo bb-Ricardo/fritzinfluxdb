@@ -100,7 +100,7 @@
   "gnetId": 713,
   "graphTooltip": 2,
   "id": null,
-  "iteration": 1654848459802,
+  "iteration": 1654898540335,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -1953,7 +1953,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               },
@@ -1996,7 +1997,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2
+            "y": 22
           },
           "id": 2,
           "interval": "10s",
@@ -2168,7 +2169,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2215,7 +2217,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 2
+            "y": 22
           },
           "id": 17,
           "interval": "1h",
@@ -2379,7 +2381,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2415,7 +2418,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 10
+            "y": 30
           },
           "id": 14,
           "links": [],
@@ -2575,7 +2578,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2591,7 +2595,7 @@
             "h": 4,
             "w": 12,
             "x": 12,
-            "y": 10
+            "y": 30
           },
           "hideTimeOverride": true,
           "id": 8,
@@ -2677,7 +2681,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2693,7 +2698,7 @@
             "h": 4,
             "w": 12,
             "x": 12,
-            "y": 14
+            "y": 34
           },
           "hideTimeOverride": true,
           "id": 3,
@@ -2849,7 +2854,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 3
+            "y": 23
           },
           "id": 55,
           "options": {
@@ -3062,7 +3067,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 3
+            "y": 23
           },
           "id": 56,
           "options": {
@@ -3231,7 +3236,7 @@
             "h": 5,
             "w": 24,
             "x": 0,
-            "y": 11
+            "y": 31
           },
           "id": 60,
           "options": {
@@ -3665,7 +3670,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 4
+            "y": 24
           },
           "id": 45,
           "options": {
@@ -3835,7 +3840,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 4
+            "y": 24
           },
           "id": 49,
           "options": {
@@ -4012,7 +4017,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 12
+            "y": 32
           },
           "id": 51,
           "options": {
@@ -4111,7 +4116,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 12
+            "y": 32
           },
           "id": 53,
           "options": {
@@ -4206,6 +4211,7 @@
                 "filterable": false
               },
               "mappings": [],
+              "noValue": "None",
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
@@ -4246,7 +4252,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 21
+            "y": 41
           },
           "hideTimeOverride": true,
           "id": 20,
@@ -4631,7 +4637,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 21
+            "y": 41
           },
           "hideTimeOverride": true,
           "id": 74,
@@ -5259,8 +5265,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5275,7 +5280,7 @@
             "h": 8,
             "w": 17,
             "x": 0,
-            "y": 5
+            "y": 80
           },
           "id": 64,
           "options": {
@@ -5360,8 +5365,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5376,7 +5380,7 @@
             "h": 8,
             "w": 7,
             "x": 17,
-            "y": 5
+            "y": 80
           },
           "id": 68,
           "options": {
@@ -5535,8 +5539,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5551,7 +5554,7 @@
             "h": 8,
             "w": 9,
             "x": 0,
-            "y": 13
+            "y": 88
           },
           "id": 62,
           "options": {
@@ -5838,8 +5841,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -5900,7 +5902,7 @@
             "h": 8,
             "w": 15,
             "x": 9,
-            "y": 13
+            "y": 88
           },
           "id": 66,
           "options": {
@@ -6070,8 +6072,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -6147,7 +6148,7 @@
             "h": 18,
             "w": 24,
             "x": 0,
-            "y": 6
+            "y": 81
           },
           "id": 72,
           "options": {
@@ -6412,8 +6413,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -6428,7 +6428,7 @@
             "h": 17,
             "w": 24,
             "x": 0,
-            "y": 24
+            "y": 99
           },
           "id": 73,
           "options": {
@@ -6693,6 +6693,6 @@
   "timezone": "",
   "title": "FRITZ!Box Router Status",
   "uid": "FritzFlux",
-  "version": 63,
+  "version": 65,
   "weekStart": ""
 }
