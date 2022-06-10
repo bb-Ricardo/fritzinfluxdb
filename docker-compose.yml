@@ -3,7 +3,7 @@ version: '3'
 services:
   fritzinfluxdb:
     container_name: fritzinfluxdb
-    image: bbricardo/fritzinfluxdb:1.0.0-beta1
+    image: bbricardo/fritzinfluxdb:1.0.0
     restart: unless-stopped
     entrypoint:
       # FritzBox configuration

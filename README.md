@@ -227,7 +227,7 @@ There are following Dashboards included:
 check here to find an overview of more attributes which probably could be added
 https://wiki.fhem.de/w/index.php?title=FRITZBOX
 
-New TR-069 services can be defined in [fritzinfluxdb/classes/fritzbox/services_tr069.py](fritzinfluxdb/classes/fritzbox/services_tr069.py)
+New TR-069 services can be defined in [fritzinfluxdb/classes/fritzbox/services_tr069.py](fritzinfluxdb/classes/fritzbox/services_tr069.py)<br>
 New LUA services can be defined in [fritzinfluxdb/classes/fritzbox/services_lua.py](fritzinfluxdb/classes/fritzbox/services_lua.py)
 
 # License
