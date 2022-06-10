@@ -203,7 +203,7 @@ See this comment for details: https://github.com/karrot-dev/fritzinfluxdb/issues
 usage: fritzinfluxdb.py [-h] [-c fritzinfluxdb.ini [fritzinfluxdb.ini ...]] [-d] [-v]
 
 fritzinfluxdb
-Version: 1.0.0-beat1 (2022-06-10)
+Version: 1.0.0 (2022-06-11)
 Project URL: https://github.com/karrot-dev/fritzinfluxdb
 
 optional arguments:
