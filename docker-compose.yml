@@ -5,7 +5,7 @@ services:
     container_name: fritzinfluxdb
     image: bbricardo/fritzinfluxdb:1.0.0
     restart: unless-stopped
-    entrypoint:
+    environment:
       # FritzBox configuration
       - FRITZBOX_USERNAME=fritzinflux
       # this var should be defined in an ".env" file
