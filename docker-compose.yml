@@ -3,7 +3,7 @@ version: '3'
 services:
   fritzinfluxdb:
     container_name: fritzinfluxdb
-    image: bbricardo/fritzinfluxdb:1.0.0
+    image: bbricardo/fritzinfluxdb:latest
     restart: unless-stopped
     environment:
       # FritzBox configuration
@@ -15,7 +15,7 @@ services:
       - INFLUXDB_VERSION=2
       - INFLUXDB_HOSTNAME=influxdb-host-or-ip
       - INFLUXDB_ORGANISATION=YourOrg
-      - INFLUXDB_BUCKT=fritzinfluxdb
+      - INFLUXDB_BUCKET=fritzinfluxdb
       # this var should be defined in an ".env" file
       - INFLUXDB_TOKEN=MyWriteTokenToBucket-fritzinfluxdb
 
