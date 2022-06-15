@@ -100,7 +100,7 @@
   "gnetId": 713,
   "graphTooltip": 2,
   "id": null,
-  "iteration": 1654898540335,
+  "iteration": 1655320107368,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -926,7 +926,7 @@
               }
             ]
           },
-          "unit": "Bps"
+          "unit": "bps"
         },
         "overrides": []
       },
@@ -971,7 +971,7 @@
           "orderByTime": "ASC",
           "policy": "default",
           "query": "SELECT last(\"receiverate\")*8 AS \"current\", last(\"downstreammax\") AS \"max\" FROM /^$measurement$/ WHERE (\"box\" =~ /^$boxtag$/)",
-          "rawQuery": true,
+          "rawQuery": false,
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -985,6 +985,36 @@
               {
                 "params": [],
                 "type": "last"
+              },
+              {
+                "params": [
+                  "*8"
+                ],
+                "type": "math"
+              },
+              {
+                "params": [
+                  "current"
+                ],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "downstreammax"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              },
+              {
+                "params": [
+                  "max"
+                ],
+                "type": "alias"
               }
             ]
           ],
@@ -1003,7 +1033,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-YlBl"
+            "mode": "continuous-GrYlRd"
           },
           "decimals": 1,
           "mappings": [
@@ -1027,7 +1057,7 @@
               }
             ]
           },
-          "unit": "Bps"
+          "unit": "bps"
         },
         "overrides": []
       },
@@ -1079,6 +1109,12 @@
               {
                 "params": [],
                 "type": "last"
+              },
+              {
+                "params": [
+                  "*8"
+                ],
+                "type": "math"
               },
               {
                 "params": [
@@ -1139,8 +1175,16 @@
                 "value": null
               },
               {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "orange",
+                "value": 105
+              },
+              {
                 "color": "red",
-                "value": 80
+                "value": 120
               }
             ]
           },
@@ -1205,7 +1249,7 @@
               },
               {
                 "params": [],
-                "type": "mean"
+                "type": "last"
               }
             ]
           ],
@@ -1953,8 +1997,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -2169,8 +2212,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2381,8 +2423,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2578,8 +2619,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2681,8 +2721,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2822,8 +2861,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -3038,8 +3076,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -3207,8 +3244,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -3277,6 +3313,10 @@
                     "type": "field"
                   },
                   {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
                     "params": [
                       "Name"
                     ],
@@ -3289,6 +3329,10 @@
                       "wlan1_status"
                     ],
                     "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
                   },
                   {
                     "params": [
@@ -3305,6 +3349,10 @@
                     "type": "field"
                   },
                   {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
                     "params": [
                       "Standard"
                     ],
@@ -3319,6 +3367,10 @@
                     "type": "field"
                   },
                   {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
                     "params": [
                       "Channel"
                     ],
@@ -3331,6 +3383,10 @@
                       "wlan1_associations"
                     ],
                     "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
                   },
                   {
                     "params": [
@@ -3373,6 +3429,10 @@
                     "type": "field"
                   },
                   {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
                     "params": [
                       "Name"
                     ],
@@ -3385,6 +3445,10 @@
                       "wlan2_status"
                     ],
                     "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
                   },
                   {
                     "params": [
@@ -3401,6 +3465,10 @@
                     "type": "field"
                   },
                   {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
                     "params": [
                       "Standard"
                     ],
@@ -3415,6 +3483,10 @@
                     "type": "field"
                   },
                   {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
                     "params": [
                       "Channel"
                     ],
@@ -3427,6 +3499,10 @@
                       "wlan2_associations"
                     ],
                     "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
                   },
                   {
                     "params": [
@@ -3469,6 +3545,10 @@
                     "type": "field"
                   },
                   {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
                     "params": [
                       "Name"
                     ],
@@ -3481,6 +3561,10 @@
                       "wlan3_status"
                     ],
                     "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
                   },
                   {
                     "params": [
@@ -3497,6 +3581,10 @@
                     "type": "field"
                   },
                   {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
                     "params": [
                       "Standard"
                     ],
@@ -3511,6 +3599,10 @@
                     "type": "field"
                   },
                   {
+                    "params": [],
+                    "type": "last"
+                  },
+                  {
                     "params": [
                       "Channel"
                     ],
@@ -3523,6 +3615,10 @@
                       "wlan3_associations"
                     ],
                     "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
                   },
                   {
                     "params": [
@@ -3653,8 +3749,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -3670,7 +3765,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 24
+            "y": 37
           },
           "id": 45,
           "options": {
@@ -3781,8 +3876,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -3840,7 +3934,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 24
+            "y": 37
           },
           "id": 49,
           "options": {
@@ -4000,8 +4094,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4017,7 +4110,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 32
+            "y": 45
           },
           "id": 51,
           "options": {
@@ -4099,8 +4192,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "#EAB839",
@@ -4116,7 +4208,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 32
+            "y": 45
           },
           "id": 53,
           "options": {
@@ -4216,8 +4308,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "dark-yellow",
-                    "value": null
+                    "color": "dark-yellow"
                   }
                 ]
               }
@@ -4252,7 +4343,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 41
+            "y": 54
           },
           "hideTimeOverride": true,
           "id": 20,
@@ -4597,12 +4688,12 @@
                 "filterable": false
               },
               "mappings": [],
+              "noValue": "None",
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "dark-yellow",
-                    "value": null
+                    "color": "dark-yellow"
                   }
                 ]
               }
@@ -4637,7 +4728,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 41
+            "y": 54
           },
           "hideTimeOverride": true,
           "id": 74,
@@ -6148,7 +6239,7 @@
             "h": 18,
             "w": 24,
             "x": 0,
-            "y": 81
+            "y": 26
           },
           "id": 72,
           "options": {
@@ -6428,7 +6519,7 @@
             "h": 17,
             "w": 24,
             "x": 0,
-            "y": 99
+            "y": 44
           },
           "id": 73,
           "options": {
