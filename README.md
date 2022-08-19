@@ -13,7 +13,7 @@ In order work properly you need to enable "permit access for applications" and "
 
 
 ## Requirements
-* python3.6 or newer
+* python3.7 or newer
 * influxdb (InfluxDB 1)
 * influxdb_client (InfluxDB 2)
 * fritzconnection
@@ -51,7 +51,7 @@ Environment variables will overwrite options defined in config file.
 ```shell
 sudo apt-get install python3-virtualenv
 cd /opt
-git clone https://github.com/yunity/fritzinfluxdb.git
+git clone https://github.com/bb-Ricardo/fritzinfluxdb.git
 cd fritzinfluxdb
 virtualenv -p python3 .venv
 . .venv/bin/activate
@@ -64,7 +64,7 @@ pip3 install -r requirements.txt
 ```shell
 yum install git python36-virtualenv
 cd /opt
-git clone https://github.com/yunity/fritzinfluxdb.git
+git clone https://github.com/bb-Ricardo/fritzinfluxdb.git
 cd fritzinfluxdb
 virtualenv-3 .venv
 . .venv/bin/activate
@@ -77,7 +77,7 @@ pip3 install -r requirements.txt
 ```shell
 dnf install git-core python3-virtualenv
 cd /opt
-git clone https://github.com/yunity/fritzinfluxdb.git
+git clone https://github.com/bb-Ricardo/fritzinfluxdb.git
 cd fritzinfluxdb
 virtualenv-3 .venv
 . .venv/bin/activate
@@ -90,7 +90,7 @@ pip3 install -r requirements.txt
 ```shell
 dnf install git-core
 cd /opt
-git clone https://github.com/yunity/fritzinfluxdb.git
+git clone https://github.com/bb-Ricardo/fritzinfluxdb.git
 cd fritzinfluxdb
 python3 -m venv .venv
 . .venv/bin/activate
@@ -196,7 +196,7 @@ Here substitute `{API_TOKEN}` with your read token for the InfluxDB 2 bucket.
 
 The last option would be the database which is the same as the bucket defined in your config.
 
-See this comment for details: https://github.com/karrot-dev/fritzinfluxdb/issues/18#issuecomment-1073066993
+See this comment for details: https://github.com/bb-Ricardo/fritzinfluxdb/issues/18#issuecomment-1073066993
 
 ## Running the script
 ```
@@ -204,7 +204,7 @@ usage: fritzinfluxdb.py [-h] [-c fritzinfluxdb.ini [fritzinfluxdb.ini ...]] [-d]
 
 fritzinfluxdb
 Version: 1.0.0 (2022-06-11)
-Project URL: https://github.com/karrot-dev/fritzinfluxdb
+Project URL: https://github.com/bb-Ricardo/fritzinfluxdb
 
 optional arguments:
   -h, --help            show this help message and exit

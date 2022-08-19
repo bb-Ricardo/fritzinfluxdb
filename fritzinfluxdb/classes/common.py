@@ -27,13 +27,22 @@ class FritzMeasurement:
 
     __slots__ = ("name", "value", "box_tag", "timestamp", "additional_tags")
 
-    def __init__(self, key, value, box_tag=None, additional_tags=None, timestamp=None):
+    def __init__(self, key, value, data_type=None, box_tag=None, additional_tags=None, timestamp=None):
 
         # name and primary tag should always be present
         self.name = str(key)
         self.box_tag = str(box_tag)
+        self.value = None
 
-        self.value = self.sanitize_value(value)
+        if data_type is not None:
+            # noinspection PyBroadException
+            try:
+                self.value = data_type(value)
+            except Exception:
+                pass
+
+        if self.value is None:
+            self.value = self.sanitize_value(value)
 
         if timestamp is not None and isinstance(timestamp, datetime):
             self.timestamp = timestamp

@@ -224,7 +224,7 @@ class FritzBoxHandler(FritzBoxHandlerBase):
 
                 if metric_name is not None:
                     self.current_result_list.append(
-                        FritzMeasurement(metric_name, value, self.config.box_tag)
+                        FritzMeasurement(metric_name, value, box_tag=self.config.box_tag)
                     )
 
         if self.discovery_done is False:
@@ -433,8 +433,8 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
             except Exception as e:
                 log.error(f"Unable to convert {self.name} value '{metric_value}' to '{data_type}': {e}")
 
-            metric = FritzMeasurement(metric_name, metric_value, self.config.box_tag, additional_tags=metric_tags,
-                                      timestamp=timestamp)
+            metric = FritzMeasurement(metric_name, metric_value, data_type=data_type, box_tag=self.config.box_tag,
+                                      additional_tags=metric_tags, timestamp=timestamp)
 
             # check if measurement is tracked and already reported
             if service.skip_tracked_measurement(metric) is True:

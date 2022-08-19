@@ -277,7 +277,7 @@ fritzbox_services.append(
                 "type": list,
                 "next": {
                     # data struct type: dict
-                    "type": str,
+                    "type": int,
                     "tags_function": lambda data: {"uid": data.get("UID")},
                     "value_function": lambda data: data.get("ipv4", dict()).get("lastused", 0)
                 }

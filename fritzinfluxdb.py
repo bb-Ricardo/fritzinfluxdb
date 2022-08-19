@@ -16,6 +16,7 @@ writes it to an InfluxDB instance.
 import os
 import signal
 import asyncio
+import sys
 from http.client import HTTPConnection
 
 
@@ -25,11 +26,11 @@ from fritzinfluxdb.configparser import import_config
 from fritzinfluxdb.classes.fritzbox.handler import FritzBoxHandler, FritzBoxLuaHandler
 from fritzinfluxdb.classes.influxdb.handler import InfluxHandler
 
-__version__ = "1.0.0"
-__version_date__ = "2022-06-11"
+__version__ = "1.0.1-beta1"
+__version_date__ = "2022-08-20"
 __description__ = "fritzinfluxdb"
 __license__ = "MIT"
-__url__ = "https://github.com/karrot-dev/fritzinfluxdb"
+__url__ = "https://github.com/bb-Ricardo/fritzinfluxdb"
 
 
 # default vars
@@ -68,6 +69,11 @@ def handle_task_result(task: asyncio.Task) -> None:
 
 
 def main():
+
+    # check for correct python version
+    if sys.version_info[0] != 3 or sys.version_info[1] < 7:
+        print("Error: Python version 3.7 or higher required!", file=sys.stderr)
+        exit(1)
 
     # parse command line arguments
     args = parse_command_line(__version__, __description__, __version_date__, __url__, default_config)
@@ -138,7 +144,7 @@ def main():
 
     try:
         for handler in handler_list:
-            task = loop.create_task(handler.task_loop(queue), name=handler.name)
+            task = loop.create_task(handler.task_loop(queue))
             task.add_done_callback(handle_task_result)
         loop.run_forever()
     finally:
