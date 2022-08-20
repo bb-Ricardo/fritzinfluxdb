@@ -5,7 +5,7 @@ It is equal capable as fritzcollectd and directly writing to InfluxDB.
 
 Both InfluxDB 1 and InfluxDB 2 are supported
 
-![Grafana Dashboard](grafana/grafana_dashboard.png)
+![Grafana Dashboard](https://raw.githubusercontent.com/bb-Ricardo/fritzinfluxdb/master/grafana/grafana_dashboard.png)
 
 
 ## IMPORTANT:
@@ -32,7 +32,7 @@ This is normal as there are values not available on certain models.
 
 ### Configuration
 
-After cloning the repo copy the config from the [example](fritzinfluxdb-sample.ini)
+After cloning the repo copy the config from the [example](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/fritzinfluxdb-sample.ini)
 to ```fritzinfluxdb.ini``` and edit the settings. All settings are described inside the file.
 
 #### Environment variables
@@ -137,7 +137,7 @@ To start the container just use:
 docker run --rm -d -v /PATH/TO/fritzinfluxdb.ini:/app/fritzinfluxdb.ini --name fritzinfluxdb bbricardo/fritzinfluxdb:latest
 ```
 
-You can alternatively use the provided [docker-compose.yml](docker-compose.yml):
+You can alternatively use the provided [docker-compose.yml](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/docker-compose.yml):
 ```
 docker-compose up -d
 ```
@@ -203,7 +203,7 @@ See this comment for details: https://github.com/bb-Ricardo/fritzinfluxdb/issues
 usage: fritzinfluxdb.py [-h] [-c fritzinfluxdb.ini [fritzinfluxdb.ini ...]] [-d] [-v]
 
 fritzinfluxdb
-Version: 1.0.0 (2022-06-11)
+Version: 1.0.1-beta2 (2022-08-21)
 Project URL: https://github.com/bb-Ricardo/fritzinfluxdb
 
 optional arguments:
@@ -217,20 +217,20 @@ optional arguments:
 ## Grafana
 
 There are following Dashboards included:
-* [fritzbox_system_dashboard.json](grafana/fritzbox_system_dashboard.json)
-* [fritzbox_logs_dashboard.json](grafana/fritzbox_logs_dashboard.json)
+* [fritzbox_system_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/fritzbox_system_dashboard.json)
+* [fritzbox_logs_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/fritzbox_logs_dashboard.json)
 
-*This was heavily inspired from: https://grafana.com/dashboards/713*
+*This was heavily inspired by: https://grafana.com/dashboards/713*
 
 ## Configure more attributes
 
 check here to find an overview of more attributes which probably could be added
 https://wiki.fhem.de/w/index.php?title=FRITZBOX
 
-New TR-069 services can be defined in [fritzinfluxdb/classes/fritzbox/services_tr069.py](fritzinfluxdb/classes/fritzbox/services_tr069.py)<br>
-New LUA services can be defined in [fritzinfluxdb/classes/fritzbox/services_lua.py](fritzinfluxdb/classes/fritzbox/services_lua.py)
+New TR-069 services can be defined in [fritzinfluxdb/classes/fritzbox/services_tr069.py](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/fritzinfluxdb/classes/fritzbox/services_tr069.py) <br>
+New LUA services can be defined in [fritzinfluxdb/classes/fritzbox/services_lua.py](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/fritzinfluxdb/classes/fritzbox/services_lua.py)
 
 # License
->You can check out the full license [here](LICENSE.txt)
+>You can check out the full license [here](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/fritzinfluxdb/LICENSE.txt)
 
 This project is licensed under the terms of the **MIT** license.
