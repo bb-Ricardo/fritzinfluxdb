@@ -474,6 +474,12 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
         if self.discovery_done is True and service.should_be_requested() is False:
             return
 
+        if self.discovery_done is False and self.config.fw_version not in service.os_versions:
+            log.debug(f"FritzOS version {self.config.fw_version} not in list "
+                      f"of supported versions for {service.name}: {service.os_versions}")
+            service.available = False
+            return
+
         # request data
         result = self.request(service.page, additional_params=service.params)
 

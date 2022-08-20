@@ -2,6 +2,10 @@
 
 [[ -z "$1" ]] && echo "please define a version tag" && exit
 
+unset DOCKER_TLS_VERIFY
+unset DOCKER_HOST
+unset DOCKER_CERT_PATH
+
 docker --config ./docker-tmp login
 docker --config ./docker-tmp buildx create --use
 docker --config ./docker-tmp buildx build --push \
@@ -9,6 +13,6 @@ docker --config ./docker-tmp buildx build --push \
   --tag bbricardo/fritzinfluxdb:latest \
   --tag bbricardo/fritzinfluxdb:${1} .
 
-rm rf ./docker-tmp
+rm -rf ./docker-tmp
 
 # EOF

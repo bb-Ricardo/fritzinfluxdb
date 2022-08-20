@@ -16,6 +16,10 @@ fritzbox_services.append(
     {
         "name": "System Stats",
         "page": "ecoStat",
+        "os_versions": [
+            "7.29",
+            "7.39"
+        ],
         "value_instances": {
             "cpu_temp": {
                 "data_path": "data.cputemp.series.0.-1",
@@ -44,6 +48,10 @@ fritzbox_services.append(
     {
         "name": "Energy Stats",
         "page": "energy",
+        "os_versions": [
+            "7.29",
+            "7.39"
+        ],
         "value_instances": {
             "energy_consumption": {
                 "data_path": "data.drain",
@@ -63,6 +71,9 @@ fritzbox_services.append(
     {
         "name": "System logs",
         "page": "log",
+        "os_versions": [
+            "7.29"
+        ],
         "params": {
             "filter": 1
         },
@@ -89,8 +100,42 @@ fritzbox_services.append(
 
 fritzbox_services.append(
     {
+        "name": "System logs",
+        "page": "log",
+        "os_versions": [
+            "7.39"
+        ],
+        "params": {
+            "filter": 1
+        },
+        "track": True,
+        "interval": 60,
+        "value_instances": {
+            "log_entry": {
+                "data_path": "data.log",
+                "type": list,
+                "next": {
+                    # data struct type: list
+                    "type": str,
+                    "tags": {
+                        "log_type": "System"
+                    },
+                    "timestamp_function": lambda data:
+                        datetime.strptime(f'{data.get("date")} {data.get("time")}', '%d.%m.%y %H:%M:%S'),
+                    "value_function": lambda data: data.get("msg"),
+                    "tags_function": None
+                }
+            }
+        }
+    })
+
+fritzbox_services.append(
+    {
         "name": "Internet connection logs",
         "page": "log",
+        "os_versions": [
+            "7.29"
+        ],
         "params": {
             "filter": 2
         },
@@ -117,8 +162,42 @@ fritzbox_services.append(
 
 fritzbox_services.append(
     {
+        "name": "Internet connection logs",
+        "page": "log",
+        "os_versions": [
+            "7.39"
+        ],
+        "params": {
+            "filter": 2
+        },
+        "track": True,
+        "interval": 61,
+        "value_instances": {
+            "log_entry": {
+                "data_path": "data.log",
+                "type": list,
+                "next": {
+                    # data struct type: list
+                    "type": str,
+                    "tags": {
+                        "log_type": "Internet connection"
+                    },
+                    "timestamp_function": lambda data:
+                        datetime.strptime(f'{data.get("date")} {data.get("time")}', '%d.%m.%y %H:%M:%S'),
+                    "value_function": lambda data: data.get("msg"),
+                    "tags_function": None
+                }
+            }
+        }
+    })
+
+fritzbox_services.append(
+    {
         "name": "Telephony logs",
         "page": "log",
+        "os_versions": [
+            "7.29"
+        ],
         "params": {
             "filter": 3
         },
@@ -145,8 +224,42 @@ fritzbox_services.append(
 
 fritzbox_services.append(
     {
+        "name": "Telephony logs",
+        "page": "log",
+        "os_versions": [
+            "7.39"
+        ],
+        "params": {
+            "filter": 3
+        },
+        "track": True,
+        "interval": 62,
+        "value_instances": {
+            "log_entry": {
+                "data_path": "data.log",
+                "type": list,
+                "next": {
+                    # data struct type: list
+                    "type": str,
+                    "tags": {
+                        "log_type": "Telephony"
+                    },
+                    "timestamp_function": lambda data:
+                        datetime.strptime(f'{data.get("date")} {data.get("time")}', '%d.%m.%y %H:%M:%S'),
+                    "value_function": lambda data: data.get("msg"),
+                    "tags_function": None
+                }
+            }
+        }
+    })
+
+fritzbox_services.append(
+    {
         "name": "WLAN logs",
         "page": "log",
+        "os_versions": [
+            "7.29"
+        ],
         "params": {
             "filter": 4
         },
@@ -173,8 +286,42 @@ fritzbox_services.append(
 
 fritzbox_services.append(
     {
+        "name": "WLAN logs",
+        "page": "log",
+        "os_versions": [
+            "7.39"
+        ],
+        "params": {
+            "filter": 4
+        },
+        "track": True,
+        "interval": 63,
+        "value_instances": {
+            "log_entry": {
+                "data_path": "data.log",
+                "type": list,
+                "next": {
+                    # data struct type: list
+                    "type": str,
+                    "tags": {
+                        "log_type": "WLAN"
+                    },
+                    "timestamp_function": lambda data:
+                        datetime.strptime(f'{data.get("date")} {data.get("time")}', '%d.%m.%y %H:%M:%S'),
+                    "value_function": lambda data: data.get("msg"),
+                    "tags_function": None
+                }
+            }
+        }
+    })
+
+fritzbox_services.append(
+    {
         "name": "USB Devices logs",
         "page": "log",
+        "os_versions": [
+            "7.29"
+        ],
         "params": {
             "filter": 5
         },
@@ -191,8 +338,39 @@ fritzbox_services.append(
                         "log_type": "USB Devices"
                     },
                     "timestamp_function": lambda data:
-                    datetime.strptime(f'{data[0]} {data[1]}', '%d.%m.%y %H:%M:%S'),
+                        datetime.strptime(f'{data[0]} {data[1]}', '%d.%m.%y %H:%M:%S'),
                     "value_function": lambda data: data[2],
+                    "tags_function": None
+                }
+            }
+        }
+    })
+
+fritzbox_services.append(
+    {
+        "name": "USB Devices logs",
+        "page": "log",
+        "os_versions": [
+            "7.39"
+        ],
+        "params": {
+            "filter": 5
+        },
+        "track": True,
+        "interval": 64,
+        "value_instances": {
+            "log_entry": {
+                "data_path": "data.log",
+                "type": list,
+                "next": {
+                    # data struct type: list
+                    "type": str,
+                    "tags": {
+                        "log_type": "USB Devices"
+                    },
+                    "timestamp_function": lambda data:
+                        datetime.strptime(f'{data.get("date")} {data.get("time")}', '%d.%m.%y %H:%M:%S'),
+                    "value_function": lambda data: data.get("msg"),
                     "tags_function": None
                 }
             }
@@ -204,6 +382,10 @@ fritzbox_services.append(
     {
         "name": "Active network hosts",
         "page": "netDev",
+        "os_versions": [
+            "7.29",
+            "7.39"
+        ],
         "params": {
             "useajax": 1,
             "xhrId": "all",
@@ -308,6 +490,10 @@ fritzbox_services.append(
 fritzbox_services.append({
         "name": "Passive network hosts",
         "page": "netDev",
+        "os_versions": [
+            "7.29",
+            "7.39"
+        ],
         "params": {
             "useajax": 1,
             "xhrId": "cleanup",
@@ -366,6 +552,9 @@ fritzbox_services.append({
 fritzbox_services.append({
         "name": "VPN Users",
         "page": "shareVpn",
+        "os_versions": [
+            "7.29"
+        ],
         "params": {
             "xhrId": "all",
             "xhr": 1,
@@ -423,7 +612,74 @@ fritzbox_services.append({
                                         if x.get("connected") is True]
                                    )
                                    ),
+            }
+        }
+    }
+)
 
+fritzbox_services.append({
+        "name": "VPN Users",
+        "page": "shareVpn",
+        "os_versions": [
+            "7.39"
+        ],
+        "params": {
+            "xhrId": "all",
+            "xhr": 1,
+        },
+        "value_instances": {
+            "myfritz_host_name": {
+                "data_path": "data.init.server",
+                "type": str
+            },
+            "vpn_type": {
+                "data_path": "data.init.type",
+                "type": str
+            },
+            "vpn_user_connected": {
+                "data_path": "data.init.userConnections",
+                "type": dict,
+                "next": {
+                    "type": str,
+                    "value_function": lambda data: data.get("connected"),
+                    "tags_function": lambda data: {"name": data.get("name")}
+                }
+            },
+            "vpn_user_active": {
+                "data_path": "data.init.userConnections",
+                "type": dict,
+                "next": {
+                    "type": str,
+                    "value_function": lambda data: data.get("active"),
+                    "tags_function": lambda data: {"name": data.get("name")}
+                }
+            },
+            "vpn_user_virtual_address": {
+                "data_path": "data.init.userConnections",
+                "type": dict,
+                "next": {
+                    "type": str,
+                    "value_function": lambda data: data.get("virtualAddress"),
+                    "tags_function": lambda data: {"name": data.get("name")}
+                }
+            },
+            "vpn_user_remote_address": {
+                "data_path": "data.init.userConnections",
+                "type": dict,
+                "next": {
+                    "type": str,
+                    "value_function": lambda data: data.get("address"),
+                    "tags_function": lambda data: {"name": data.get("name")}
+                }
+            },
+            "vpn_user_num_active": {
+                "type": int,
+                "value_function": (lambda data:
+                                   len(
+                                       [x for x in grab(data, "data.init.userConnections", fallback=dict()).values()
+                                        if x.get("connected") is True]
+                                   )
+                                   ),
             }
         }
     }
@@ -432,6 +688,10 @@ fritzbox_services.append({
 fritzbox_services.append({
         "name": "DSL Info",
         "page": "dslOv",
+        "os_versions": [
+            "7.29",
+            "7.39"
+        ],
         "params": {
             "xhrId": "all",
             "xhr": 1,
@@ -462,6 +722,10 @@ fritzbox_services.append({
 fritzbox_services.append({
         "name": "Cable Info",
         "page": "docOv",
+        "os_versions": [
+            "7.29",
+            "7.39"
+        ],
         "params": {
             "xhrId": "all",
             "xhr": 1

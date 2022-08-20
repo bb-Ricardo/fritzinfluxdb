@@ -141,6 +141,7 @@ class FritzBoxLuaService(FritzBoxService):
     """
 
     page = None
+    os_versions = None
 
     def __init__(self, service_data=None):
 
@@ -150,6 +151,12 @@ class FritzBoxLuaService(FritzBoxService):
 
         if self.page is None:
             do_error_exit(f"FritzBoxLuaService '{self.name}' instance has no 'page' defined")
+            return
+
+        self.os_versions = service_data.get("os_versions", list())
+
+        if len(self.os_versions) == 0:
+            do_error_exit(f"FritzBoxLuaService '{self.name}' instance has no supported 'os_versions' defined")
             return
 
         self.validate_value_instances()
