@@ -203,7 +203,7 @@ See this comment for details: https://github.com/bb-Ricardo/fritzinfluxdb/issues
 usage: fritzinfluxdb.py [-h] [-c fritzinfluxdb.ini [fritzinfluxdb.ini ...]] [-d] [-v]
 
 fritzinfluxdb
-Version: 1.0.1-beta2 (2022-08-21)
+Version: 1.0.1 (2022-08-22)
 Project URL: https://github.com/bb-Ricardo/fritzinfluxdb
 
 optional arguments:

@@ -26,8 +26,8 @@ from fritzinfluxdb.configparser import import_config
 from fritzinfluxdb.classes.fritzbox.handler import FritzBoxHandler, FritzBoxLuaHandler
 from fritzinfluxdb.classes.influxdb.handler import InfluxHandler
 
-__version__ = "1.0.1-beta2"
-__version_date__ = "2022-08-21"
+__version__ = "1.0.1"
+__version_date__ = "2022-08-22"
 __description__ = "fritzinfluxdb"
 __license__ = "MIT"
 __url__ = "https://github.com/bb-Ricardo/fritzinfluxdb"
