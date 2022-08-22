@@ -231,6 +231,6 @@ New TR-069 services can be defined in [fritzinfluxdb/classes/fritzbox/services_t
 New LUA services can be defined in [fritzinfluxdb/classes/fritzbox/services_lua.py](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/fritzinfluxdb/classes/fritzbox/services_lua.py)
 
 # License
->You can check out the full license [here](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/fritzinfluxdb/LICENSE.txt)
+>You can check out the full license [here](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/LICENSE.txt)
 
 This project is licensed under the terms of the **MIT** license.
