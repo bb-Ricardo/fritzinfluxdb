@@ -400,7 +400,7 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
                 pass
 
         elif data_path is not None:
-            metric_value = grab(data, data_path, fallback="" if data_path is str else None)
+            metric_value = grab(data, data_path, fallback="" if data_type is str else None)
 
         # try to add tags
         if isinstance(data_tags, dict):
