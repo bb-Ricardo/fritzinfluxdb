@@ -18,6 +18,8 @@ fritzbox_services.append(
         "page": "ecoStat",
         "os_versions": [
             "7.29",
+            "7.30",
+            "7.31",
             "7.39"
         ],
         "value_instances": {
@@ -50,6 +52,8 @@ fritzbox_services.append(
         "page": "energy",
         "os_versions": [
             "7.29",
+            "7.30",
+            "7.31",
             "7.39"
         ],
         "value_instances": {
@@ -72,7 +76,9 @@ fritzbox_services.append(
         "name": "System logs",
         "page": "log",
         "os_versions": [
-            "7.29"
+            "7.29",
+            "7.30",
+            "7.31"
         ],
         "params": {
             "filter": 1
@@ -134,7 +140,9 @@ fritzbox_services.append(
         "name": "Internet connection logs",
         "page": "log",
         "os_versions": [
-            "7.29"
+            "7.29",
+            "7.30",
+            "7.31"
         ],
         "params": {
             "filter": 2
@@ -196,7 +204,9 @@ fritzbox_services.append(
         "name": "Telephony logs",
         "page": "log",
         "os_versions": [
-            "7.29"
+            "7.29",
+            "7.30",
+            "7.31"
         ],
         "params": {
             "filter": 3
@@ -258,7 +268,9 @@ fritzbox_services.append(
         "name": "WLAN logs",
         "page": "log",
         "os_versions": [
-            "7.29"
+            "7.29",
+            "7.30",
+            "7.31"
         ],
         "params": {
             "filter": 4
@@ -320,7 +332,9 @@ fritzbox_services.append(
         "name": "USB Devices logs",
         "page": "log",
         "os_versions": [
-            "7.29"
+            "7.29",
+            "7.30",
+            "7.31"
         ],
         "params": {
             "filter": 5
@@ -384,6 +398,8 @@ fritzbox_services.append(
         "page": "netDev",
         "os_versions": [
             "7.29",
+            "7.30",
+            "7.31",
             "7.39"
         ],
         "params": {
@@ -492,6 +508,8 @@ fritzbox_services.append({
         "page": "netDev",
         "os_versions": [
             "7.29",
+            "7.30",
+            "7.31",
             "7.39"
         ],
         "params": {
@@ -553,7 +571,9 @@ fritzbox_services.append({
         "name": "VPN Users",
         "page": "shareVpn",
         "os_versions": [
-            "7.29"
+            "7.29",
+            "7.30",
+            "7.31"
         ],
         "params": {
             "xhrId": "all",
@@ -690,6 +710,8 @@ fritzbox_services.append({
         "page": "dslOv",
         "os_versions": [
             "7.29",
+            "7.30",
+            "7.31",
             "7.39"
         ],
         "params": {
@@ -724,6 +746,8 @@ fritzbox_services.append({
         "page": "docOv",
         "os_versions": [
             "7.29",
+            "7.30",
+            "7.31",
             "7.39"
         ],
         "params": {
