@@ -135,24 +135,43 @@ class FritzBoxTR069Service(FritzBoxService):
             self.actions.append(action_instance)
 
 
+class FritzBoxLuaURLPath:
+    data = "/data.lua"
+    homeautomation = "/webservices/homeautoswitch.lua"
+
+
 class FritzBoxLuaService(FritzBoxService):
     """
     a single Lua service
     """
 
     page = None
+    switchcmd = None
     os_versions = None
+    url_path = FritzBoxLuaURLPath.data
 
     def __init__(self, service_data=None):
 
         super().__init__(service_data)
 
-        self.page = service_data.get("page")
+        url_path = service_data.get("url_path")
+        if url_path == FritzBoxLuaURLPath.data:
+            self.page = service_data.get("page")
 
-        if self.page is None:
-            do_error_exit(f"FritzBoxLuaService '{self.name}' instance has no 'page' defined")
-            return
+            if self.page is None:
+                do_error_exit(f"FritzBoxLuaService '{self.name}' instance has no 'page' defined")
+                return
 
+        elif url_path == FritzBoxLuaURLPath.homeautomation:
+            self.switchcmd = service_data.get("switchcmd")
+
+            if self.switchcmd is None:
+                do_error_exit(f"FritzBoxLuaService '{self.name}' instance has no 'switchcmd' defined")
+                return
+        else:
+            do_error_exit(f"FritzBoxLuaService '{self.name}' instance has has unsupported url_path: {url_path}")
+
+        self.url_path = url_path
         self.os_versions = service_data.get("os_versions", list())
 
         if len(self.os_versions) == 0:

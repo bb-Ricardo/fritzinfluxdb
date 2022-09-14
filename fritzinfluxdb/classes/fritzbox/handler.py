@@ -7,11 +7,14 @@
 #  repository or visit: <https://opensource.org/licenses/MIT>.
 
 import asyncio
+
 import urllib3
 import requests
 from xml.etree.ElementTree import fromstring
 import hashlib
 import json
+import xmltodict
+from xml.parsers.expat import ExpatError
 
 # import 3rd party modules
 from fritzconnection import FritzConnection
@@ -19,9 +22,10 @@ from fritzconnection.core.exceptions import FritzConnectionException, FritzServi
 
 from fritzinfluxdb.classes.fritzbox.config import FritzBoxConfig
 from fritzinfluxdb.log import get_logger
-from fritzinfluxdb.classes.fritzbox.service_handler import FritzBoxTR069Service, FritzBoxLuaService
+from fritzinfluxdb.classes.fritzbox.service_handler import FritzBoxTR069Service, FritzBoxLuaService, FritzBoxLuaURLPath
 from fritzinfluxdb.classes.fritzbox.services_tr069 import fritzbox_services as tr069_services
 from fritzinfluxdb.classes.fritzbox.services_lua import fritzbox_services as lua_services
+from fritzinfluxdb.classes.fritzbox.services_homeauto import fritzbox_services as homeauto_services
 from fritzinfluxdb.classes.common import FritzMeasurement
 from fritzinfluxdb.common import grab
 
@@ -261,6 +265,9 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
         # parse services from fritzbox/services_lua.py
         self.add_services(FritzBoxLuaService, lua_services)
 
+        # parse services from fritzbox/services_homeauto.py
+        self.add_services(FritzBoxLuaService, homeauto_services)
+
     def connect(self):
 
         if self.sid is not None:
@@ -316,7 +323,7 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
         self.sid = sid
         self.init_successful = True
 
-    def request(self, page, additional_params):
+    def request(self, service_to_request, additional_params):
 
         result = None
 
@@ -324,25 +331,48 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
             self.connect()
 
         params = {
-            "page": page,
-            "lang": "de",
             "sid": self.sid
         }
+
+        if service_to_request.url_path == FritzBoxLuaURLPath.data:
+            params = {**params, **{
+                "page": service_to_request.page,
+                "lang": "de"
+            }}
+            session_handler = self.session.post
+
+        elif service_to_request.url_path == FritzBoxLuaURLPath.homeautomation:
+            params["switchcmd"] = service_to_request.switchcmd
+            session_handler = self.session.get
+
+        else:
+            log.error(f"The URL path '{service_to_request.url_path}' defined for "
+                      f"{service_to_request.name} is not supported.")
+            return result
 
         if isinstance(additional_params, dict):
             params = {**params, **additional_params}
 
-        data_url = f"{self.url}/data.lua"
+        data_url = f"{self.url}{service_to_request.url_path})"
+
         try:
-            response = self.session.post(data_url, timeout=self.config.connect_timeout, data=params)
+            response = session_handler(data_url, timeout=self.config.connect_timeout, data=params)
         except Exception as e:
             log.error(f"Unable to perform request to '{data_url}': {e}")
             return
 
-        try:
-            result = response.json()
-        except json.decoder.JSONDecodeError:
-            pass
+        if service_to_request.url_path == FritzBoxLuaURLPath.data:
+            try:
+                result = response.json()
+            except json.decoder.JSONDecodeError:
+                pass
+        elif service_to_request.url_path == FritzBoxLuaURLPath.homeautomation:
+            try:
+                result = xmltodict.parse(response.content)
+            except ExpatError:
+                pass
+        else:
+            print(service_to_request.url_path)
 
         if response.status_code == 200 and result is not None:
             log.debug(f"{self.name} request successful")
@@ -481,9 +511,9 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
             return
 
         # request data
-        result = self.request(service.page, additional_params=service.params)
+        result = self.request(service, additional_params=service.params)
 
-        if result is None or result.get("pid") != service.page:
+        if result is None:
             message_handler = log.info
             message_text = f"Unable to request {self.name} service '{service.name}'"
             if result is None:

@@ -1,3 +1,4 @@
 fritzconnection==1.9.1
 influxdb==5.3.1
 influxdb_client==1.29.1
+xmltodict==0.13.0
