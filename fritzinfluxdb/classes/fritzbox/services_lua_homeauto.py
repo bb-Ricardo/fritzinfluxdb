@@ -47,7 +47,8 @@ fritzbox_services.append(
                     "type": str,
                     "tags_function": lambda data: {"name": data.get("name")},
                     "data_path": "@fwversion"
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_product_name": {
                 "data_path": "devicelist.device",
@@ -57,7 +58,8 @@ fritzbox_services.append(
                     "type": str,
                     "tags_function": lambda data: {"name": data.get("name")},
                     "data_path": "@productname"
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_manufacturer": {
                 "data_path": "devicelist.device",
@@ -67,7 +69,8 @@ fritzbox_services.append(
                     "type": str,
                     "tags_function": lambda data: {"name": data.get("name")},
                     "data_path": "@manufacturer"
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_device_present": {
                 "data_path": "devicelist.device",
@@ -77,7 +80,8 @@ fritzbox_services.append(
                     "type": int,
                     "tags_function": lambda data: {"name": data.get("name")},
                     "data_path": "present"
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
 
             # Battery data
@@ -90,7 +94,8 @@ fritzbox_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "data_path": "battery",
                     "exclude_filter_function": lambda data: "battery" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_battery_low": {
                 "data_path": "devicelist.device",
@@ -101,7 +106,8 @@ fritzbox_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "data_path": "batterylow",
                     "exclude_filter_function": lambda data: "batterylow" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
 
             # Temperature
@@ -116,7 +122,8 @@ fritzbox_services.append(
                         float((int(grab(data, "temperature.celsius")) + int(grab(data, "temperature.offset")))/10)
                     ),
                     "exclude_filter_function": lambda data: "temperature" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
 
             # Power
@@ -131,7 +138,8 @@ fritzbox_services.append(
                         float(int(grab(data, "powermeter.power")) / 1000)
                     ),
                     "exclude_filter_function": lambda data: "powermeter" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_powermeter_energy": {
                 "data_path": "devicelist.device",
@@ -142,7 +150,8 @@ fritzbox_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: grab(data, "powermeter.energy"),
                     "exclude_filter_function": lambda data: "powermeter" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_powermeter_voltage": {
                 "data_path": "devicelist.device",
@@ -155,7 +164,8 @@ fritzbox_services.append(
                         float(int(grab(data, "powermeter.voltage")) / 1000)
                     ),
                     "exclude_filter_function": lambda data: "powermeter" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
 
             # Switch data
@@ -168,7 +178,8 @@ fritzbox_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: "0"+grab(data, "switch.state", fallback="0"),
                     "exclude_filter_function": lambda data: "switch" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_switch_mode": {
                 "data_path": "devicelist.device",
@@ -179,7 +190,8 @@ fritzbox_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: grab(data, "switch.mode", fallback=""),
                     "exclude_filter_function": lambda data: "switch" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_switch_lock": {
                 "data_path": "devicelist.device",
@@ -190,7 +202,8 @@ fritzbox_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: "0" + grab(data, "switch.lock", fallback="0"),
                     "exclude_filter_function": lambda data: "switch" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_switch_devicelock": {
                 "data_path": "devicelist.device",
@@ -201,7 +214,8 @@ fritzbox_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: "0" + grab(data, "switch.devicelock", fallback="0"),
                     "exclude_filter_function": lambda data: "switch" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_simpleonoff_state": {
                 "data_path": "devicelist.device",
@@ -212,7 +226,8 @@ fritzbox_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: "0" + grab(data, "simpleonoff.state", fallback="0"),
                     "exclude_filter_function": lambda data: "simpleonoff" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_levelcontrol_level": {
                 "data_path": "devicelist.device",
@@ -223,7 +238,8 @@ fritzbox_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: "0" + grab(data, "levelcontrol.levelpercentage", fallback="0"),
                     "exclude_filter_function": lambda data: "levelcontrol" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_heating_tist": {
                 "data_path": "devicelist.device",
@@ -236,7 +252,8 @@ fritzbox_services.append(
                         avm_temp_map("0" + grab(data, "hkr.tist", fallback="0"), 0, 120, 0, 60)
                     ),
                     "exclude_filter_function": lambda data: "hkr" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_heating_tsoll": {
                 "data_path": "devicelist.device",
@@ -249,7 +266,8 @@ fritzbox_services.append(
                         avm_temp_map("0" + grab(data, "hkr.tsoll", fallback="0"), 16, 56, 8, 28)
                     ),
                     "exclude_filter_function": lambda data: "hkr" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_heating_komfort": {
                 "data_path": "devicelist.device",
@@ -262,7 +280,8 @@ fritzbox_services.append(
                         avm_temp_map("0" + grab(data, "hkr.komfort", fallback="0"), 16, 56, 8, 28)
                     ),
                     "exclude_filter_function": lambda data: "hkr" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_heating_absenk": {
                 "data_path": "devicelist.device",
@@ -275,7 +294,8 @@ fritzbox_services.append(
                         avm_temp_map("0" + grab(data, "hkr.absenk", fallback="0"), 16, 56, 8, 28)
                     ),
                     "exclude_filter_function": lambda data: "hkr" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_heating_lock": {
                 "data_path": "devicelist.device",
@@ -286,7 +306,8 @@ fritzbox_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: "0" + grab(data, "hkr.lock", fallback="0"),
                     "exclude_filter_function": lambda data: "hkr" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_heating_devicelock": {
                 "data_path": "devicelist.device",
@@ -297,7 +318,8 @@ fritzbox_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: "0" + grab(data, "hkr.devicelock", fallback="0"),
                     "exclude_filter_function": lambda data: "hkr" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_heating_errorcode": {
                 "data_path": "devicelist.device",
@@ -308,7 +330,8 @@ fritzbox_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: "0" + grab(data, "hkr.errorcode", fallback="0"),
                     "exclude_filter_function": lambda data: "hkr" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_heating_windowopenactiv": {
                 "data_path": "devicelist.device",
@@ -319,7 +342,8 @@ fritzbox_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: "0" + grab(data, "hkr.windowopenactiv", fallback="0"),
                     "exclude_filter_function": lambda data: "hkr" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_heating_windowopenactiveendtime": {
                 "data_path": "devicelist.device",
@@ -330,7 +354,8 @@ fritzbox_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: "0" + grab(data, "hkr.windowopenactiveendtime", fallback="0"),
                     "exclude_filter_function": lambda data: "hkr" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_heating_boostactive": {
                 "data_path": "devicelist.device",
@@ -341,7 +366,8 @@ fritzbox_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: "0" + grab(data, "hkr.boostactive", fallback="0"),
                     "exclude_filter_function": lambda data: "hkr" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_heating_boostactiveendtime": {
                 "data_path": "devicelist.device",
@@ -352,7 +378,8 @@ fritzbox_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: "0" + grab(data, "hkr.boostactiveendtime", fallback="0"),
                     "exclude_filter_function": lambda data: "hkr" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_heating_batterylow": {
                 "data_path": "devicelist.device",
@@ -363,7 +390,8 @@ fritzbox_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: "0" + grab(data, "hkr.batterylow", fallback="0"),
                     "exclude_filter_function": lambda data: "hkr" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_heating_battery": {
                 "data_path": "devicelist.device",
@@ -374,7 +402,8 @@ fritzbox_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: "0" + grab(data, "hkr.battery", fallback="0"),
                     "exclude_filter_function": lambda data: "hkr" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_heating_nextchange_endperiod": {
                 "data_path": "devicelist.device",
@@ -385,7 +414,8 @@ fritzbox_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: "0" + grab(data, "hkr.nextchange.endperiod", fallback="0"),
                     "exclude_filter_function": lambda data: "hkr" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_heating_nextchange_tchange": {
                 "data_path": "devicelist.device",
@@ -398,7 +428,8 @@ fritzbox_services.append(
                         avm_temp_map("0" + grab(data, "hkr.nextchange.tchange", fallback="0"), 16, 56, 8, 28)
                     ),
                     "exclude_filter_function": lambda data: "hkr" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_heating_summeractive": {
                 "data_path": "devicelist.device",
@@ -409,7 +440,8 @@ fritzbox_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: "0" + grab(data, "hkr.summeractive", fallback="0"),
                     "exclude_filter_function": lambda data: "hkr" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
             "ha_heating_holidayactive": {
                 "data_path": "devicelist.device",
@@ -420,7 +452,8 @@ fritzbox_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: "0" + grab(data, "hkr.holidayactive", fallback="0"),
                     "exclude_filter_function": lambda data: "hkr" not in data.keys()
-                }
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
         }
     })

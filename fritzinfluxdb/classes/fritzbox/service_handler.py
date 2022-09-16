@@ -138,6 +138,7 @@ class FritzBoxTR069Service(FritzBoxService):
 class FritzBoxLuaURLPath:
     data = "/data.lua"
     homeautomation = "/webservices/homeautoswitch.lua"
+    foncalls_list = "/fon_num/foncalls_list.lua"
 
 
 class FritzBoxLuaService(FritzBoxService):
@@ -169,6 +170,8 @@ class FritzBoxLuaService(FritzBoxService):
             if self.switchcmd is None:
                 do_error_exit(f"FritzBoxLuaService '{self.name}' instance has no 'switchcmd' defined")
                 return
+        elif url_path == FritzBoxLuaURLPath.foncalls_list:
+            pass
         else:
             do_error_exit(f"FritzBoxLuaService '{self.name}' instance has has unsupported url_path: {url_path}")
 

@@ -25,7 +25,8 @@ from fritzinfluxdb.log import get_logger
 from fritzinfluxdb.classes.fritzbox.service_handler import FritzBoxTR069Service, FritzBoxLuaService, FritzBoxLuaURLPath
 from fritzinfluxdb.classes.fritzbox.services_tr069 import fritzbox_services as tr069_services
 from fritzinfluxdb.classes.fritzbox.services_lua import fritzbox_services as lua_services
-from fritzinfluxdb.classes.fritzbox.services_homeauto import fritzbox_services as homeauto_services
+from fritzinfluxdb.classes.fritzbox.services_lua_homeauto import fritzbox_services as homeauto_services
+from fritzinfluxdb.classes.fritzbox.services_lua_telephone_list import fritzbox_services as telephopne_services
 from fritzinfluxdb.classes.common import FritzMeasurement
 from fritzinfluxdb.common import grab
 
@@ -265,8 +266,11 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
         # parse services from fritzbox/services_lua.py
         self.add_services(FritzBoxLuaService, lua_services)
 
-        # parse services from fritzbox/services_homeauto.py
+        # parse services from fritzbox/services_lua_homeauto.py
         self.add_services(FritzBoxLuaService, homeauto_services)
+
+        # parse services from fritzbox/services_lua_telephone_list.py
+        self.add_services(FritzBoxLuaService, telephopne_services)
 
     def connect(self):
 
@@ -334,29 +338,40 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
             "sid": self.sid
         }
 
+        # appending additional params
+        if isinstance(additional_params, dict):
+            params = {**params, **additional_params}
+
+        # basic function call attributes
+        call_attributes = {
+            "timeout": self.config.connect_timeout
+        }
+
         if service_to_request.url_path == FritzBoxLuaURLPath.data:
             params = {**params, **{
                 "page": service_to_request.page,
                 "lang": "de"
             }}
+            call_attributes["data"] = params
             session_handler = self.session.post
 
         elif service_to_request.url_path == FritzBoxLuaURLPath.homeautomation:
             params["switchcmd"] = service_to_request.switchcmd
             session_handler = self.session.get
+            call_attributes["params"] = params
 
+        elif service_to_request.url_path == FritzBoxLuaURLPath.foncalls_list:
+            session_handler = self.session.get
+            call_attributes["params"] = params
         else:
             log.error(f"The URL path '{service_to_request.url_path}' defined for "
                       f"{service_to_request.name} is not supported.")
             return result
 
-        if isinstance(additional_params, dict):
-            params = {**params, **additional_params}
-
         data_url = f"{self.url}{service_to_request.url_path}"
 
         try:
-            response = session_handler(data_url, timeout=self.config.connect_timeout, data=params)
+            response = session_handler(data_url, **call_attributes)
         except Exception as e:
             log.error(f"Unable to perform request to '{data_url}': {e}")
             return
@@ -371,8 +386,17 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
                 result = xmltodict.parse(response.content)
             except ExpatError:
                 pass
+        elif service_to_request.url_path == FritzBoxLuaURLPath.foncalls_list:
+            filter_strings = ['sep=;', 'Typ;Datum;Name;Rufnummer;Nebenstelle;Eigene Rufnummer;Dauer', '']
+            try:
+                result = [x for x in response.text.split("\n") if x not in filter_strings]
+            except ExpatError:
+                pass
         else:
-            print(service_to_request.url_path)
+            result = response.content
+
+        # Debugging purposes
+        # log.debug(f"Response: {response.content}")
 
         if response.status_code == 200 and result is not None:
             log.debug(f"{self.name} request successful")
