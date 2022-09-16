@@ -154,7 +154,7 @@ class FritzBoxLuaService(FritzBoxService):
 
         super().__init__(service_data)
 
-        url_path = service_data.get("url_path")
+        url_path = service_data.get("url_path") or FritzBoxLuaURLPath.data
         if url_path == FritzBoxLuaURLPath.data:
             self.page = service_data.get("page")
 
