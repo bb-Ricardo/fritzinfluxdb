@@ -353,7 +353,7 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
         if isinstance(additional_params, dict):
             params = {**params, **additional_params}
 
-        data_url = f"{self.url}{service_to_request.url_path})"
+        data_url = f"{self.url}{service_to_request.url_path}"
 
         try:
             response = session_handler(data_url, timeout=self.config.connect_timeout, data=params)
