@@ -15,6 +15,7 @@ import hashlib
 import json
 import xmltodict
 from xml.parsers.expat import ExpatError
+from enum import Enum, auto
 
 # import 3rd party modules
 from fritzconnection import FritzConnection
@@ -30,6 +31,11 @@ from fritzinfluxdb.classes.common import FritzMeasurement
 from fritzinfluxdb.common import grab
 
 log = get_logger()
+
+
+class HttpMethod(Enum):
+    GET = auto()
+    POST = auto()
 
 
 class FritzBoxHandlerBase:
@@ -333,17 +339,18 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
         params = {
             "sid": self.sid
         }
+        method = None
 
         if service_to_request.url_path == FritzBoxLuaURLPath.data:
             params = {**params, **{
                 "page": service_to_request.page,
                 "lang": "de"
             }}
-            session_handler = self.session.post
+            method = HttpMethod.POST
 
         elif service_to_request.url_path == FritzBoxLuaURLPath.homeautomation:
             params["switchcmd"] = service_to_request.switchcmd
-            session_handler = self.session.get
+            method = HttpMethod.GET
 
         else:
             log.error(f"The URL path '{service_to_request.url_path}' defined for "
@@ -356,7 +363,10 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
         data_url = f"{self.url}{service_to_request.url_path}"
 
         try:
-            response = session_handler(data_url, timeout=self.config.connect_timeout, data=params)
+            if method == HttpMethod.POST:
+                response = self.session.post(data_url, timeout=self.config.connect_timeout, data=params)
+            else:
+                response = self.session.get(data_url, timeout=self.config.connect_timeout, params=params)
         except Exception as e:
             log.error(f"Unable to perform request to '{data_url}': {e}")
             return
