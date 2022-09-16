@@ -148,13 +148,14 @@ class FritzBoxLuaService(FritzBoxService):
     page = None
     switchcmd = None
     os_versions = None
-    url_path = FritzBoxLuaURLPath.data
+    url_path = None
 
     def __init__(self, service_data=None):
 
         super().__init__(service_data)
 
-        url_path = service_data.get("url_path") or FritzBoxLuaURLPath.data
+        url_path = service_data.get("url_path", FritzBoxLuaURLPath.data)
+
         if url_path == FritzBoxLuaURLPath.data:
             self.page = service_data.get("page")
 
