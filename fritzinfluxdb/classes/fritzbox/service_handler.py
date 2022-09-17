@@ -146,41 +146,31 @@ class FritzBoxLuaService(FritzBoxService):
     a single Lua service
     """
 
-    page = None
-    switchcmd = None
     os_versions = None
     url_path = None
+    default_method = "GET"
+    default_url_path = FritzBoxLuaURLPath.data
 
     def __init__(self, service_data=None):
 
         super().__init__(service_data)
 
-        url_path = service_data.get("url_path", FritzBoxLuaURLPath.data)
-
-        if url_path == FritzBoxLuaURLPath.data:
-            self.page = service_data.get("page")
-
-            if self.page is None:
-                do_error_exit(f"FritzBoxLuaService '{self.name}' instance has no 'page' defined")
-                return
-
-        elif url_path == FritzBoxLuaURLPath.homeautomation:
-            self.switchcmd = service_data.get("switchcmd")
-
-            if self.switchcmd is None:
-                do_error_exit(f"FritzBoxLuaService '{self.name}' instance has no 'switchcmd' defined")
-                return
-        elif url_path == FritzBoxLuaURLPath.foncalls_list:
-            pass
-        else:
-            do_error_exit(f"FritzBoxLuaService '{self.name}' instance has has unsupported url_path: {url_path}")
-
-        self.url_path = url_path
+        self.url_path = service_data.get("url_path", self.default_url_path)
         self.os_versions = service_data.get("os_versions", list())
+        self.method = service_data.get("method", self.default_method)
+        self.response_parser = service_data.get("response_parser", self.response_parser)
+
+        if len(self.url_path) == 0:
+            do_error_exit(f"FritzBoxLuaService '{self.name}' instance has no url_path defined")
 
         if len(self.os_versions) == 0:
             do_error_exit(f"FritzBoxLuaService '{self.name}' instance has no supported 'os_versions' defined")
-            return
+
+        if not callable(self.response_parser):
+            do_error_exit(f"FritzBoxLuaService '{self.name}' instance 'response_parser' is not a callable function")
+
+        if self.method not in ["GET", "POST", "HEAD"]:
+            do_error_exit(f"FritzBoxLuaService '{self.name}' instance 'method' invalid: {self.method}")
 
         self.validate_value_instances()
 
@@ -220,3 +210,11 @@ class FritzBoxLuaService(FritzBoxService):
 
         if self.track_measurements is True:
             self.tracked_measurements.add(hash(measurement))
+
+    @staticmethod
+    def response_parser(response):
+        """
+        handler to prepare returned data for parsing
+        """
+
+        return response.text

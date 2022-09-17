@@ -12,16 +12,30 @@ from fritzinfluxdb.common import grab
 
 fritzbox_services = list()
 
+
+def prepare_response_data(response):
+    """
+    handler to prepare returned data for parsing
+    """
+
+    return response.json()
+
+
 fritzbox_services.append(
     {
         "name": "System Stats",
-        "page": "ecoStat",
         "os_versions": [
             "7.29",
             "7.30",
             "7.31",
             "7.39"
         ],
+        "method": "POST",
+        "params": {
+            "page": "ecoStat",
+            "lang": "de"
+        },
+        "response_parser": prepare_response_data,
         "value_instances": {
             "cpu_temp": {
                 "data_path": "data.cputemp.series.0.-1",
@@ -49,13 +63,18 @@ fritzbox_services.append(
 fritzbox_services.append(
     {
         "name": "Energy Stats",
-        "page": "energy",
         "os_versions": [
             "7.29",
             "7.30",
             "7.31",
             "7.39"
         ],
+        "method": "POST",
+        "params": {
+            "page": "energy",
+            "lang": "de"
+        },
+        "response_parser": prepare_response_data,
         "value_instances": {
             "energy_consumption": {
                 "data_path": "data.drain",
@@ -74,15 +93,18 @@ fritzbox_services.append(
 fritzbox_services.append(
     {
         "name": "System logs",
-        "page": "log",
         "os_versions": [
             "7.29",
             "7.30",
             "7.31"
         ],
+        "method": "POST",
         "params": {
-            "filter": 1
+            "filter": 1,
+            "page": "log",
+            "lang": "de"
         },
+        "response_parser": prepare_response_data,
         "track": True,
         "interval": 60,
         "value_instances": {
@@ -107,13 +129,16 @@ fritzbox_services.append(
 fritzbox_services.append(
     {
         "name": "System logs",
-        "page": "log",
         "os_versions": [
             "7.39"
         ],
+        "method": "POST",
         "params": {
-            "filter": 1
+            "filter": 1,
+            "page": "log",
+            "lang": "de"
         },
+        "response_parser": prepare_response_data,
         "track": True,
         "interval": 60,
         "value_instances": {
@@ -138,15 +163,18 @@ fritzbox_services.append(
 fritzbox_services.append(
     {
         "name": "Internet connection logs",
-        "page": "log",
         "os_versions": [
             "7.29",
             "7.30",
             "7.31"
         ],
+        "method": "POST",
         "params": {
-            "filter": 2
+            "filter": 2,
+            "page": "log",
+            "lang": "de"
         },
+        "response_parser": prepare_response_data,
         "track": True,
         "interval": 61,
         "value_instances": {
@@ -171,13 +199,16 @@ fritzbox_services.append(
 fritzbox_services.append(
     {
         "name": "Internet connection logs",
-        "page": "log",
         "os_versions": [
             "7.39"
         ],
+        "method": "POST",
         "params": {
-            "filter": 2
+            "filter": 2,
+            "page": "log",
+            "lang": "de"
         },
+        "response_parser": prepare_response_data,
         "track": True,
         "interval": 61,
         "value_instances": {
@@ -202,15 +233,18 @@ fritzbox_services.append(
 fritzbox_services.append(
     {
         "name": "Telephony logs",
-        "page": "log",
         "os_versions": [
             "7.29",
             "7.30",
             "7.31"
         ],
+        "method": "POST",
         "params": {
-            "filter": 3
+            "filter": 3,
+            "page": "log",
+            "lang": "de"
         },
+        "response_parser": prepare_response_data,
         "track": True,
         "interval": 62,
         "value_instances": {
@@ -235,13 +269,16 @@ fritzbox_services.append(
 fritzbox_services.append(
     {
         "name": "Telephony logs",
-        "page": "log",
         "os_versions": [
             "7.39"
         ],
+        "method": "POST",
         "params": {
-            "filter": 3
+            "filter": 3,
+            "page": "log",
+            "lang": "de"
         },
+        "response_parser": prepare_response_data,
         "track": True,
         "interval": 62,
         "value_instances": {
@@ -266,15 +303,18 @@ fritzbox_services.append(
 fritzbox_services.append(
     {
         "name": "WLAN logs",
-        "page": "log",
         "os_versions": [
             "7.29",
             "7.30",
             "7.31"
         ],
+        "method": "POST",
         "params": {
-            "filter": 4
+            "filter": 4,
+            "page": "log",
+            "lang": "de"
         },
+        "response_parser": prepare_response_data,
         "track": True,
         "interval": 63,
         "value_instances": {
@@ -299,13 +339,16 @@ fritzbox_services.append(
 fritzbox_services.append(
     {
         "name": "WLAN logs",
-        "page": "log",
         "os_versions": [
             "7.39"
         ],
+        "method": "POST",
         "params": {
-            "filter": 4
+            "filter": 4,
+            "page": "log",
+            "lang": "de"
         },
+        "response_parser": prepare_response_data,
         "track": True,
         "interval": 63,
         "value_instances": {
@@ -330,15 +373,18 @@ fritzbox_services.append(
 fritzbox_services.append(
     {
         "name": "USB Devices logs",
-        "page": "log",
         "os_versions": [
             "7.29",
             "7.30",
             "7.31"
         ],
+        "method": "POST",
         "params": {
-            "filter": 5
+            "filter": 5,
+            "page": "log",
+            "lang": "de"
         },
+        "response_parser": prepare_response_data,
         "track": True,
         "interval": 64,
         "value_instances": {
@@ -363,13 +409,16 @@ fritzbox_services.append(
 fritzbox_services.append(
     {
         "name": "USB Devices logs",
-        "page": "log",
         "os_versions": [
             "7.39"
         ],
+        "method": "POST",
         "params": {
-            "filter": 5
+            "filter": 5,
+            "page": "log",
+            "lang": "de"
         },
+        "response_parser": prepare_response_data,
         "track": True,
         "interval": 64,
         "value_instances": {
@@ -395,19 +444,21 @@ fritzbox_services.append(
 fritzbox_services.append(
     {
         "name": "Active network hosts",
-        "page": "netDev",
         "os_versions": [
             "7.29",
             "7.30",
             "7.31",
             "7.39"
         ],
+        "method": "POST",
         "params": {
+            "page": "netDev",
             "useajax": 1,
             "xhrId": "all",
             "xhr": 1,
             "initial": True
         },
+        "response_parser": prepare_response_data,
         "interval": 120,
         "value_instances": {
             "active_hosts_name": {
@@ -505,18 +556,20 @@ fritzbox_services.append(
 # every 10 minutes
 fritzbox_services.append({
         "name": "Passive network hosts",
-        "page": "netDev",
         "os_versions": [
             "7.29",
             "7.30",
             "7.31",
             "7.39"
         ],
+        "method": "POST",
         "params": {
+            "page": "netDev",
             "useajax": 1,
             "xhrId": "cleanup",
             "xhr": 1,
         },
+        "response_parser": prepare_response_data,
         "interval": 600,
         "value_instances": {
             "passive_hosts_name": {
@@ -569,16 +622,18 @@ fritzbox_services.append({
 
 fritzbox_services.append({
         "name": "VPN Users",
-        "page": "shareVpn",
         "os_versions": [
             "7.29",
             "7.30",
             "7.31"
         ],
+        "method": "POST",
         "params": {
+            "page": "shareVpn",
             "xhrId": "all",
             "xhr": 1,
         },
+        "response_parser": prepare_response_data,
         "value_instances": {
             "myfritz_host_name": {
                 "data_path": "data.vpnInfo.server",
@@ -644,14 +699,16 @@ fritzbox_services.append({
 
 fritzbox_services.append({
         "name": "VPN Users",
-        "page": "shareVpn",
         "os_versions": [
             "7.39"
         ],
+        "method": "POST",
         "params": {
+            "page": "shareVpn",
             "xhrId": "all",
             "xhr": 1,
         },
+        "response_parser": prepare_response_data,
         "value_instances": {
             "myfritz_host_name": {
                 "data_path": "data.init.server",
@@ -712,18 +769,20 @@ fritzbox_services.append({
 
 fritzbox_services.append({
         "name": "DSL Info",
-        "page": "dslOv",
         "os_versions": [
             "7.29",
             "7.30",
             "7.31",
             "7.39"
         ],
+        "method": "POST",
         "params": {
+            "page": "dslOv",
             "xhrId": "all",
             "xhr": 1,
             "useajax": 1
         },
+        "response_parser": prepare_response_data,
         "interval": 600,
         "value_instances": {
             "dsl_line_length": {
@@ -748,17 +807,19 @@ fritzbox_services.append({
 
 fritzbox_services.append({
         "name": "Cable Info",
-        "page": "docOv",
         "os_versions": [
             "7.29",
             "7.30",
             "7.31",
             "7.39"
         ],
+        "method": "POST",
         "params": {
+            "page": "docOv",
             "xhrId": "all",
             "xhr": 1
         },
+        "response_parser": prepare_response_data,
         "interval": 600,
         "value_instances": {
             "cable_cmts_vendor": {

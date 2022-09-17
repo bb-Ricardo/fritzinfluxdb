@@ -12,9 +12,6 @@ import urllib3
 import requests
 from xml.etree.ElementTree import fromstring
 import hashlib
-import json
-import xmltodict
-from xml.parsers.expat import ExpatError
 
 # import 3rd party modules
 from fritzconnection import FritzConnection
@@ -22,11 +19,11 @@ from fritzconnection.core.exceptions import FritzConnectionException, FritzServi
 
 from fritzinfluxdb.classes.fritzbox.config import FritzBoxConfig
 from fritzinfluxdb.log import get_logger
-from fritzinfluxdb.classes.fritzbox.service_handler import FritzBoxTR069Service, FritzBoxLuaService, FritzBoxLuaURLPath
+from fritzinfluxdb.classes.fritzbox.service_handler import FritzBoxTR069Service, FritzBoxLuaService
 from fritzinfluxdb.classes.fritzbox.services_tr069 import fritzbox_services as tr069_services
 from fritzinfluxdb.classes.fritzbox.services_lua import fritzbox_services as lua_services
 from fritzinfluxdb.classes.fritzbox.services_lua_homeauto import fritzbox_services as homeauto_services
-from fritzinfluxdb.classes.fritzbox.services_lua_telephone_list import fritzbox_services as telephopne_services
+from fritzinfluxdb.classes.fritzbox.services_lua_telephone_list import fritzbox_services as telephone_services
 from fritzinfluxdb.classes.common import FritzMeasurement
 from fritzinfluxdb.common import grab
 
@@ -270,7 +267,7 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
         self.add_services(FritzBoxLuaService, homeauto_services)
 
         # parse services from fritzbox/services_lua_telephone_list.py
-        self.add_services(FritzBoxLuaService, telephopne_services)
+        self.add_services(FritzBoxLuaService, telephone_services)
 
     def connect(self):
 
@@ -329,8 +326,6 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
 
     def request(self, service_to_request, additional_params):
 
-        result = None
-
         if self.sid is None:
             self.connect()
 
@@ -347,53 +342,26 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
             "timeout": self.config.connect_timeout
         }
 
-        if service_to_request.url_path == FritzBoxLuaURLPath.data:
-            params = {**params, **{
-                "page": service_to_request.page,
-                "lang": "de"
-            }}
+        if service_to_request.method == "POST":
             call_attributes["data"] = params
-            session_handler = self.session.post
-
-        elif service_to_request.url_path == FritzBoxLuaURLPath.homeautomation:
-            params["switchcmd"] = service_to_request.switchcmd
-            session_handler = self.session.get
-            call_attributes["params"] = params
-
-        elif service_to_request.url_path == FritzBoxLuaURLPath.foncalls_list:
-            session_handler = self.session.get
-            call_attributes["params"] = params
         else:
-            log.error(f"The URL path '{service_to_request.url_path}' defined for "
-                      f"{service_to_request.name} is not supported.")
-            return result
+            call_attributes["params"] = params
 
         data_url = f"{self.url}{service_to_request.url_path}"
 
+        # perform request
         try:
-            response = session_handler(data_url, **call_attributes)
+            response = self.session.request(service_to_request.method, data_url, **call_attributes)
         except Exception as e:
             log.error(f"Unable to perform request to '{data_url}': {e}")
             return
 
-        if service_to_request.url_path == FritzBoxLuaURLPath.data:
-            try:
-                result = response.json()
-            except json.decoder.JSONDecodeError:
-                pass
-        elif service_to_request.url_path == FritzBoxLuaURLPath.homeautomation:
-            try:
-                result = xmltodict.parse(response.content)
-            except ExpatError:
-                pass
-        elif service_to_request.url_path == FritzBoxLuaURLPath.foncalls_list:
-            filter_strings = ['sep=;', 'Typ;Datum;Name;Rufnummer;Nebenstelle;Eigene Rufnummer;Dauer', '']
-            try:
-                result = [x for x in response.text.split("\n") if x not in filter_strings]
-            except ExpatError:
-                pass
-        else:
-            result = response.content
+        # noinspection PyBroadException
+        try:
+            result = service_to_request.response_parser(response)
+        except Exception as e:
+            log.error(f"{self.name} request parsing for '{service_to_request.name}' failed: {e}")
+            return
 
         # Debugging purposes
         # log.debug(f"Response: {response.content}")

@@ -6,6 +6,8 @@
 #  For a copy, see file LICENSE.txt included in this
 #  repository or visit: <https://opensource.org/licenses/MIT>.
 
+import xmltodict
+
 from fritzinfluxdb.common import grab
 from fritzinfluxdb.classes.fritzbox.service_handler import FritzBoxLuaURLPath
 
@@ -13,6 +15,9 @@ fritzbox_services = list()
 
 
 def avm_temp_map(value, input_min, input_max, output_min, output_max):
+    """
+    Map home temperature data for AVM devices back to °C
+    """
 
     int_value = int(value)
 
@@ -26,17 +31,29 @@ def avm_temp_map(value, input_min, input_max, output_min, output_max):
     return float((int_value-input_min)/(input_max-input_min)*(output_max-output_min)+output_min)
 
 
+def prepare_response_data(response):
+    """
+    handler to prepare returned data for parsing
+    """
+
+    return xmltodict.parse(response.contentx)
+
+
 fritzbox_services.append(
     {
         "name": "Home Automation",
-        "switchcmd": "getdevicelistinfos",
-        "url_path": FritzBoxLuaURLPath.homeautomation,
         "os_versions": [
             "7.29",
             "7.30",
             "7.31",
             "7.39"
         ],
+        "url_path": FritzBoxLuaURLPath.homeautomation,
+        "method": "GET",
+        "params": {
+            "switchcmd": "getdevicelistinfos"
+        },
+        "response_parser": prepare_response_data,
         "value_instances": {
             # Base Data
             "ha_fw_version": {

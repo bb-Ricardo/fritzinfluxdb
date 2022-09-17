@@ -9,7 +9,6 @@
 import hashlib
 from datetime import datetime
 
-from fritzinfluxdb.common import grab
 from fritzinfluxdb.classes.fritzbox.service_handler import FritzBoxLuaURLPath
 
 fritzbox_services = list()
@@ -19,6 +18,9 @@ read_interval = 60
 
 
 def get_hash(data):
+    """
+    compute a MD5 hash and use as ID to track and group log data by uid tag
+    """
 
     hit = hash_cache.get(data)
     if hit is not None:
@@ -46,6 +48,9 @@ def get_call_type(data):
 
 
 def get_call_duration(data):
+    """
+    returns call duration in minutes
+    """
 
     # noinspection PyBroadException
     try:
@@ -57,23 +62,40 @@ def get_call_duration(data):
     return duration
 
 
+def prepare_response_data(response):
+    """
+    handler to prepare returned data for parsing
+    """
+
+    # exclude from csv output
+    filter_strings = [
+        'sep=;',
+        'Typ;Datum;Name;Rufnummer;Nebenstelle;Eigene Rufnummer;Dauer',
+        ''
+    ]
+
+    return [x for x in response.text.split("\n") if x not in filter_strings]
+
+
 # due to the tracking of measurements multiple short calls from the same number in the same minute
 # will be reduced to one entry
 fritzbox_services.append(
     {
         "name": "Phone call list",
-        "page": "empty",
         "os_versions": [
             "7.29",
             "7.30",
             "7.31",
             "7.39"
         ],
+        "url_path": FritzBoxLuaURLPath.foncalls_list,
+        "method": "GET",
         "params": {
+            "switchcmd": "getdevicelistinfos",
             "csv": "",
         },
+        "response_parser": prepare_response_data,
         "interval": read_interval,
-        "url_path": FritzBoxLuaURLPath.foncalls_list,
         "track": True,
         "value_instances": {
             "call_list_type": {
