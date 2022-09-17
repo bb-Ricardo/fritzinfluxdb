@@ -651,7 +651,7 @@ fritzbox_services.append({
                     "value_function": lambda data: data.get("connected"),
                     "tags_function": lambda data: {"name": data.get("name")}
                 },
-                "exclude_filter_function": lambda data: not isinstance(data, dict)
+                "exclude_filter_function": lambda data: not isinstance(grab(data, "data.vpnInfo.userConnections"), dict)
             },
             "vpn_user_active": {
                 "data_path": "data.vpnInfo.userConnections",
@@ -661,7 +661,7 @@ fritzbox_services.append({
                     "value_function": lambda data: data.get("active"),
                     "tags_function": lambda data: {"name": data.get("name")}
                 },
-                "exclude_filter_function": lambda data: not isinstance(data, dict)
+                "exclude_filter_function": lambda data: not isinstance(grab(data, "data.vpnInfo.userConnections"), dict)
             },
             "vpn_user_virtual_address": {
                 "data_path": "data.vpnInfo.userConnections",
@@ -671,7 +671,7 @@ fritzbox_services.append({
                     "value_function": lambda data: data.get("virtualAddress"),
                     "tags_function": lambda data: {"name": data.get("name")}
                 },
-                "exclude_filter_function": lambda data: not isinstance(data, dict)
+                "exclude_filter_function": lambda data: not isinstance(grab(data, "data.vpnInfo.userConnections"), dict)
             },
             "vpn_user_remote_address": {
                 "data_path": "data.vpnInfo.userConnections",
@@ -681,7 +681,7 @@ fritzbox_services.append({
                     "value_function": lambda data: data.get("address"),
                     "tags_function": lambda data: {"name": data.get("name")}
                 },
-                "exclude_filter_function": lambda data: not isinstance(data, dict)
+                "exclude_filter_function": lambda data: not isinstance(grab(data, "data.vpnInfo.userConnections"), dict)
             },
             "vpn_user_num_active": {
                 "type": int,
