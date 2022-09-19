@@ -36,7 +36,7 @@ def prepare_response_data(response):
     handler to prepare returned data for parsing
     """
 
-    return xmltodict.parse(response.contentx)
+    return xmltodict.parse(response.content)
 
 
 fritzbox_services.append(
