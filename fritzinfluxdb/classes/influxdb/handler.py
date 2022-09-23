@@ -263,9 +263,19 @@ class InfluxHandler:
                 log.error(f"Problem requesting InfluxDB DBRP data: {e}")
                 return
 
-            if len(bucket_dbrp_data.content) > 0:
-                log.debug(f"InfluxDB bucket '{self.config.bucket}' has a database mapping: "
-                          f"{bucket_dbrp_data.content[0].database}")
+            create_retention_policy = False
+            for dbrp_data in bucket_dbrp_data.content or list():
+
+                # take care of influx 2.4 default autogen retention policy
+                if dbrp_data.retention_policy == "autogen" and dbrp_data.default is True:
+                    create_retention_policy = True
+
+            if len(bucket_dbrp_data.content) == 0:
+                create_retention_policy = True
+
+            if create_retention_policy is False:
+                log.debug(f"InfluxDB bucket '{self.config.bucket}' has a database mapping retention policy: "
+                          f"{bucket_dbrp_data.content[0].retention_policy}")
             else:
                 try:
                     dbrp_api.post_dbrp(DBRPCreate(
