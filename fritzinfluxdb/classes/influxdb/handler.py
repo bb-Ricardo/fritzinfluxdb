@@ -66,6 +66,9 @@ class InfluxHandler:
     # set to true if connection to InfluxDB got lost
     connection_lost = False
 
+    # keep track if InfluxDB refuses to write data which is out of range
+    out_of_retention_period_range = False
+
     def __init__(self, config, user_agent=None):
 
         self.config = InfluxDBConfig(config)
@@ -78,6 +81,7 @@ class InfluxHandler:
         self.last_write_retry = None
         self.session_v1_requests_session = requests.Session()
         self.current_max_measurements_buffer_warning = self.max_measurements_buffer_warning
+        self.current_measurements_per_write = self.max_measurements_per_write
 
         if self.config.version == 1:
 
@@ -318,8 +322,15 @@ class InfluxHandler:
             log.debug("InfluxDB data queue: No measurements found in queue")
             return
 
+        if self.out_of_retention_period_range is True:
+
+            # sort measurements to write out all the newest measurements first
+            # which probably won't hit the retention period boundary
+            self.buffer = sorted(self.buffer, key=lambda m: m.timestamp, reverse=True)
+
         # only use max amount of measurements to send to InfluxDB
-        local_buffer = self.buffer[0:self.max_measurements_per_write]
+        log.debug(f"Trying to write a maximum of '{self.current_measurements_per_write}' measurements to InfluxDB")
+        local_buffer = self.buffer[0:self.current_measurements_per_write]
 
         # convert FritzMeasurement to list of dicts
         data = [self.convert_measurement(x) for x in local_buffer]
@@ -333,10 +344,34 @@ class InfluxHandler:
                 self.session_v2_write_api.write(bucket=self.config.bucket, record=data,
                                                 write_precision=WritePrecision.S)
                 write_successful = True
+        except ApiException as e:
+            if e.status == 422:
+
+                log.debug("InfluxDB refused to write data as there seems to be measurements "
+                          "which are older then the defined retention period")
+
+                self.out_of_retention_period_range = True
+                self.current_retry_interval = 0
+
+                # get timestamp of measurement which is just out of range
+                if self.current_measurements_per_write <= 1 and len(self.buffer) > 0:
+                    newest_measurement = self.buffer[0]
+                    num_purged = len([x for x in self.buffer if x.timestamp <= newest_measurement.timestamp])
+                    log.info(f"Purging '{num_purged}' measurements which are older ({newest_measurement.timestamp}) "
+                             f"then the InfluxDB configured retention period")
+                    self.buffer[:] = [x for x in self.buffer if x.timestamp > newest_measurement.timestamp]
+                else:
+                    self.set_num_current_measurements_to_write(int(self.current_measurements_per_write/2))
+            else:
+                log.error(f"Failed to write to InfluxDB '{self.config.hostname}': {e}")
+
         except Exception as e:
             self.connection_lost = True
             log.error(f"Failed to write to InfluxDB '{self.config.hostname}': {e}")
-            pass
+
+        if len(self.buffer) == 0:
+            self.out_of_retention_period_range = False
+            self.current_measurements_per_write = self.max_measurements_per_write
 
         if write_successful is True:
             if self.connection_lost is True:
@@ -350,9 +385,24 @@ class InfluxHandler:
             self.last_write_retry = None
             self.current_retry_interval = self.retry_interval
 
+            self.out_of_retention_period_range = False
+            self.set_num_current_measurements_to_write(self.current_measurements_per_write * 2)
+
         else:
             if self.connection_lost is True:
                 self.current_retry_interval *= 2
+
+    def set_num_current_measurements_to_write(self, num_measurements: int):
+
+        if not isinstance(num_measurements, int):
+            return
+
+        if num_measurements < 1:
+            self.current_measurements_per_write = 1
+        elif num_measurements >= self.max_measurements_per_write:
+            self.current_measurements_per_write = self.max_measurements_per_write
+        else:
+            self.current_measurements_per_write = num_measurements
 
     async def check_buffer(self):
 
@@ -391,6 +441,7 @@ class InfluxHandler:
             await self.check_buffer()
 
             log.debug(f"Current InfluxDB measurement buffer length: {len(self.buffer)}")
-            await asyncio.sleep(1)
+            if self.out_of_retention_period_range is False:
+                await asyncio.sleep(1)
 
 # EOF
