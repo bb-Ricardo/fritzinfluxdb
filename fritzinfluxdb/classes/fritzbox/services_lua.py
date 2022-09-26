@@ -777,8 +777,7 @@ fritzbox_services.append({
         "os_versions": [
             "7.29",
             "7.30",
-            "7.31",
-            "7.39"
+            "7.31"
         ],
         "method": "POST",
         "params": {
