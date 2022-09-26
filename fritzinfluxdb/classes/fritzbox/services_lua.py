@@ -725,7 +725,8 @@ fritzbox_services.append({
                     "type": str,
                     "value_function": lambda data: data.get("connected"),
                     "tags_function": lambda data: {"name": data.get("name")}
-                }
+                },
+                "exclude_filter_function": lambda data: not isinstance(grab(data, "data.init.userConnections"), dict)
             },
             "vpn_user_active": {
                 "data_path": "data.init.userConnections",
@@ -734,7 +735,8 @@ fritzbox_services.append({
                     "type": str,
                     "value_function": lambda data: data.get("active"),
                     "tags_function": lambda data: {"name": data.get("name")}
-                }
+                },
+                "exclude_filter_function": lambda data: not isinstance(grab(data, "data.init.userConnections"), dict)
             },
             "vpn_user_virtual_address": {
                 "data_path": "data.init.userConnections",
@@ -743,7 +745,8 @@ fritzbox_services.append({
                     "type": str,
                     "value_function": lambda data: data.get("virtualAddress"),
                     "tags_function": lambda data: {"name": data.get("name")}
-                }
+                },
+                "exclude_filter_function": lambda data: not isinstance(grab(data, "data.init.userConnections"), dict)
             },
             "vpn_user_remote_address": {
                 "data_path": "data.init.userConnections",
@@ -752,7 +755,8 @@ fritzbox_services.append({
                     "type": str,
                     "value_function": lambda data: data.get("address"),
                     "tags_function": lambda data: {"name": data.get("name")}
-                }
+                },
+                "exclude_filter_function": lambda data: not isinstance(grab(data, "data.init.userConnections"), dict)
             },
             "vpn_user_num_active": {
                 "type": int,
@@ -762,6 +766,7 @@ fritzbox_services.append({
                                         if x.get("connected") is True]
                                    )
                                    ),
+                "exclude_filter_function": lambda data: not isinstance(grab(data, "data.init.userConnections"), dict)
             }
         }
     }
