@@ -139,7 +139,39 @@ fritzbox_services.append(
                     "value_function": lambda data: (
                         float((int(grab(data, "temperature.celsius")) + int(grab(data, "temperature.offset")))/10)
                     ),
-                    "exclude_filter_function": lambda data: "temperature" not in data.keys()
+                    "exclude_filter_function": lambda data: (
+                        grab(data, "temperature.celsius") is None or grab(data, "temperature.offset") is None
+                    )
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
+            },
+
+            "ha_temperature_celsius": {
+                "data_path": "devicelist.device",
+                "type": list,
+                "next": {
+                    # data struct type: dict
+                    "type": float,
+                    "tags_function": lambda data: {"name": data.get("name")},
+                    "value_function": lambda data: (
+                        float(int(grab(data, "temperature.celsius")) / 10)
+                    ),
+                    "exclude_filter_function": lambda data: grab(data, "temperature.celsius") is None
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
+            },
+
+            "ha_temperature_offset": {
+                "data_path": "devicelist.device",
+                "type": list,
+                "next": {
+                    # data struct type: dict
+                    "type": float,
+                    "tags_function": lambda data: {"name": data.get("name")},
+                    "value_function": lambda data: (
+                        float(int(grab(data, "temperature.offset")) / 10)
+                    ),
+                    "exclude_filter_function": lambda data: grab(data, "temperature.offset") is None
                 },
                 "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
@@ -155,7 +187,7 @@ fritzbox_services.append(
                     "value_function": lambda data: (
                         float(int(grab(data, "powermeter.power")) / 1000)
                     ),
-                    "exclude_filter_function": lambda data: "powermeter" not in data.keys()
+                    "exclude_filter_function": lambda data: grab(data, "powermeter.power") is None
                 },
                 "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
@@ -167,7 +199,7 @@ fritzbox_services.append(
                     "type": float,
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: grab(data, "powermeter.energy"),
-                    "exclude_filter_function": lambda data: "powermeter" not in data.keys()
+                    "exclude_filter_function": lambda data: grab(data, "powermeter.energy") is None
                 },
                 "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
@@ -181,7 +213,7 @@ fritzbox_services.append(
                     "value_function": lambda data: (
                         float(int(grab(data, "powermeter.voltage")) / 1000)
                     ),
-                    "exclude_filter_function": lambda data: "powermeter" not in data.keys()
+                    "exclude_filter_function": lambda data: grab(data, "powermeter.voltage") is None
                 },
                 "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },

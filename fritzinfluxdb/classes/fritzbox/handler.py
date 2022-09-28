@@ -215,8 +215,10 @@ class FritzBoxHandler(FritzBoxHandlerBase):
             if call_result is None:
                 continue
 
-            log.debug(f"Request {self.name} service '{service.name}' returned successfully: "
-                      f"{action.name} ({action.params})")
+            debug_msg = f"Request {self.name} service '{service.name}' returned successfully: {action.name}"
+            if len(action.params) > 0:
+                debug_msg += f" ({action.params})"
+            log.debug(debug_msg)
 
             # set time stamp of this query
             service.set_last_query_now()
@@ -447,7 +449,7 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
             pass
 
         if metric_value is None:
-            log.error(f"Unable to extract '{data_path}' form '{data}', got '{type(metric_value)}'")
+            log.error(f"Unable to extract '{metric_name}' form '{data}', got '{type(metric_value)}'")
             return
 
         if data_type in [int, float, bool, str]:
