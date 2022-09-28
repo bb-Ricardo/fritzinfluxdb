@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+#  Copyright (c) 2022 - 2022 Ricardo Bartels. All rights reserved.
 #
 #  fritzinfluxdb.py
 #
@@ -28,6 +29,7 @@ from fritzinfluxdb.classes.influxdb.handler import InfluxHandler
 
 __version__ = "1.0.1"
 __version_date__ = "2022-08-22"
+__author__ = "Ricardo Bartels <ricardo@bitchbrothers.com>"
 __description__ = "fritzinfluxdb"
 __license__ = "MIT"
 __url__ = "https://github.com/bb-Ricardo/fritzinfluxdb"

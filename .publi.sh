@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+#  Copyright (c) 2022 - 2022 Ricardo Bartels. All rights reserved.
+#
+#  fritzinfluxdb.py
+#
+#  This work is licensed under the terms of the MIT license.
+#  For a copy, see file LICENSE.txt included in this
+#  repository or visit: <https://opensource.org/licenses/MIT>.
 
 DOCKERHUB_IMAGE_PATH="bbricardo/fritzinfluxdb"
 
