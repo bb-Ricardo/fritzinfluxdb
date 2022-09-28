@@ -14,6 +14,6 @@ COPY fritzinfluxdb /app/fritzinfluxdb
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
 # run daemon
-CMD [ "python", "/app/fritzinfluxdb.py" ]
+CMD [ "python", "/app/fritzinfluxdb.py", "-d" ]
 
 # EOF
