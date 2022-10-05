@@ -135,7 +135,7 @@ fritzbox_services.append(
         ],
         "method": "POST",
         "params": {
-            "filter": 1,
+            "filter": "sys",
             "page": "log",
             "lang": "de"
         },
@@ -205,7 +205,7 @@ fritzbox_services.append(
         ],
         "method": "POST",
         "params": {
-            "filter": 2,
+            "filter": "net",
             "page": "log",
             "lang": "de"
         },
@@ -275,7 +275,7 @@ fritzbox_services.append(
         ],
         "method": "POST",
         "params": {
-            "filter": 3,
+            "filter": "fon",
             "page": "log",
             "lang": "de"
         },
@@ -345,7 +345,7 @@ fritzbox_services.append(
         ],
         "method": "POST",
         "params": {
-            "filter": 4,
+            "filter": "wlan",
             "page": "log",
             "lang": "de"
         },
@@ -415,7 +415,7 @@ fritzbox_services.append(
         ],
         "method": "POST",
         "params": {
-            "filter": 5,
+            "filter": "usb",
             "page": "log",
             "lang": "de"
         },
