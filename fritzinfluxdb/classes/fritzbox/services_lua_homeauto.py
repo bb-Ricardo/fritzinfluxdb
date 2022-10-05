@@ -47,7 +47,8 @@ fritzbox_services.append(
             "7.29",
             "7.30",
             "7.31",
-            "7.39"
+            "7.39",
+            "7.50"
         ],
         "url_path": FritzBoxLuaURLPath.homeautomation,
         "method": "GET",

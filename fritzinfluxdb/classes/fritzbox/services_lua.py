@@ -29,7 +29,8 @@ fritzbox_services.append(
             "7.29",
             "7.30",
             "7.31",
-            "7.39"
+            "7.39",
+            "7.50"
         ],
         "method": "POST",
         "params": {
@@ -68,7 +69,8 @@ fritzbox_services.append(
             "7.29",
             "7.30",
             "7.31",
-            "7.39"
+            "7.39",
+            "7.50"
         ],
         "method": "POST",
         "params": {
@@ -131,7 +133,8 @@ fritzbox_services.append(
     {
         "name": "System logs",
         "os_versions": [
-            "7.39"
+            "7.39",
+            "7.50"
         ],
         "method": "POST",
         "params": {
@@ -201,7 +204,8 @@ fritzbox_services.append(
     {
         "name": "Internet connection logs",
         "os_versions": [
-            "7.39"
+            "7.39",
+            "7.50"
         ],
         "method": "POST",
         "params": {
@@ -271,7 +275,8 @@ fritzbox_services.append(
     {
         "name": "Telephony logs",
         "os_versions": [
-            "7.39"
+            "7.39",
+            "7.50"
         ],
         "method": "POST",
         "params": {
@@ -341,7 +346,8 @@ fritzbox_services.append(
     {
         "name": "WLAN logs",
         "os_versions": [
-            "7.39"
+            "7.39",
+            "7.50"
         ],
         "method": "POST",
         "params": {
@@ -411,7 +417,8 @@ fritzbox_services.append(
     {
         "name": "USB Devices logs",
         "os_versions": [
-            "7.39"
+            "7.39",
+            "7.50"
         ],
         "method": "POST",
         "params": {
@@ -449,7 +456,8 @@ fritzbox_services.append(
             "7.29",
             "7.30",
             "7.31",
-            "7.39"
+            "7.39",
+            "7.50"
         ],
         "method": "POST",
         "params": {
@@ -561,7 +569,8 @@ fritzbox_services.append({
             "7.29",
             "7.30",
             "7.31",
-            "7.39"
+            "7.39",
+            "7.50"
         ],
         "method": "POST",
         "params": {
@@ -701,7 +710,8 @@ fritzbox_services.append({
 fritzbox_services.append({
         "name": "VPN Users",
         "os_versions": [
-            "7.39"
+            "7.39",
+            "7.50"
         ],
         "method": "POST",
         "params": {
@@ -816,7 +826,8 @@ fritzbox_services.append({
             "7.29",
             "7.30",
             "7.31",
-            "7.39"
+            "7.39",
+            "7.50"
         ],
         "method": "POST",
         "params": {
