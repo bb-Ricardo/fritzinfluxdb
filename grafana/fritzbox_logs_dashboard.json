@@ -1,47 +1,12 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_INFLUXDB",
-      "label": "InfluxDB",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "influxdb",
-      "pluginName": "InfluxDB"
-    },
-    {
-      "name": "VAR_MEASUREMENT",
-      "type": "constant",
-      "label": "InfluxDB measurement",
-      "value": "fritzbox",
-      "description": ""
-    }
-  ],
-  "__elements": [],
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "8.4.4"
-    },
-    {
-      "type": "datasource",
-      "id": "influxdb",
-      "name": "InfluxDB",
-      "version": "1.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "table",
-      "name": "Table",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -60,15 +25,14 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
-  "iteration": 1649155848242,
+  "id": 2,
   "links": [],
   "liveNow": false,
   "panels": [
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "${DS_INFLUXDB}"
+        "uid": "${InfluxDB}"
       },
       "description": "",
       "fieldConfig": {
@@ -78,7 +42,8 @@
           },
           "custom": {
             "align": "auto",
-            "displayMode": "color-text"
+            "displayMode": "color-text",
+            "inspect": false
           },
           "mappings": [
             {
@@ -211,12 +176,12 @@
           }
         ]
       },
-      "pluginVersion": "8.4.4",
+      "pluginVersion": "9.1.7",
       "targets": [
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
+            "uid": "${InfluxDB}"
           },
           "groupBy": [
             {
@@ -288,7 +253,7 @@
       "type": "table"
     }
   ],
-  "schemaVersion": 35,
+  "schemaVersion": 37,
   "style": "dark",
   "tags": [
     "fritzbox"
@@ -300,27 +265,19 @@
         "hide": 2,
         "label": "InfluxDB measurement",
         "name": "measurement",
-        "query": "${VAR_MEASUREMENT}",
+        "query": "fritzbox",
         "skipUrlSync": false,
-        "type": "constant",
-        "current": {
-          "value": "${VAR_MEASUREMENT}",
-          "text": "${VAR_MEASUREMENT}",
-          "selected": false
-        },
-        "options": [
-          {
-            "value": "${VAR_MEASUREMENT}",
-            "text": "${VAR_MEASUREMENT}",
-            "selected": false
-          }
-        ]
+        "type": "constant"
       },
       {
-        "current": {},
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
         "datasource": {
           "type": "influxdb",
-          "uid": "${DS_INFLUXDB}"
+          "uid": "fRNwPzSVk"
         },
         "definition": "SHOW TAG VALUES FROM $measurement WITH KEY=box",
         "hide": 0,
@@ -337,10 +294,14 @@
         "type": "query"
       },
       {
-        "current": {},
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
         "datasource": {
           "type": "influxdb",
-          "uid": "${DS_INFLUXDB}"
+          "uid": "fRNwPzSVk"
         },
         "definition": "SHOW TAG VALUES FROM $measurement WITH KEY=log_type",
         "hide": 0,
@@ -355,6 +316,25 @@
         "skipUrlSync": false,
         "sort": 5,
         "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "FritzBox_Berlin",
+          "value": "FritzBox_Berlin"
+        },
+        "description": "Database, where the fritzinfluxdb is storing the data",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "InfluxDB",
+        "options": [],
+        "query": "influxdb",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
       }
     ]
   },
@@ -366,6 +346,6 @@
   "timezone": "",
   "title": "FRITZ!Box Router Logs",
   "uid": "fritzrouterlogs",
-  "version": 1,
+  "version": 3,
   "weekStart": ""
 }
