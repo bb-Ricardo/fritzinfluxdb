@@ -220,7 +220,7 @@ fritzbox_services.append(
             },
 
             # Switch data
-            "ha_switch_sate": {
+            "ha_switch_state": {
                 "data_path": "devicelist.device",
                 "type": list,
                 "next": {

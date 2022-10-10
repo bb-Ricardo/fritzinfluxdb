@@ -23,7 +23,7 @@ unset DOCKER_CERT_PATH
 
 docker --config ./docker-tmp login
 docker --config ./docker-tmp buildx create --use
-if [[ $FINAL ]]; then
+if [[ $FINAL == true ]]; then
   docker --config ./docker-tmp buildx build --push \
     --platform linux/arm/v7,linux/arm64/v8,linux/amd64 \
     --tag ${DOCKERHUB_IMAGE_PATH}:latest \
