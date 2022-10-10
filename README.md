@@ -219,6 +219,7 @@ optional arguments:
 There are following Dashboards included:
 * [fritzbox_system_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/fritzbox_system_dashboard.json)
 * [fritzbox_logs_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/fritzbox_logs_dashboard.json)
+* [fritzbox_call_log_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/fritzbox_call_log_dashboard.json)
 
 *This was heavily inspired by: https://grafana.com/dashboards/713*
 
