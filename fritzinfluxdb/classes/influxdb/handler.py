@@ -16,6 +16,7 @@ import requests
 
 # InfluxDB version 1.x client
 from influxdb import InfluxDBClient as InfluxDBClientV1
+from influxdb.exceptions import InfluxDBClientError
 # InfluxDB version 2.x client
 from influxdb_client import InfluxDBClient as InfluxDBClientV2, BucketRetentionRules, DBRPCreate, DBRPsService
 from influxdb_client.rest import ApiException
@@ -41,9 +42,6 @@ class InfluxHandler:
     # default InfluxDB connection timeout
     connection_timeout_v1 = 2
     connection_timeout_v2 = 5
-
-    # default number of days to keep our fritzinfluxdb data in InfluxDB
-    bucket_retention_days = 365
 
     # max size of message buffer before discarding old measurements
     max_measurements_buffer_size = 1_000_000
@@ -201,6 +199,18 @@ class InfluxHandler:
         else:
             log.debug(f"InfluxDB database '{self.config.database}' exists")
 
+        try:
+            retention_policies = self.session_v1.get_list_retention_policies(self.config.database)
+        except Exception as e:
+            log.error(f"Problem querying database retention policy: {e}")
+            return
+
+        if "1year" not in [x.get("name") for x in retention_policies]:
+            self.session_v1.create_retention_policy(
+                name="1year", duration=f"{self.config.data_retention_days}d", replication="1",
+                database=self.config.database, shard_duration="24h", default=True
+            )
+
         log.info(f"Connection to InfluxDB {self.version} established and database present")
 
         self.init_successful = True
@@ -241,7 +251,7 @@ class InfluxHandler:
             log.info(f"InfluxDB bucket '{self.config.bucket}' not found, trying to create it")
             try:
                 retention_rules = BucketRetentionRules(type="expire",
-                                                       every_seconds=3600 * 24 * self.bucket_retention_days,
+                                                       every_seconds=3600 * 24 * self.config.data_retention_days,
                                                        shard_group_duration_seconds=3600 * 24)
 
                 bucket_data = buckets_api.create_bucket(bucket_name=self.config.bucket,
@@ -265,11 +275,8 @@ class InfluxHandler:
                 return
 
             create_retention_policy = False
-            for dbrp_data in bucket_dbrp_data.content or list():
-
-                # take care of influx 2.4 default autogen retention policy
-                if dbrp_data.retention_policy == "autogen" and dbrp_data.default is True:
-                    create_retention_policy = True
+            if "1year" not in [x.retention_policy for x in bucket_dbrp_data.content]:
+                create_retention_policy = True
 
             if len(bucket_dbrp_data.content) == 0:
                 create_retention_policy = True
@@ -283,7 +290,8 @@ class InfluxHandler:
                         org=self.config.organisation,
                         bucket_id=bucket_data.id,
                         database=bucket_data.name,
-                        retention_policy="1year"
+                        retention_policy="1year",
+                        default=True
                     ))
                 except Exception as e:
                     log.error(f"Problem creating InfluxDB DBRP data: {e}")
@@ -355,8 +363,10 @@ class InfluxHandler:
                 self.session_v2_write_api.write(bucket=self.config.bucket, record=data,
                                                 write_precision=WritePrecision.S)
                 write_successful = True
-        except ApiException as e:
-            if e.status == 422:
+        except (ApiException, InfluxDBClientError) as e:
+
+            if (isinstance(e, ApiException) and e.status == 422) or \
+                    (isinstance(e, InfluxDBClientError) and "points beyond retention policy" in f"{e}"):
 
                 log.debug("InfluxDB refused to write data as there seems to be measurements "
                           "which are older then the defined retention period")

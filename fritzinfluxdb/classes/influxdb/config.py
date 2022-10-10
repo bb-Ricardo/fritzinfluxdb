@@ -52,6 +52,10 @@ class InfluxDBConfig(ConfigBase):
         "type": str,
         "default": "fritzbox"
     }
+    data_retention_days = {
+        "type": int,
+        "default": 365
+    }
 
     # version 1 parameters
     username = {
