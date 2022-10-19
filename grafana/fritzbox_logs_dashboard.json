@@ -16,13 +16,13 @@
       "description": ""
     }
   ],
-  "__elements": [],
+  "__elements": {},
   "__requires": [
     {
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "8.4.4"
+      "version": "9.1.6"
     },
     {
       "type": "datasource",
@@ -41,7 +41,10 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -61,7 +64,6 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1649155848242,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -78,7 +80,8 @@
           },
           "custom": {
             "align": "auto",
-            "displayMode": "color-text"
+            "displayMode": "color-text",
+            "inspect": false
           },
           "mappings": [
             {
@@ -211,7 +214,7 @@
           }
         ]
       },
-      "pluginVersion": "8.4.4",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -229,6 +232,7 @@
           "measurement": "/^$measurement$/",
           "orderByTime": "ASC",
           "policy": "default",
+          "query": "from(bucket: v.defaultBucket)\n    |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n    |> filter(fn: (r) => r._field == \"log_entry\" and r.box =~ /^.*$/ and r.log_type =~ /^${log_type}$/)\n    |> sort(columns: [\"_time\"], desc: true)\n    |> group(columns: [\"_measurement\"])\n    |> keep(columns:[\"_time\", \"_value\", \"log_type\"])\n",
           "refId": "A",
           "resultFormat": "logs",
           "select": [
@@ -264,35 +268,27 @@
             "excludeByName": {
               "Time": false
             },
-            "indexByName": {},
+            "indexByName": {
+              "_time": 0,
+              "_value": 2,
+              "log_type": 1
+            },
             "renameByName": {
               "Time": "Date/Time",
+              "_time": "Date/Time",
+              "_value": "Entry",
               "log_entry": "Entry",
               "log_type": "Log Type"
             }
-          }
-        },
-        {
-          "id": "sortBy",
-          "options": {
-            "fields": {},
-            "sort": [
-              {
-                "desc": true,
-                "field": "Date/Time"
-              }
-            ]
           }
         }
       ],
       "type": "table"
     }
   ],
-  "schemaVersion": 35,
+  "schemaVersion": 37,
   "style": "dark",
-  "tags": [
-    "fritzbox"
-  ],
+  "tags": [],
   "templating": {
     "list": [
       {
@@ -317,19 +313,20 @@
         ]
       },
       {
+        "allValue": ".*",
         "current": {},
         "datasource": {
           "type": "influxdb",
           "uid": "${DS_INFLUXDB}"
         },
-        "definition": "SHOW TAG VALUES FROM $measurement WITH KEY=box",
+        "definition": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"log_entry\")\n  |> keyValues(keyColumns: [\"box\"])\n  |> group()\n  |> keep(columns: [\"box\"])\n  |> distinct(column: \"box\")",
         "hide": 0,
         "includeAll": true,
         "label": "FritzBox",
         "multi": false,
         "name": "boxtag",
         "options": [],
-        "query": "SHOW TAG VALUES FROM $measurement WITH KEY=box",
+        "query": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"log_entry\")\n  |> keyValues(keyColumns: [\"box\"])\n  |> group()\n  |> keep(columns: [\"box\"])\n  |> distinct(column: \"box\")",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -337,19 +334,20 @@
         "type": "query"
       },
       {
+        "allValue": ".*",
         "current": {},
         "datasource": {
           "type": "influxdb",
           "uid": "${DS_INFLUXDB}"
         },
-        "definition": "SHOW TAG VALUES FROM $measurement WITH KEY=log_type",
+        "definition": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"log_entry\")\n  |> keyValues(keyColumns: [\"log_type\"])\n  |> group()\n  |> keep(columns: [\"log_type\"])\n  |> distinct(column: \"log_type\")",
         "hide": 0,
         "includeAll": true,
         "label": "Log Type",
         "multi": false,
         "name": "log_type",
         "options": [],
-        "query": "SHOW TAG VALUES FROM $measurement WITH KEY=log_type",
+        "query": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"log_entry\")\n  |> keyValues(keyColumns: [\"log_type\"])\n  |> group()\n  |> keep(columns: [\"log_type\"])\n  |> distinct(column: \"log_type\")",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,

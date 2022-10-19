@@ -16,13 +16,13 @@
       "description": ""
     }
   ],
-  "__elements": [],
+  "__elements": {},
   "__requires": [
     {
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "8.4.4"
+      "version": "9.1.6"
     },
     {
       "type": "datasource",
@@ -41,7 +41,10 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -61,7 +64,6 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1663972781859,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -77,7 +79,8 @@
           },
           "custom": {
             "align": "center",
-            "displayMode": "auto"
+            "displayMode": "auto",
+            "inspect": false
           },
           "mappings": [],
           "thresholds": {
@@ -225,16 +228,17 @@
       "id": 2,
       "options": {
         "footer": {
+          "enablePagination": false,
           "fields": "",
           "reducer": [
             "sum"
           ],
           "show": false
         },
-        "frameIndex": 22,
+        "frameIndex": 57,
         "showHeader": true
       },
-      "pluginVersion": "8.4.4",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -252,6 +256,7 @@
           "measurement": "/^$measurement$/",
           "orderByTime": "ASC",
           "policy": "default",
+          "query": "from(bucket: v.defaultBucket)\n    |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n    |> filter(fn: (r) => r._field =~ /^call_list_.*$/ and r.box == \"${boxtag}\")\n",
           "refId": "A",
           "resultFormat": "table",
           "select": [
@@ -347,32 +352,22 @@
               "value": "/^$boxtag$/"
             }
           ]
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "hide": false,
+          "query": "from(bucket: v.defaultBucket)\n    |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n    |> filter(fn: (r) => r._field =~ /^call_list_caller_number$/ and r.box == \"${boxtag}\")\n",
+          "refId": "B"
         }
       ],
       "title": "Call List Entries",
       "transformations": [
         {
-          "id": "seriesToRows",
+          "id": "merge",
           "options": {}
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "uid": true
-            },
-            "indexByName": {
-              "Call Type": 3,
-              "Duration": 4,
-              "Extension": 5,
-              "Name": 2,
-              "Number": 1,
-              "Number called": 6,
-              "Time": 0,
-              "uid": 7
-            },
-            "renameByName": {}
-          }
         },
         {
           "id": "sortBy",
@@ -385,12 +380,53 @@
               }
             ]
           }
+        },
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "equal",
+                  "options": {
+                    "value": "undefined"
+                  }
+                },
+                "fieldName": "call_list_type"
+              }
+            ],
+            "match": "any",
+            "type": "exclude"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "Time": 0,
+              "call_list_caller_name": 2,
+              "call_list_caller_number": 1,
+              "call_list_duration": 4,
+              "call_list_extension": 5,
+              "call_list_number_called": 6,
+              "call_list_type": 3
+            },
+            "renameByName": {
+              "call_list_caller_name": "Name",
+              "call_list_caller_number": "Number",
+              "call_list_duration": "Duration",
+              "call_list_extension": "Extension",
+              "call_list_number_called": "Number called",
+              "call_list_type": "Call Type"
+            }
+          }
         }
       ],
       "type": "table"
     }
   ],
-  "schemaVersion": 35,
+  "schemaVersion": 37,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -422,14 +458,14 @@
           "type": "influxdb",
           "uid": "${DS_INFLUXDB}"
         },
-        "definition": "SHOW TAG VALUES FROM $measurement WITH KEY=box",
+        "definition": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"call_list_type\")\n  |> keyValues(keyColumns: [\"box\"])\n  |> group()\n  |> keep(columns: [\"box\"])\n  |> distinct(column: \"box\")",
         "hide": 0,
         "includeAll": true,
         "label": "FritzBox",
         "multi": false,
         "name": "boxtag",
         "options": [],
-        "query": "SHOW TAG VALUES FROM $measurement WITH KEY=box",
+        "query": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"call_list_type\")\n  |> keyValues(keyColumns: [\"box\"])\n  |> group()\n  |> keep(columns: [\"box\"])\n  |> distinct(column: \"box\")",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -446,6 +482,6 @@
   "timezone": "",
   "title": "FRITZ!Box Call Logs",
   "uid": "fritzboxcalllogs",
-  "version": 7,
+  "version": 10,
   "weekStart": ""
 }
