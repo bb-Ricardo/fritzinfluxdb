@@ -178,7 +178,7 @@
             "uid": "${DS_INFLUXDB}"
           },
           "hide": false,
-          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._field == \"ha_temperature\" and r.box == \"${boxtag}\")\r\n  |> last()\r\n  |> map(fn: (r) => ({\"\": r._value, _measurement: r.name}))",
+          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_temperature\" and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({\"\": r._value, _measurement: r.name}))",
           "refId": "A"
         }
       ],
@@ -291,7 +291,7 @@
             "type": "influxdb",
             "uid": "${DS_INFLUXDB}"
           },
-          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._field == \"ha_heating_tist\" and r.box == \"${boxtag}\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: median)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _field: r.name + \" (actual)\", _value: r._value}))\r\n",
+          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_tist\" and r.box =~ /^${boxtag}$/)\r\n  |> aggregateWindow(every: v.windowPeriod, fn: median)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _field: r.name + \" (actual)\", _value: r._value}))\r\n",
           "refId": "A"
         },
         {
@@ -300,7 +300,7 @@
             "uid": "${DS_INFLUXDB}"
           },
           "hide": false,
-          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._field == \"ha_heating_tsoll\" and r.box == \"${boxtag}\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: first)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _field: r.name + \" (set)\", _value: r._value}))\r\n",
+          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_tsoll\" and r.box =~ /^${boxtag}$/)\r\n  |> aggregateWindow(every: v.windowPeriod, fn: first)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _field: r.name + \" (set)\", _value: r._value}))\r\n",
           "refId": "B"
         }
       ],
@@ -374,7 +374,7 @@
             "type": "influxdb",
             "uid": "${DS_INFLUXDB}"
           },
-          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._field == \"ha_heating_boostactive\" and r.box == \"${boxtag}\")\r\n  |> last()\r\n  |> map(fn: (r) => ({Device: r.name, Boost: r._value}))\r\n",
+          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_boostactive\" and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({Device: r.name, Boost: r._value}))\r\n",
           "refId": "A"
         },
         {
@@ -383,7 +383,7 @@
             "uid": "${DS_INFLUXDB}"
           },
           "hide": false,
-          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._field == \"ha_heating_holidayactive\" and r.box == \"${boxtag}\")\r\n  |> last()\r\n  |> map(fn: (r) => ({Device: r.name, Holiday: r._value}))\r\n",
+          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_holidayactive\" and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({Device: r.name, Holiday: r._value}))\r\n",
           "refId": "B"
         },
         {
@@ -392,7 +392,7 @@
             "uid": "${DS_INFLUXDB}"
           },
           "hide": false,
-          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._field == \"ha_heating_summeractive\" and r.box == \"${boxtag}\")\r\n  |> last()\r\n  |> map(fn: (r) => ({Device: r.name, Summer: r._value}))\r\n",
+          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_summeractive\" and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({Device: r.name, Summer: r._value}))\r\n",
           "refId": "C"
         },
         {
@@ -401,7 +401,7 @@
             "uid": "${DS_INFLUXDB}"
           },
           "hide": false,
-          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._field == \"ha_heating_devicelock\" and r.box == \"${boxtag}\")\r\n  |> last()\r\n  |> map(fn: (r) => ({Device: r.name, Locked: r._value}))\r\n",
+          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_devicelock\" and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({Device: r.name, Locked: r._value}))\r\n",
           "refId": "D"
         }
       ],
@@ -478,7 +478,7 @@
             "type": "influxdb",
             "uid": "${DS_INFLUXDB}"
           },
-          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._field == \"ha_battery_percent\" and r.box == \"${boxtag}\")\r\n  |> last()\r\n  |> map(fn: (r) => ({\"\": r._value, _measurement: r.name}))",
+          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_battery_percent\" and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({\"\": r._value, _measurement: r.name}))",
           "refId": "A"
         }
       ],
@@ -564,7 +564,7 @@
             "type": "influxdb",
             "uid": "${DS_INFLUXDB}"
           },
-          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._field =~ /^ha_heating_windowopenactive?$/ and r.box == \"${boxtag}\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: first)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _field: r.name, _value: if r._value != 0 then true else false}))\r\n",
+          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field =~ /^ha_heating_windowopenactive?$/ and r.box =~ /^${boxtag}$/)\r\n  |> aggregateWindow(every: v.windowPeriod, fn: first)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _field: r.name, _value: if r._value != 0 then true else false}))\r\n",
           "refId": "A"
         }
       ],
@@ -691,7 +691,7 @@
             "type": "influxdb",
             "uid": "${DS_INFLUXDB}"
           },
-          "query": "import \"strings\"\r\n\r\nfrom(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._field == \"ha_powermeter_power\" and r.box == \"${boxtag}\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _value: r._value, _measurement: r.name, _field: strings.replaceAll(v: r._field, t: \"ha_powermeter_\", u: \"\")}))",
+          "query": "import \"strings\"\r\n\r\nfrom(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_powermeter_power\" and r.box =~ /^${boxtag}$/)\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _value: r._value, _measurement: r.name, _field: strings.replaceAll(v: r._field, t: \"ha_powermeter_\", u: \"\")}))",
           "refId": "A"
         },
         {
@@ -700,7 +700,7 @@
             "uid": "${DS_INFLUXDB}"
           },
           "hide": false,
-          "query": "import \"strings\"\r\n\r\nfrom(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._field == \"ha_powermeter_voltage\" and r.box == \"${boxtag}\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _value: r._value, _measurement: r.name, _field: strings.replaceAll(v: r._field, t: \"ha_powermeter_\", u: \"\")}))",
+          "query": "import \"strings\"\r\n\r\nfrom(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_powermeter_voltage\" and r.box =~ /^${boxtag}$/)\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _value: r._value, _measurement: r.name, _field: strings.replaceAll(v: r._field, t: \"ha_powermeter_\", u: \"\")}))",
           "refId": "B"
         }
       ],
@@ -791,7 +791,7 @@
             "type": "influxdb",
             "uid": "${DS_INFLUXDB}"
           },
-          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._field =~ /^ha_simpleonoff_state$/ and r.box == \"${boxtag}\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: first)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _field: r.name, _value: if r._value != 0 then true else false}))\r\n",
+          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field =~ /^ha_simpleonoff_state$/ and r.box =~ /^${boxtag}$/)\r\n  |> aggregateWindow(every: v.windowPeriod, fn: first)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _field: r.name, _value: if r._value != 0 then true else false}))\r\n",
           "refId": "A"
         }
       ],
@@ -891,7 +891,7 @@
             "type": "influxdb",
             "uid": "${DS_INFLUXDB}"
           },
-          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._field == \"ha_temperature\" and r.box == \"${boxtag}\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: median)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _field: r.name, _value: r._value}))\r\n",
+          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_temperature\" and r.box =~ /^${boxtag}$/)\r\n  |> aggregateWindow(every: v.windowPeriod, fn: median)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _field: r.name, _value: r._value}))\r\n",
           "refId": "A"
         }
       ],
@@ -951,7 +951,7 @@
             "type": "influxdb",
             "uid": "${DS_INFLUXDB}"
           },
-          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._field == \"ha_device_present\" and r._value >= 1 and r.box == \"${boxtag}\")\r\n  |> last()\r\n  |> map(fn: (r) => ({Devices: r.name}))",
+          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_device_present\" and r._value >= 1 and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({Devices: r.name}))",
           "refId": "A"
         }
       ],
@@ -966,6 +966,7 @@
   "templating": {
     "list": [
       {
+        "allValue": ".*",
         "current": {},
         "datasource": {
           "type": "influxdb",
