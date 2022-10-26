@@ -9,7 +9,6 @@
 
 import re
 from datetime import datetime
-from xmlrpc.client import Boolean
 
 from fritzinfluxdb.common import grab
 
