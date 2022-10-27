@@ -363,7 +363,7 @@
   "timepicker": {},
   "timezone": "",
   "title": "FRITZ!Box Router Logs",
-  "uid": "fritzrouterlogs",
+  "uid": "fritzbox-router-logs-flux",
   "version": 1,
   "weekStart": ""
 }

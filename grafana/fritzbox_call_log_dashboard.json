@@ -482,7 +482,7 @@
   "timepicker": {},
   "timezone": "",
   "title": "FRITZ!Box Call Logs",
-  "uid": "fritzboxcalllogs",
+  "uid": "fritzbox-call-logs-flux",
   "version": 10,
   "weekStart": ""
 }
