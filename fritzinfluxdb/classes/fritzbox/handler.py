@@ -359,6 +359,11 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
             log.error(f"Unable to perform request to '{data_url}': {e}")
             return
 
+        # check for invalid session
+        if "<html" in f"{response.content}"[0:100]:
+            self.sid = None
+            return
+
         # noinspection PyBroadException
         try:
             result = service_to_request.response_parser(response)
