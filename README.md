@@ -25,7 +25,7 @@ DSL and Cable Modem FritzBox versions are supported. During startup there are me
 This is normal as there are values not available on certain models.
 
 ### Environment
-* Grafana >= 8.4.0
+* Grafana >= 9.1.0
 
 ## Setup
 * here we assume we install in `/opt`
@@ -180,30 +180,12 @@ link describes how to set env vars on a `docker run`
 
 For InfluxDB 2 it is highly recommended creating a specific write only token for the defined bucket.
 
-### Setup InfluxDB 2 datasource in Grafana for fritzinfluxdb
-
-The Grafana Dashboard is build using the InfluxQL query language. Therefore, the definition of the InfluxDB datasource
-in Grafana needs to be adopted.
-
-As "Query Language" define: InfluxQL<br>
-Set the http url to your InfluxDB instance
-
-Now "Add header":<br>
-* Header: Authorization
-* Value: Token {API_TOKEN}
-
-Here substitute `{API_TOKEN}` with your read token for the InfluxDB 2 bucket.
-
-The last option would be the database which is the same as the bucket defined in your config.
-
-See this comment for details: https://github.com/bb-Ricardo/fritzinfluxdb/issues/18#issuecomment-1073066993
-
 ## Running the script
 ```
 usage: fritzinfluxdb.py [-h] [-c fritzinfluxdb.ini [fritzinfluxdb.ini ...]] [-d] [-v]
 
 fritzinfluxdb
-Version: 1.0.1 (2022-08-22)
+Version: 1.1.0 (2022-11-XX)
 Project URL: https://github.com/bb-Ricardo/fritzinfluxdb
 
 optional arguments:
@@ -216,10 +198,31 @@ optional arguments:
 
 ## Grafana
 
+Dashboards to display the collected data are included under [grafana](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana).
+Due to some limitations of the InfluxDB 1.8 Flux language implementation the dashboards had to bes separated.
+
+Influx data source configuration:
+
+InfluxDB 1.8:
+  * the "Query Language" `InfluxQL` has to be selected
+
+InfluxDB >=2.2.0:
+  * the "Query Language" `Flux` has to be selected
+  * the bucket with the fritzbox data has to be set as default bucket (all dashboards use the default bucket)
+
+### Dashboards
 There are following Dashboards included:
-* [fritzbox_system_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/fritzbox_system_dashboard.json)
-* [fritzbox_logs_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/fritzbox_logs_dashboard.json)
-* [fritzbox_call_log_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/fritzbox_call_log_dashboard.json)
+
+InfluxDB 1.8.X:
+* [fritzbox_system_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/influx1_dashboards/fritzbox_system_dashboard.json)
+* [fritzbox_logs_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/influx1_dashboards/fritzbox_logs_dashboard.json)
+* [fritzbox_call_log_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/influx1_dashboards/fritzbox_call_log_dashboard.json)
+
+InfluxDB >=2.2.0:
+* [fritzbox_system_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/influx2_dashboards/fritzbox_system_dashboard.json)
+* [fritzbox_logs_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/influx2_dashboards/fritzbox_logs_dashboard.json)
+* [fritzbox_call_log_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/influx2_dashboards/fritzbox_call_log_dashboard.json)
+* [fritzbox_home_automation_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/influx2_dashboards/fritzbox_home_automation_dashboard.json)
 
 *This was heavily inspired by: https://grafana.com/dashboards/713*
 
