@@ -7,7 +7,9 @@
 #  For a copy, see file LICENSE.txt included in this
 #  repository or visit: <https://opensource.org/licenses/MIT>.
 
-fritzbox_services = [
+from fritzinfluxdb.classes.fritzbox.service_definitions import tr069_services
+
+tr069_services.extend([
     {
         "name": "WANCommonIFC",
         "actions": [
@@ -195,4 +197,4 @@ fritzbox_services = [
             "NewMode": "ddns_mode"
         }
     }
-]
+])

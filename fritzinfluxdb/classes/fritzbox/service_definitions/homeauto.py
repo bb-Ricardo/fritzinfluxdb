@@ -11,8 +11,7 @@ import xmltodict
 
 from fritzinfluxdb.common import grab
 from fritzinfluxdb.classes.fritzbox.service_handler import FritzBoxLuaURLPath
-
-fritzbox_services = list()
+from fritzinfluxdb.classes.fritzbox.service_definitions import lua_services
 
 
 def avm_temp_map(value, input_min, input_max, output_min, output_max):
@@ -40,7 +39,7 @@ def prepare_response_data(response):
     return xmltodict.parse(response.content)
 
 
-fritzbox_services.append(
+lua_services.append(
     {
         "name": "Home Automation",
         "os_versions": [

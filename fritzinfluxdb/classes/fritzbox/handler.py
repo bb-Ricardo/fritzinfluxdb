@@ -21,10 +21,7 @@ from fritzconnection.core.exceptions import FritzConnectionException, FritzServi
 from fritzinfluxdb.classes.fritzbox.config import FritzBoxConfig
 from fritzinfluxdb.log import get_logger
 from fritzinfluxdb.classes.fritzbox.service_handler import FritzBoxTR069Service, FritzBoxLuaService
-from fritzinfluxdb.classes.fritzbox.services_tr069 import fritzbox_services as tr069_services
-from fritzinfluxdb.classes.fritzbox.services_lua import fritzbox_services as lua_services
-from fritzinfluxdb.classes.fritzbox.services_lua_homeauto import fritzbox_services as homeauto_services
-from fritzinfluxdb.classes.fritzbox.services_lua_telephone_list import fritzbox_services as telephone_services
+import fritzinfluxdb.classes.fritzbox.service_definitions as service_definitions
 from fritzinfluxdb.classes.common import FritzMeasurement
 from fritzinfluxdb.common import grab
 
@@ -113,8 +110,7 @@ class FritzBoxHandler(FritzBoxHandlerBase):
 
         super().__init__(config)
 
-        # parse services from fritzbox/services_tr069.py
-        self.add_services(FritzBoxTR069Service, tr069_services)
+        self.add_services(FritzBoxTR069Service, service_definitions.tr069_services)
 
     def connect(self):
 
@@ -263,14 +259,7 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
         self.session = requests.Session()
         self.session.verify = self.config.verify_tls
 
-        # parse services from fritzbox/services_lua.py
-        self.add_services(FritzBoxLuaService, lua_services)
-
-        # parse services from fritzbox/services_lua_homeauto.py
-        self.add_services(FritzBoxLuaService, homeauto_services)
-
-        # parse services from fritzbox/services_lua_telephone_list.py
-        self.add_services(FritzBoxLuaService, telephone_services)
+        self.add_services(FritzBoxLuaService, service_definitions.lua_services)
 
     def connect(self):
 

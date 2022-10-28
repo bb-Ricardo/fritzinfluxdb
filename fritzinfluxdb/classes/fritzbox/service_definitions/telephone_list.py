@@ -11,8 +11,9 @@ import hashlib
 from datetime import datetime
 
 from fritzinfluxdb.classes.fritzbox.service_handler import FritzBoxLuaURLPath
+from fritzinfluxdb.classes.fritzbox.service_definitions import lua_services
 
-fritzbox_services = list()
+
 hash_cache = dict()
 
 read_interval = 60
@@ -78,9 +79,9 @@ def prepare_response_data(response):
     return [x for x in response.text.split("\n") if x not in filter_strings]
 
 
-# due to the tracking of measurements multiple short calls from the same number in the same minute
+# due to the tracking of measurements multiple short calls from the same number within the same minute
 # will be reduced to one entry
-fritzbox_services.append(
+lua_services.append(
     {
         "name": "Phone call list",
         "os_versions": [
