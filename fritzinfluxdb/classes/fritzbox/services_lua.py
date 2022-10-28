@@ -14,6 +14,17 @@ from fritzinfluxdb.common import grab
 
 fritzbox_services = list()
 
+# precompile active_host_txt_regex
+#  used this neat tool: https://regex101.com/r/ut4KdU/1
+# Needs to match following strings:
+#   166 / 150 Mbit/s
+#   2,4 GHz, 50 / 836 Mbit/s
+#   5 GHz, 50 / 836 Mbit/s
+#   2,4 GHz
+#   5 GHz
+active_host_txt_regex = \
+    re.compile(r"((?P<frequency>[0-9,]+) GHz)*(, )*((?P<downstream>\d+) / (?P<upstream>\d+) .*bit.*)*")
+
 
 def prepare_response_data(response):
     """
@@ -21,6 +32,29 @@ def prepare_response_data(response):
     """
 
     return response.json()
+
+
+def get_active_host_details(data, desired_value: str, fallback_value):
+
+    property_list = data.get("properties")
+
+    if not isinstance(property_list, list):
+        property_list = list()
+
+    txt_list = [x.get("txt") for x in property_list]
+
+    if desired_value == "additional_text":
+        return ", ".join(txt_list)
+
+    if desired_value == "is_mesh":
+        return True if "Mesh" in txt_list else False
+
+    regex_matches = active_host_txt_regex.match(next((x for x in txt_list if "GHz" in x or "bit" in x), ""))
+
+    if regex_matches is None:
+        return fallback_value
+
+    return regex_matches.groupdict(fallback_value).get(desired_value, fallback_value)
 
 
 fritzbox_services.append(
@@ -548,11 +582,7 @@ fritzbox_services.append(
                     # data struct type: dict
                     "type": str,
                     "tags_function": lambda data: {"uid": data.get("UID"), "name": data.get("name")},
-                    "value_function": lambda data: (
-                        lambda x: x[0].get("txt", "") if len(x) != 0 else ""
-                    )(
-                        data.get("properties", [{"txt": ""}])
-                    )
+                    "value_function": lambda data: get_active_host_details(data, "additional_text", "")
                 }
             },
             "active_hosts_is_mesh": {
@@ -562,79 +592,37 @@ fritzbox_services.append(
                     # data struct type: dict
                     "type": bool,
                     "tags_function": lambda data: {"uid": data.get("UID"), "name": data.get("name")},
-                    "value_function": lambda data: (
-                        [True for x in data.get("properties") if x.__contains__("txt") and x.get("txt") == "Mesh"]
-                    )
+                    "value_function": lambda data: get_active_host_details(data, "is_mesh", False)
                 }
             },
-            "active_hosts_wifi_frequency": {
+            "active_hosts_frequency": {
                 "data_path": "data.active",
                 "type": list,
                 "next": {
                     # data struct type: dict
                     "type": str,
                     "tags_function": lambda data: {"uid": data.get("UID"), "name": data.get("name")},
-                    "value_function":  lambda data: (
-                        lambda x: x[0][0] if len(x)==1 and x[0]!= None else ""
-                    ) (
-                        [re.search("(2\,4|5) GHz", x.get("txt")) for x in data.get("properties") if (x.__contains__("txt") and re.match("2\,4|5 GHz()(, \d+ / \d+ .*bit.*)?", x.get("txt")))]
-                    )
+                    "value_function": lambda data: get_active_host_details(data, "frequency", "")
                 }
             },
-            "active_hosts_wifi_downstream": {
+            "active_hosts_downstream": {
                 "data_path": "data.active",
                 "type": list,
                 "next": {
                     # data struct type: dict
                     "type": int,
                     "tags_function": lambda data: {"uid": data.get("UID"), "name": data.get("name")},
-                    "value_function":  lambda data: (
-                        lambda x: x[0][0][1] if len(x)==1 and x[0]!= None and len(x[0])>0 else 0
-                    ) (
-                        [re.findall("(\d+) / (\d+)", x.get("txt")) for x in data.get("properties") if (x.__contains__("txt") and re.match("2\,4|5 GHz, \d+ / \d+ .*bit.*", x.get("txt")))]
-                    )
+                    "value_function": lambda data: get_active_host_details(data, "downstream", 0)
                 }
             },
-            "active_hosts_wifi_upstream": {
+            "active_hosts_upstream": {
                 "data_path": "data.active",
                 "type": list,
                 "next": {
                     # data struct type: dict
                     "type": int,
                     "tags_function": lambda data: {"uid": data.get("UID"), "name": data.get("name")},
-                    "value_function":  lambda data: (
-                        lambda x: x[0][0][0] if len(x)==1 and x[0]!=None and len(x[0])>0 else 0
-                    ) (
-                        [re.findall("(\d+) / (\d+)", x.get("txt")) for x in data.get("properties") if (x.__contains__("txt") and re.match("2\,4|5 GHz, \d+ / \d+ .*bit.*", x.get("txt")))]
-                    )
-                }
-            },
-            "active_hosts_powerline_downstream": {
-                "data_path": "data.active",
-                "type": list,
-                "next": {
-                    # data struct type: dict
-                    "type": int,
-                    "tags_function": lambda data: {"uid": data.get("UID"), "name": data.get("name")},
-                    "value_function":  lambda data: (
-                        lambda x: x[0][0][1] if len(x)==1 and x[0]!= None else 0
-                    ) (
-                        [re.findall("^(\d+) / (\d+)", x.get("txt")) for x in data.get("properties") if (x.__contains__("txt") and re.match("^\d+ / \d+ .*bit.*", x.get("txt")))]
-                    )
-                }
-            },
-            "active_hosts_powerline_upstream": {
-                "data_path": "data.active",
-                "type": list,
-                "next": {
-                    # data struct type: dict
-                    "type": int,
-                    "tags_function": lambda data: {"uid": data.get("UID"), "name": data.get("name")},
-                    "value_function":  lambda data: (
-                        lambda x: x[0][0][0] if len(x)==1 and x[0]!= None else 0
-                    ) (
-                        [re.findall("^(\d+) / (\d+)", x.get("txt")) for x in data.get("properties") if (x.__contains__("txt") and re.match("^\d+ / \d+ .*bit.*", x.get("txt")))]
-                    )
+                    "value_function": lambda data: get_active_host_details(data, "upstream", 0)
                 }
             },
             "num_active_host": {
