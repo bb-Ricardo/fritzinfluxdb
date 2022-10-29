@@ -16,13 +16,13 @@
       "description": ""
     }
   ],
-  "__elements": [],
+  "__elements": {},
   "__requires": [
     {
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "8.4.4"
+      "version": "9.1.6"
     },
     {
       "type": "datasource",
@@ -41,7 +41,10 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -61,7 +64,6 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1663972781859,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -77,7 +79,8 @@
           },
           "custom": {
             "align": "center",
-            "displayMode": "auto"
+            "displayMode": "auto",
+            "inspect": false
           },
           "mappings": [],
           "thresholds": {
@@ -234,7 +237,7 @@
         "frameIndex": 22,
         "showHeader": true
       },
-      "pluginVersion": "8.4.4",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -385,12 +388,30 @@
               }
             ]
           }
+        },
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "equal",
+                  "options": {
+                    "value": "undefined"
+                  }
+                },
+                "fieldName": "Call Type"
+              }
+            ],
+            "match": "all",
+            "type": "exclude"
+          }
         }
       ],
       "type": "table"
     }
   ],
-  "schemaVersion": 35,
+  "schemaVersion": 37,
   "style": "dark",
   "tags": [],
   "templating": {
