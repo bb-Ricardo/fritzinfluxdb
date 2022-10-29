@@ -154,6 +154,14 @@ class FritzBoxHandler(FritzBoxHandlerBase):
             self.config.model = device_info.get("NewModelName")
             self.config.fw_version = device_info.get("NewSoftwareVersion")
 
+        # get link type (DSL or Cable)
+        # noinspection PyBroadException
+        try:
+            link_info = self.session.call_action("WANCommonIFC", "GetCommonLinkProperties")
+            self.config.link_type = link_info.get("NewWANAccessType")
+        except BaseException:
+            pass
+
         log.info(f"Successfully established {self.name} session")
 
         self.init_successful = True
@@ -164,6 +172,15 @@ class FritzBoxHandler(FritzBoxHandlerBase):
             log.info(f"Closed {self.name} connection")
 
     def query_service_data(self, service):
+
+        def service_invalid_log(log_message):
+            if service.link_type is not None and service.link_type is not self.config.link_type:
+                log_handler = log.debug
+                log_message += f" (only available on {service.link_type} connections)"
+            else:
+                log_handler = log.warning
+
+            log_handler(log_message)
 
         if not isinstance(service, FritzBoxTR069Service):
             log.error("Query service must be of type 'FritzBoxTR069Service'")
@@ -186,15 +203,15 @@ class FritzBoxHandler(FritzBoxHandlerBase):
             try:
                 call_result = self.session.call_action(service.name, action.name, **action.params)
             except FritzServiceError:
-                log.info(f"Requested invalid service: {service.name}")
+                service_invalid_log(f"Requested invalid service: {service.name}")
                 if self.discovery_done is False:
-                    log.info(f"Querying service '{service.name}' will be disabled")
+                    service_invalid_log(f"Querying service '{service.name}' will be disabled")
                     service.available = False
                 continue
             except FritzActionError:
-                log.info(f"Requested invalid action '{action.name}' for service: {service.name}")
+                service_invalid_log(f"Requested invalid action '{action.name}' for service: {service.name}")
                 if self.discovery_done is False:
-                    log.info(f"Querying action '{action.name}' will be disabled")
+                    service_invalid_log(f"Querying action '{action.name}' will be disabled")
                     action.available = False
                 continue
             except FritzConnectionException as e:
@@ -230,7 +247,7 @@ class FritzBoxHandler(FritzBoxHandlerBase):
 
         if self.discovery_done is False:
             if True not in [x.available for x in service.actions]:
-                log.info(f"All actions for service '{service.name}' are unavailable. Disabling service.")
+                service_invalid_log(f"All actions for service '{service.name}' are unavailable. Disabling service.")
                 service.available = False
 
         return

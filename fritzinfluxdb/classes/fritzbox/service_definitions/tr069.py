@@ -90,6 +90,7 @@ tr069_services.extend([
             "GetStatisticsTotal",
             "X_AVM-DE_GetDSLInfo"
         ],
+        "link_type": "DSL",
         "value_instances": {
             "NewDownstreamMaxRate": "maxBitRate_downstream",
             "NewUpstreamMaxRate": "maxBitRate_upstream",
@@ -117,6 +118,7 @@ tr069_services.extend([
     {
         "name": "WANPPPConnection:1",
         "actions": ["GetInfo"],
+        "link_type": "DSL",
         "value_instances": {
             "NewExternalIPAddress": "external_ip",
             "NewLastAuthErrorInfo": "last_auth_error",
@@ -129,6 +131,7 @@ tr069_services.extend([
     {
         "name": "WANIPConnection:1",
         "actions": ["GetInfo"],
+        "link_type": "Cable",
         "value_instances": {
             "NewExternalIPAddress": "external_ip",
             "NewUptime": "linkuptime",

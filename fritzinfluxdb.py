@@ -127,11 +127,12 @@ def main():
             log.error(f"Initializing connection to {handler.name} failed")
             init_errors = True
 
-    if init_errors is True:
-        exit(1)
+#    if init_errors is True:
+#        exit(1)
 
-    log.info(f"Successfully connected to FritzBox '{fritzbox_connection.config.hostname}' "
-             f"({fritzbox_connection.config.box_tag}) Model: {fritzbox_connection.config.model} - "
+    log.info(f"Successfully connected to "
+             f"FritzBox '{fritzbox_connection.config.hostname}' ({fritzbox_connection.config.box_tag}) "
+             f"Model: {fritzbox_connection.config.model} ({fritzbox_connection.config.link_type}) - "
              f"FW: {fritzbox_connection.config.fw_version}")
 
     loop = asyncio.get_event_loop()

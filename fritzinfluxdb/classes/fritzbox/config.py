@@ -75,6 +75,7 @@ class FritzBoxConfig(ConfigBase):
 
         self._fw_version = None
         self.model = None
+        self.link_type = None
 
     def parse_config(self, config_data: configparser.ConfigParser):
 

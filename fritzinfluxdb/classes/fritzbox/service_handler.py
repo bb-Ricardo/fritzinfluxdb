@@ -118,6 +118,7 @@ class FritzBoxTR069Service(FritzBoxService):
         super().__init__(service_data)
 
         self.actions = list()
+        self.link_type = service_data.get("link_type")  # defines for which link type this service is valid for
 
         for action in service_data.get("actions", list()):
             self.add_action(action)
