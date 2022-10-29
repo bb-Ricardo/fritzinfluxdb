@@ -23,7 +23,7 @@
       "description": ""
     }
   ],
-  "__elements": [],
+  "__elements": {},
   "__requires": [
     {
       "type": "panel",
@@ -41,7 +41,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "8.4.4"
+      "version": "9.1.6"
     },
     {
       "type": "datasource",
@@ -78,16 +78,22 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "${DS_INFLUXDB}",
+        "datasource": {
+          "type": "influxdb",
+          "uid": "${DS_INFLUXDB}"
+        },
         "enable": true,
         "hide": false,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Log annotations",
         "query": "SELECT \"log_entry\" FROM /^$measurement$/ WHERE (\"box\" =~ /^$boxtag$/ AND \"log_type\" = 'Internet connection') AND $timeFilter ORDER BY time DESC",
         "target": {
+          "fromAnnotations": true,
           "limit": 100,
           "matchAny": false,
+          "query": "SELECT \"log_entry\" FROM /^$measurement$/ WHERE (\"box\" =~ /^$boxtag$/ AND \"log_type\" = 'Internet connection') AND $timeFilter ORDER BY time DESC",
           "tags": [],
+          "textEditor": true,
           "type": "dashboard"
         },
         "type": "dashboard"
@@ -100,12 +106,15 @@
   "gnetId": 713,
   "graphTooltip": 2,
   "id": null,
-  "iteration": 1655320107368,
   "links": [],
   "liveNow": false,
   "panels": [
     {
       "collapsed": false,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "000000002"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -114,6 +123,15 @@
       },
       "id": 41,
       "panels": [],
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "000000002"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "Overview",
       "type": "row"
     },
@@ -128,6 +146,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "DSL Speed",
             "axisPlacement": "left",
             "barAlignment": 0,
@@ -282,7 +302,8 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "multi",
@@ -714,7 +735,7 @@
         },
         "textMode": "value"
       },
-      "pluginVersion": "8.4.4",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -850,7 +871,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.4",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -951,7 +972,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": false
       },
-      "pluginVersion": "8.4.4",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -1082,7 +1103,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": false
       },
-      "pluginVersion": "8.4.4",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -1213,7 +1234,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.4",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -1317,7 +1338,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "8.4.4",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -1424,7 +1445,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "8.4.4",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -1542,7 +1563,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.4",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -1663,7 +1684,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.4",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -1765,7 +1786,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.4",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "alias": "$tag_name",
@@ -1898,7 +1919,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.4",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -1944,6 +1965,10 @@
     },
     {
       "collapsed": true,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "000000002"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2049,7 +2074,8 @@
             "legend": {
               "calcs": [],
               "displayMode": "list",
-              "placement": "bottom"
+              "placement": "bottom",
+              "showLegend": true
             },
             "tooltip": {
               "mode": "multi",
@@ -2270,7 +2296,8 @@
                 "lastNotNull"
               ],
               "displayMode": "list",
-              "placement": "bottom"
+              "placement": "bottom",
+              "showLegend": true
             },
             "tooltip": {
               "mode": "multi",
@@ -2800,11 +2827,24 @@
           "type": "stat"
         }
       ],
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "000000002"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "Traffic Stats",
       "type": "row"
     },
     {
       "collapsed": true,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "000000002"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2901,7 +2941,8 @@
                 "lastNotNull"
               ],
               "displayMode": "list",
-              "placement": "bottom"
+              "placement": "bottom",
+              "showLegend": true
             },
             "tooltip": {
               "mode": "multi",
@@ -3113,7 +3154,8 @@
                 "lastNotNull"
               ],
               "displayMode": "list",
-              "placement": "bottom"
+              "placement": "bottom",
+              "showLegend": true
             },
             "tooltip": {
               "mode": "multi",
@@ -3690,11 +3732,24 @@
           "type": "table"
         }
       ],
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "000000002"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "WLAN",
       "type": "row"
     },
     {
       "collapsed": true,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "000000002"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -3771,8 +3826,9 @@
           "options": {
             "legend": {
               "calcs": [],
-              "displayMode": "hidden",
-              "placement": "bottom"
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
             },
             "tooltip": {
               "mode": "multi",
@@ -3941,7 +3997,8 @@
             "legend": {
               "calcs": [],
               "displayMode": "list",
-              "placement": "bottom"
+              "placement": "bottom",
+              "showLegend": true
             },
             "tooltip": {
               "mode": "multi",
@@ -4116,8 +4173,9 @@
           "options": {
             "legend": {
               "calcs": [],
-              "displayMode": "hidden",
-              "placement": "bottom"
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
             },
             "tooltip": {
               "mode": "multi",
@@ -5299,11 +5357,24 @@
           "type": "table"
         }
       ],
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "000000002"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "System Infos",
       "type": "row"
     },
     {
       "collapsed": true,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "000000002"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -5378,7 +5449,8 @@
             "legend": {
               "calcs": [],
               "displayMode": "list",
-              "placement": "bottom"
+              "placement": "bottom",
+              "showLegend": true
             },
             "tooltip": {
               "mode": "multi",
@@ -6130,11 +6202,24 @@
           "type": "table"
         }
       ],
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "000000002"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "VPN and DynDNS Info",
       "type": "row"
     },
     {
       "collapsed": true,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "000000002"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -6679,12 +6764,21 @@
           "type": "table"
         }
       ],
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "000000002"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "Network Hosts",
       "type": "row"
     }
   ],
   "refresh": "1m",
-  "schemaVersion": 35,
+  "schemaVersion": 37,
   "style": "dark",
   "tags": [],
   "templating": {
