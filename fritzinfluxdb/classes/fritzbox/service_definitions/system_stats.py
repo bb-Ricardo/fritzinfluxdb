@@ -9,6 +9,8 @@
 
 from fritzinfluxdb.classes.fritzbox.service_definitions import lua_services
 
+read_interval = 150
+
 
 def prepare_json_response_data(response):
     """
@@ -34,6 +36,7 @@ lua_services.append(
             "lang": "de"
         },
         "response_parser": prepare_json_response_data,
+        "interval": read_interval,
         "value_instances": {
             "cpu_temp": {
                 "data_path": "data.cputemp.series.0.-1",
@@ -74,6 +77,7 @@ lua_services.append(
             "lang": "de"
         },
         "response_parser": prepare_json_response_data,
+        "interval": read_interval,
         "value_instances": {
             "energy_consumption": {
                 "data_path": "data.drain",
