@@ -205,6 +205,7 @@ Influx data source configuration:
 
 InfluxDB 1.8:
   * the "Query Language" `InfluxQL` has to be selected
+  * DEPRECATED: these dashboards will not be developed/extended any further
 
 InfluxDB >=2.2.0:
   * the "Query Language" `Flux` has to be selected
@@ -213,7 +214,7 @@ InfluxDB >=2.2.0:
 ### Dashboards
 There are following Dashboards included:
 
-InfluxDB 1.8.X:
+InfluxDB 1.8.X (deprecated):
 * [fritzbox_system_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/influx1_dashboards/fritzbox_system_dashboard.json)
 * [fritzbox_logs_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/influx1_dashboards/fritzbox_logs_dashboard.json)
 * [fritzbox_call_log_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/influx1_dashboards/fritzbox_call_log_dashboard.json)

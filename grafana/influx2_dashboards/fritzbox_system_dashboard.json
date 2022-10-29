@@ -651,7 +651,7 @@
           "measurement": "/^$measurement$/",
           "orderByTime": "DESC",
           "policy": "default",
-          "query": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"${measurement}\" and r.box == \"${boxtag}\" and r._field == \"log_entry\" )\n  |> limit(n:5, offset: 0)\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\"])\n  |> sort(columns: [\"_time\"], desc: true)\n",
+          "query": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and r._field == \"log_entry\" )\n  |> sort(columns: [\"_time\"], desc: true)\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"log_type\"])\n  |> limit(n:5, offset: 0)\n",
           "rawQuery": false,
           "refId": "A",
           "resultFormat": "time_series",
@@ -5526,6 +5526,18 @@
                     "value": true
                   }
                 ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Type"
+                },
+                "properties": [
+                  {
+                    "id": "custom.filterable",
+                    "value": true
+                  }
+                ]
               }
             ]
           },
@@ -5570,7 +5582,7 @@
               "measurement": "/^$measurement$/",
               "orderByTime": "ASC",
               "policy": "default",
-              "query": "from(bucket: v.defaultBucket)\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and r._field =~ /active_hosts_.*/ )\n  |> last()\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"_time\"])\n",
+              "query": "from(bucket: v.defaultBucket)\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and r._field =~ /active_hosts_(name|mac|type|parent|port|ipv4.*|additional_text)/ )\n  |> last()\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"_time\", \"name\"])\n",
               "refId": "A",
               "resultFormat": "table",
               "select": [
