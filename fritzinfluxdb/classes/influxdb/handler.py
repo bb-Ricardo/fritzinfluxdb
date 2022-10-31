@@ -364,10 +364,10 @@ class InfluxHandler:
         self.last_write_retry = datetime.now(pytz.utc)
         try:
             if self.config.version == 1:
-                write_successful = self.session_v1.write_points(data, time_precision=WritePrecision.S)
+                write_successful = self.session_v1.write_points(data, time_precision=WritePrecision.US)
             elif self.config.version == 2:
                 self.session_v2_write_api.write(bucket=self.config.bucket, record=data,
-                                                write_precision=WritePrecision.S)
+                                                write_precision=WritePrecision.US)
                 write_successful = True
         except (ApiException, InfluxDBClientError) as e:
 
@@ -542,7 +542,8 @@ class InfluxLogAndConfigWriter:
                                     "log_type": self.log_record_type
                                 },
                                 data_type=str,
-                                timestamp=log_timestamp)
+                                timestamp=log_timestamp,
+                                timestamp_precision=WritePrecision.US)
 
     def get_timezone_setting_measurement(self):
 
@@ -571,11 +572,15 @@ class InfluxLogAndConfigWriter:
                 if formatted_log_record is None:
                     continue
 
+                log.debug(formatted_log_record)
+
                 await output_queue.put(formatted_log_record)
 
             # write timezone setting to influx queue
             if self.is_time_to_write_timezone_setting():
-                await output_queue.put(self.get_timezone_setting_measurement())
+                timezone_measurement = self.get_timezone_setting_measurement()
+                log.debug(timezone_measurement)
+                await output_queue.put(timezone_measurement)
                 self.last_timezone_setting_write = datetime.now(pytz.utc)
 
             await asyncio.sleep(1)

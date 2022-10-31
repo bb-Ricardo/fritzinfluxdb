@@ -18,6 +18,12 @@ from fritzinfluxdb.log import get_logger
 log = get_logger()
 
 
+class WritePrecision(object):
+    MS = "ms"
+    S = "s"
+    US = "us"
+
+
 class FritzMeasurement:
     """
         This class holds measurements which should be sanitized to this specification
@@ -25,10 +31,14 @@ class FritzMeasurement:
     """
 
     default_box_tag_key = "box"
+    default_timestamp_precision = WritePrecision.S
 
-    __slots__ = ("name", "value", "box_tag", "timestamp", "additional_tags")
+    __slots__ = ("name", "value", "box_tag", "timestamp", "additional_tags", "timestamp_precision")
 
-    def __init__(self, key, value, data_type=None, box_tag=None, additional_tags=None, timestamp=None):
+    def __init__(self, key, value,
+                 data_type=None, box_tag=None,
+                 additional_tags=None, timestamp=None,
+                 timestamp_precision=None):
 
         # name and primary tag should always be present
         self.name = str(key)
@@ -50,6 +60,8 @@ class FritzMeasurement:
         else:
             self.timestamp = datetime.now(pytz.utc)
 
+        self.update_timestamp_precision(timestamp_precision)
+
         self.additional_tags = None
 
         if isinstance(additional_tags, dict):
@@ -57,6 +69,22 @@ class FritzMeasurement:
 
     def __repr__(self):
         return f"{self.timestamp}: {self.name}={self.value} ({self.tags})"
+
+    def update_timestamp_precision(self, precision=None):
+
+        if self.timestamp is None:
+            return
+
+        if precision is None:
+            precision = self.default_timestamp_precision
+
+        if precision not in WritePrecision.__dict__.values():
+            raise ValueError(f"invalid timestamp precision '{precision}'")
+
+        if precision == WritePrecision.MS:
+            self.timestamp = self.timestamp.replace(microsecond=int(self.timestamp.microsecond/1_000))
+        elif precision == WritePrecision.S:
+            self.timestamp = self.timestamp.replace(microsecond=int(self.timestamp.microsecond/1_000_000))
 
     def sanitize_value(self, value):
 
