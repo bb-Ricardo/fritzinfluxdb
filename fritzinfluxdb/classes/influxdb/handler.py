@@ -532,7 +532,7 @@ class InfluxLogAndConfigWriter:
         if not isinstance(log_record, LogRecord):
             return None
 
-        log_timestamp = datetime.utcfromtimestamp(log_record.created)
+        log_timestamp = pytz.timezone("UTC").localize(datetime.utcfromtimestamp(log_record.created))
 
         log_msg = "{levelname}: {message}".format(**log_record.__dict__)
 
