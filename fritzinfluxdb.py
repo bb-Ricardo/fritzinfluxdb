@@ -25,7 +25,7 @@ from fritzinfluxdb.cli_parser import parse_command_line
 from fritzinfluxdb.log import setup_logging
 from fritzinfluxdb.configparser import import_config
 from fritzinfluxdb.classes.fritzbox.handler import FritzBoxHandler, FritzBoxLuaHandler
-from fritzinfluxdb.classes.influxdb.handler import InfluxHandler
+from fritzinfluxdb.classes.influxdb.handler import InfluxHandler, InfluxLogAndConfigWriter
 
 __version__ = "1.1.0-beta.1"
 __version_date__ = "2022-09-28"
@@ -80,7 +80,8 @@ def main():
     # parse command line arguments
     args = parse_command_line(__version__, __description__, __version_date__, __url__, default_config)
 
-    log = setup_logging("DEBUG" if args.verbose > 0 else "INFO", args.daemon)
+    log_queue = asyncio.Queue()
+    log = setup_logging("DEBUG" if args.verbose > 0 else "INFO", args.daemon, log_queue)
 
     log.propagate = False
 
@@ -97,11 +98,13 @@ def main():
     influx_connection = InfluxHandler(config, user_agent=f"{__description__}/{__version__}")
     fritzbox_connection = FritzBoxHandler(config)
     fritzbox_lua_connection = FritzBoxLuaHandler(fritzbox_connection.config)
+    influx_log_writer = InfluxLogAndConfigWriter(fritzbox_connection.config, log_queue)
 
     handler_list = [
         influx_connection,
         fritzbox_connection,
-        fritzbox_lua_connection
+        fritzbox_lua_connection,
+        influx_log_writer
     ]
 
     for handler in handler_list:
@@ -127,8 +130,8 @@ def main():
             log.error(f"Initializing connection to {handler.name} failed")
             init_errors = True
 
-#    if init_errors is True:
-#        exit(1)
+    if init_errors is True:
+        exit(1)
 
     log.info(f"Successfully connected to "
              f"FritzBox '{fritzbox_connection.config.hostname}' ({fritzbox_connection.config.box_tag}) "

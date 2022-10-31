@@ -11,6 +11,7 @@ import asyncio
 import pytz
 from datetime import datetime
 from http.client import HTTPConnection
+from logging import LogRecord
 
 import requests
 
@@ -26,6 +27,8 @@ from influxdb_client.domain.write_precision import WritePrecision
 from fritzinfluxdb.classes.influxdb.config import InfluxDBConfig
 from fritzinfluxdb.log import get_logger
 from fritzinfluxdb.classes.common import FritzMeasurement
+
+from fritzinfluxdb.classes.fritzbox.config import FritzBoxConfig
 
 log = get_logger()
 
@@ -467,5 +470,114 @@ class InfluxHandler:
             log.debug(f"Current InfluxDB measurement buffer length: {len(self.buffer)}")
             if self.out_of_retention_period_range is False:
                 await asyncio.sleep(1)
+
+
+class InfluxLogAndConfigWriter:
+
+    name = "InfluxLogAndConfigWriter"
+
+    config = None
+
+    # InfluxDB measurement name
+    log_measurement_name = "log_entry"
+
+    # log type of records for fritzinfluxdb instances
+    log_record_type = "FritzInfluxDB"
+
+    #
+    timezone_measurement_name = "fritzinfluxdb_setting_timezone"
+
+    # The log queue to read the log records from
+    log_queue = None
+
+    # interval in which to write the timezone setting to InfluxDB
+    timezone_setting_write_interval = 60 * 60 * 12  # every twelve hours
+
+    # keep track if this instance was initiated successfully
+    init_successful = False
+
+    def __init__(self, config: FritzBoxConfig, log_queue: asyncio.Queue):
+        """
+        Handler to read log records from 'log_queue', format them to InfluxDB measurements
+        and writers them to the output queue.
+        Also writes the config option "timezone" to InfluxDB.
+
+        Parameters
+        ----------
+        config: FritzBoxConfig
+            the current FritzBoxConfig
+        log_queue: asyncio.Queue
+            queue object to read logs from which should be sent to InfluxDB
+
+        Returns
+        -------
+        handler to use for formatting log entries and write timezone config to InfluxDB
+        """
+
+        if not isinstance(config, FritzBoxConfig):
+            raise ValueError("param 'config' needs to be a 'FritzBoxConfig' object")
+
+        if not isinstance(log_queue, asyncio.Queue):
+            raise ValueError("param 'log_queue' needs to be a 'asyncio.Queue' object")
+
+        self.config = config
+        self.log_queue = log_queue
+
+        self.last_timezone_setting_write = None
+
+        self.init_successful = True
+
+    def format_log_record(self, log_record):
+
+        if not isinstance(log_record, LogRecord):
+            return None
+
+        log_timestamp = datetime.utcfromtimestamp(log_record.created)
+
+        log_msg = "{levelname}: {message}".format(**log_record.__dict__)
+
+        return FritzMeasurement(self.log_measurement_name, log_msg,
+                                box_tag=self.config.box_tag,
+                                additional_tags={
+                                    "log_type": self.log_record_type
+                                },
+                                data_type=str,
+                                timestamp=log_timestamp)
+
+    def get_timezone_setting_measurement(self):
+
+        return FritzMeasurement(self.timezone_measurement_name, self.config.timezone,
+                                box_tag=self.config.box_tag,
+                                data_type=str)
+
+    def is_time_to_write_timezone_setting(self):
+
+        if self.last_timezone_setting_write is None:
+            return True
+
+        if (datetime.now(pytz.utc) - self.last_timezone_setting_write).total_seconds() >= \
+                self.timezone_setting_write_interval:
+            return True
+
+        return False
+
+    async def task_loop(self, output_queue: asyncio.Queue):
+
+        while True:
+
+            while self.log_queue.empty() is False:
+                formatted_log_record = self.format_log_record(await self.log_queue.get())
+
+                if formatted_log_record is None:
+                    continue
+
+                await output_queue.put(formatted_log_record)
+
+            # write timezone setting to influx queue
+            if self.is_time_to_write_timezone_setting():
+                await output_queue.put(self.get_timezone_setting_measurement())
+                self.last_timezone_setting_write = datetime.now(pytz.utc)
+
+            await asyncio.sleep(1)
 
 # EOF

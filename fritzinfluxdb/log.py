@@ -8,6 +8,7 @@
 #  repository or visit: <https://opensource.org/licenses/MIT>.
 
 import logging
+from logging.handlers import QueueHandler
 import sys
 
 from fritzinfluxdb.common import do_error_exit
@@ -28,7 +29,7 @@ def get_logger():
     return logging.getLogger("fritzinfluxdb")
 
 
-def setup_logging(log_level=None, run_as_daemon=False):
+def setup_logging(log_level=None, run_as_daemon=False, log_queue=None):
     """
     Set up logging for the whole program and return a log handler
 
@@ -38,6 +39,8 @@ def setup_logging(log_level=None, run_as_daemon=False):
         valid log level to set logging to
     run_as_daemon: bool
         define if tool is running as daemon to omit log time stamp
+    log_queue: asyncio.Queue
+        queue object to write logs to which should be sent to InfluxDB
 
     Returns
     -------
@@ -64,9 +67,15 @@ def setup_logging(log_level=None, run_as_daemon=False):
 
     logger.setLevel(numeric_log_level)
 
+    # add handler to write logs to stdout
     log_stream = logging.StreamHandler(sys.stdout)
     log_stream.setFormatter(log_format)
     logger.addHandler(log_stream)
+
+    # add handler to write logs to InfluxDB log queue
+    queue_handler = QueueHandler(log_queue)
+    queue_handler.setLevel(logging.INFO)
+    logger.addHandler(queue_handler)
 
     return logger
 
