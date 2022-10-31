@@ -466,7 +466,7 @@
   "timepicker": {},
   "timezone": "",
   "title": "FRITZ!Box Call Logs",
-  "uid": "fritzboxcalllogs",
+  "uid": "fritzbox-call-logs",
   "version": 7,
   "weekStart": ""
 }

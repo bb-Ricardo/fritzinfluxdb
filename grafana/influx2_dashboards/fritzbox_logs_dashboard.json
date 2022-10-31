@@ -88,7 +88,7 @@
               "options": {
                 "pattern": "/.*([Ff]ehl|DSL antwortet nicht).*/",
                 "result": {
-                  "color": "dark-red",
+                  "color": "red",
                   "index": 0
                 }
               },
@@ -98,7 +98,7 @@
               "options": {
                 "pattern": "/.*DSL-Synchronisierung beginnt.*/",
                 "result": {
-                  "color": "semi-dark-orange",
+                  "color": "orange",
                   "index": 1
                 }
               },
@@ -110,6 +110,26 @@
                 "result": {
                   "color": "semi-dark-green",
                   "index": 2
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": "/^ERROR.*/",
+                "result": {
+                  "color": "red",
+                  "index": 3
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": "/^WARNING.*/",
+                "result": {
+                  "color": "orange",
+                  "index": 4
                 }
               },
               "type": "regex"
@@ -207,12 +227,7 @@
         },
         "frameIndex": 0,
         "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Date/Time"
-          }
-        ]
+        "sortBy": []
       },
       "pluginVersion": "9.1.6",
       "targets": [
@@ -280,6 +295,18 @@
               "log_entry": "Entry",
               "log_type": "Log Type"
             }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": true,
+                "field": "Date/Time"
+              }
+            ]
           }
         }
       ],
@@ -364,6 +391,6 @@
   "timezone": "",
   "title": "FRITZ!Box Router Logs",
   "uid": "fritzbox-router-logs-flux",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }

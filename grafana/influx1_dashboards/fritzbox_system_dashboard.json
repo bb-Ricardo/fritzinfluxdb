@@ -2,7 +2,7 @@
   "__inputs": [
     {
       "name": "DS_INFLUXDB",
-      "label": "InfluxDB",
+      "label": "InfluxDB Home",
       "description": "",
       "type": "datasource",
       "pluginId": "influxdb",
@@ -13,13 +13,6 @@
       "type": "constant",
       "label": "InfluxDB measurement",
       "value": "fritzbox",
-      "description": ""
-    },
-    {
-      "name": "VAR_TIMEZONE",
-      "type": "constant",
-      "label": "specify your timezone",
-      "value": "Europe/Berlin",
       "description": ""
     }
   ],
@@ -651,6 +644,12 @@
               "key": "box",
               "operator": "=~",
               "value": "/^$boxtag$/"
+            },
+            {
+              "condition": "AND",
+              "key": "log_type",
+              "operator": "!=",
+              "value": "FritzInfluxDB"
             }
           ]
         }
@@ -1988,6 +1987,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -2022,7 +2023,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               },
@@ -2204,6 +2206,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -2238,7 +2242,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2441,7 +2446,8 @@
               },
               "custom": {
                 "align": "auto",
-                "displayMode": "auto"
+                "displayMode": "auto",
+                "inspect": false
               },
               "decimals": 2,
               "displayName": "",
@@ -2450,7 +2456,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2500,7 +2507,7 @@
             },
             "showHeader": true
           },
-          "pluginVersion": "8.4.4",
+          "pluginVersion": "9.1.6",
           "targets": [
             {
               "alias": "Download",
@@ -2646,7 +2653,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2682,7 +2690,7 @@
             },
             "textMode": "auto"
           },
-          "pluginVersion": "8.4.4",
+          "pluginVersion": "9.1.6",
           "targets": [
             {
               "datasource": {
@@ -2748,7 +2756,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2784,7 +2793,7 @@
             },
             "textMode": "auto"
           },
-          "pluginVersion": "8.4.4",
+          "pluginVersion": "9.1.6",
           "targets": [
             {
               "datasource": {
@@ -6805,26 +6814,6 @@
         ]
       },
       {
-        "hide": 2,
-        "label": "specify your timezone",
-        "name": "timezone",
-        "query": "${VAR_TIMEZONE}",
-        "skipUrlSync": false,
-        "type": "constant",
-        "current": {
-          "value": "${VAR_TIMEZONE}",
-          "text": "${VAR_TIMEZONE}",
-          "selected": false
-        },
-        "options": [
-          {
-            "value": "${VAR_TIMEZONE}",
-            "text": "${VAR_TIMEZONE}",
-            "selected": false
-          }
-        ]
-      },
-      {
         "current": {},
         "datasource": {
           "type": "influxdb",
@@ -6838,6 +6827,25 @@
         "name": "boxtag",
         "options": [],
         "query": "SHOW TAG VALUES FROM $measurement WITH KEY=box",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "influxdb",
+          "uid": "${DS_INFLUXDB}"
+        },
+        "definition": "SELECT last(\"fritzinfluxdb_setting_timezone\") FROM /^$measurement$/ WHERE \"box\" =~ /^$boxtag$/",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "timezone",
+        "options": [],
+        "query": "SELECT last(\"fritzinfluxdb_setting_timezone\") FROM /^$measurement$/ WHERE \"box\" =~ /^$boxtag$/",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -6877,7 +6885,7 @@
   },
   "timezone": "",
   "title": "FRITZ!Box Router Status",
-  "uid": "FritzFlux",
-  "version": 65,
+  "uid": "fritzbox-system",
+  "version": 2,
   "weekStart": ""
 }

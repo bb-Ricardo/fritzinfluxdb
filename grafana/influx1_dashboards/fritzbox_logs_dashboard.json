@@ -85,7 +85,7 @@
               "options": {
                 "pattern": "/.*([Ff]ehl|DSL antwortet nicht).*/",
                 "result": {
-                  "color": "dark-red",
+                  "color": "red",
                   "index": 0
                 }
               },
@@ -95,7 +95,7 @@
               "options": {
                 "pattern": "/.*DSL-Synchronisierung beginnt.*/",
                 "result": {
-                  "color": "semi-dark-orange",
+                  "color": "orange",
                   "index": 1
                 }
               },
@@ -107,6 +107,26 @@
                 "result": {
                   "color": "semi-dark-green",
                   "index": 2
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": "/^ERROR.*/",
+                "result": {
+                  "color": "red",
+                  "index": 3
+                }
+              },
+              "type": "regex"
+            },
+            {
+              "options": {
+                "pattern": "/^WARNING.*/",
+                "result": {
+                  "color": "orange",
+                  "index": 4
                 }
               },
               "type": "regex"
@@ -365,7 +385,7 @@
   "timepicker": {},
   "timezone": "",
   "title": "FRITZ!Box Router Logs",
-  "uid": "fritzrouterlogs",
+  "uid": "ffritzbox-router-logs",
   "version": 1,
   "weekStart": ""
 }

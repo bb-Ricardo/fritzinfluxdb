@@ -14,13 +14,6 @@
       "label": "InfluxDB measurement",
       "value": "fritzbox",
       "description": ""
-    },
-    {
-      "name": "VAR_TIMEZONE",
-      "type": "constant",
-      "label": "specify your timezone",
-      "value": "Europe/Berlin",
-      "description": ""
     }
   ],
   "__elements": {},
@@ -41,7 +34,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "9.1.6"
+      "version": "9.2.2"
     },
     {
       "type": "datasource",
@@ -651,7 +644,7 @@
           "measurement": "/^$measurement$/",
           "orderByTime": "DESC",
           "policy": "default",
-          "query": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and r._field == \"log_entry\" )\n  |> sort(columns: [\"_time\"], desc: true)\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"log_type\"])\n  |> limit(n:5, offset: 0)\n",
+          "query": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and r._field == \"log_entry\" and r.log_type != \"FritzInfluxDB\")\n  |> sort(columns: [\"_time\"], desc: true)\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"log_type\"])\n  |> limit(n:5, offset: 0)\n",
           "rawQuery": false,
           "refId": "A",
           "resultFormat": "time_series",
@@ -754,7 +747,7 @@
         },
         "textMode": "value"
       },
-      "pluginVersion": "9.1.6",
+      "pluginVersion": "9.2.2",
       "targets": [
         {
           "datasource": {
@@ -877,7 +870,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.6",
+      "pluginVersion": "9.2.2",
       "targets": [
         {
           "datasource": {
@@ -978,7 +971,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": false
       },
-      "pluginVersion": "9.1.6",
+      "pluginVersion": "9.2.2",
       "targets": [
         {
           "datasource": {
@@ -1109,7 +1102,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": false
       },
-      "pluginVersion": "9.1.6",
+      "pluginVersion": "9.2.2",
       "targets": [
         {
           "datasource": {
@@ -1240,7 +1233,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.6",
+      "pluginVersion": "9.2.2",
       "targets": [
         {
           "datasource": {
@@ -1346,7 +1339,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "9.1.6",
+      "pluginVersion": "9.2.2",
       "targets": [
         {
           "datasource": {
@@ -1454,7 +1447,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "9.1.6",
+      "pluginVersion": "9.2.2",
       "targets": [
         {
           "datasource": {
@@ -1568,7 +1561,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.6",
+      "pluginVersion": "9.2.2",
       "targets": [
         {
           "datasource": {
@@ -1689,7 +1682,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.6",
+      "pluginVersion": "9.2.2",
       "targets": [
         {
           "datasource": {
@@ -1791,7 +1784,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.6",
+      "pluginVersion": "9.2.2",
       "targets": [
         {
           "alias": "$tag_name",
@@ -1924,7 +1917,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.6",
+      "pluginVersion": "9.2.2",
       "targets": [
         {
           "datasource": {
@@ -2081,7 +2074,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2
+            "y": 22
           },
           "id": 2,
           "interval": "10s",
@@ -2217,7 +2210,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 2
+            "y": 22
           },
           "id": 17,
           "interval": "1h",
@@ -2384,7 +2377,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 10
+            "y": 30
           },
           "id": 14,
           "links": [],
@@ -2398,7 +2391,7 @@
             },
             "showHeader": true
           },
-          "pluginVersion": "9.1.6",
+          "pluginVersion": "9.2.2",
           "targets": [
             {
               "alias": "Download",
@@ -2521,7 +2514,7 @@
             "h": 4,
             "w": 12,
             "x": 12,
-            "y": 10
+            "y": 30
           },
           "hideTimeOverride": true,
           "id": 8,
@@ -2541,7 +2534,7 @@
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.1.6",
+          "pluginVersion": "9.2.2",
           "targets": [
             {
               "datasource": {
@@ -2624,7 +2617,7 @@
             "h": 4,
             "w": 12,
             "x": 12,
-            "y": 14
+            "y": 34
           },
           "hideTimeOverride": true,
           "id": 3,
@@ -2644,7 +2637,7 @@
             },
             "textMode": "auto"
           },
-          "pluginVersion": "9.1.6",
+          "pluginVersion": "9.2.2",
           "targets": [
             {
               "datasource": {
@@ -2754,8 +2747,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2981,8 +2973,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -3164,8 +3155,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -3633,8 +3623,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -3778,8 +3767,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -4024,8 +4012,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4125,8 +4112,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "#EAB839",
@@ -4254,8 +4240,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "dark-yellow",
-                    "value": null
+                    "color": "dark-yellow"
                   }
                 ]
               }
@@ -4403,8 +4388,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "dark-yellow",
-                    "value": null
+                    "color": "dark-yellow"
                   }
                 ]
               }
@@ -4669,8 +4653,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4785,8 +4768,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4901,8 +4883,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5202,8 +5183,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -5456,8 +5436,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -6050,26 +6029,6 @@
         ]
       },
       {
-        "hide": 2,
-        "label": "specify your timezone",
-        "name": "timezone",
-        "query": "${VAR_TIMEZONE}",
-        "skipUrlSync": false,
-        "type": "constant",
-        "current": {
-          "value": "${VAR_TIMEZONE}",
-          "text": "${VAR_TIMEZONE}",
-          "selected": false
-        },
-        "options": [
-          {
-            "value": "${VAR_TIMEZONE}",
-            "text": "${VAR_TIMEZONE}",
-            "selected": false
-          }
-        ]
-      },
-      {
         "current": {},
         "datasource": {
           "type": "influxdb",
@@ -6083,6 +6042,26 @@
         "name": "boxtag",
         "options": [],
         "query": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"linkuptime\")\n  |> keyValues(keyColumns: [\"box\"])\n  |> group()\n  |> keep(columns: [\"box\"])\n  |> distinct(column: \"box\")",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "allValue": "",
+        "current": {},
+        "datasource": {
+          "type": "influxdb",
+          "uid": "${DS_INFLUXDB}"
+        },
+        "definition": "import \"sampledata\"\nimport \"date\"\n// generate default timezone entry\ndefault = sampledata.string()\n  |> map(fn: (r) => ({_value: \"Europe/Berlin\", _time: date.time(t: 1990-01-01) }))\n  |> last()\n\n// query actual entry\nquery = from(bucket: v.defaultBucket)\n  |> range(start: -2d)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and r._field == \"fritzinfluxdb_setting_timezone\")\n  |> last()\n  |> keep(columns: [\"_time\", \"_value\"])\n\n// join result and keep the latest (query) result\nunion(tables: [default, query])\n  |> sort(columns: [\"_time\"], desc: false)\n  |> last()\n",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "timezone",
+        "options": [],
+        "query": "import \"sampledata\"\nimport \"date\"\n// generate default timezone entry\ndefault = sampledata.string()\n  |> map(fn: (r) => ({_value: \"Europe/Berlin\", _time: date.time(t: 1990-01-01) }))\n  |> last()\n\n// query actual entry\nquery = from(bucket: v.defaultBucket)\n  |> range(start: -2d)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and r._field == \"fritzinfluxdb_setting_timezone\")\n  |> last()\n  |> keep(columns: [\"_time\", \"_value\"])\n\n// join result and keep the latest (query) result\nunion(tables: [default, query])\n  |> sort(columns: [\"_time\"], desc: false)\n  |> last()\n",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -6123,6 +6102,6 @@
   "timezone": "",
   "title": "FRITZ!Box Router Status",
   "uid": "fritzbox-system-flux",
-  "version": 65,
+  "version": 5,
   "weekStart": ""
 }

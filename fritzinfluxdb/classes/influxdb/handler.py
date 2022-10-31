@@ -484,7 +484,7 @@ class InfluxLogAndConfigWriter:
     # log type of records for fritzinfluxdb instances
     log_record_type = "FritzInfluxDB"
 
-    #
+    # measurement name of timezone setting record
     timezone_measurement_name = "fritzinfluxdb_setting_timezone"
 
     # The log queue to read the log records from
