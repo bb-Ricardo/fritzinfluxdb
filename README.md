@@ -5,7 +5,7 @@ It is equal capable as fritzcollectd and directly writing to InfluxDB.
 
 Both InfluxDB 1 and InfluxDB 2 are supported
 
-![Grafana Dashboard](https://raw.githubusercontent.com/bb-Ricardo/fritzinfluxdb/master/grafana/grafana_dashboard.png)
+![Grafana Dashboard](https://raw.githubusercontent.com/bb-Ricardo/fritzinfluxdb/main/grafana/grafana_dashboard.png)
 
 
 ## IMPORTANT:
@@ -32,7 +32,7 @@ This is normal as there are values not available on certain models.
 
 ### Configuration
 
-After cloning the repo copy the config from the [example](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/fritzinfluxdb-sample.ini)
+After cloning the repo copy the config from the [example](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/fritzinfluxdb-sample.ini)
 to ```fritzinfluxdb.ini``` and edit the settings. All settings are described inside the file.
 
 #### Environment variables
@@ -137,7 +137,7 @@ To start the container just use:
 docker run --rm -d -v /PATH/TO/fritzinfluxdb.ini:/app/fritzinfluxdb.ini --name fritzinfluxdb bbricardo/fritzinfluxdb:latest
 ```
 
-You can alternatively use the provided [docker-compose.yml](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/docker-compose.yml):
+You can alternatively use the provided [docker-compose.yml](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/docker-compose.yml):
 ```
 docker-compose up -d
 ```
@@ -198,7 +198,7 @@ optional arguments:
 
 ## Grafana
 
-Dashboards to display the collected data are included under [grafana](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana).
+Dashboards to display the collected data are included under [grafana](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/grafana).
 Due to some limitations of the InfluxDB 1.8 Flux language implementation the dashboards had to bes separated.
 
 Influx data source configuration:
@@ -215,15 +215,15 @@ InfluxDB >=2.2.0:
 There are following Dashboards included:
 
 InfluxDB 1.8.X (deprecated):
-* [fritzbox_system_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/influx1_dashboards/fritzbox_system_dashboard.json)
-* [fritzbox_logs_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/influx1_dashboards/fritzbox_logs_dashboard.json)
-* [fritzbox_call_log_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/influx1_dashboards/fritzbox_call_log_dashboard.json)
+* [fritzbox_system_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/grafana/influx1_dashboards/fritzbox_system_dashboard.json)
+* [fritzbox_logs_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/grafana/influx1_dashboards/fritzbox_logs_dashboard.json)
+* [fritzbox_call_log_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/grafana/influx1_dashboards/fritzbox_call_log_dashboard.json)
 
 InfluxDB >=2.2.0:
-* [fritzbox_system_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/influx2_dashboards/fritzbox_system_dashboard.json)
-* [fritzbox_logs_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/influx2_dashboards/fritzbox_logs_dashboard.json)
-* [fritzbox_call_log_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/influx2_dashboards/fritzbox_call_log_dashboard.json)
-* [fritzbox_home_automation_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/grafana/influx2_dashboards/fritzbox_home_automation_dashboard.json)
+* [fritzbox_system_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/grafana/influx2_dashboards/fritzbox_system_dashboard.json)
+* [fritzbox_logs_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/grafana/influx2_dashboards/fritzbox_logs_dashboard.json)
+* [fritzbox_call_log_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/grafana/influx2_dashboards/fritzbox_call_log_dashboard.json)
+* [fritzbox_home_automation_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/grafana/influx2_dashboards/fritzbox_home_automation_dashboard.json)
 
 *This was heavily inspired by: https://grafana.com/dashboards/713*
 
@@ -232,10 +232,10 @@ InfluxDB >=2.2.0:
 check here to find an overview of more attributes which probably could be added
 https://wiki.fhem.de/w/index.php?title=FRITZBOX
 
-New TR-069 services can be defined in [fritzinfluxdb/classes/fritzbox/services_tr069.py](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/fritzinfluxdb/classes/fritzbox/services_tr069.py) <br>
-New LUA services can be defined in [fritzinfluxdb/classes/fritzbox/services_lua.py](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/fritzinfluxdb/classes/fritzbox/services_lua.py)
+New TR-069 services can be defined in [fritzinfluxdb/classes/fritzbox/services_tr069.py](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/fritzinfluxdb/classes/fritzbox/services_tr069.py) <br>
+New LUA services can be defined in [fritzinfluxdb/classes/fritzbox/services_lua.py](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/fritzinfluxdb/classes/fritzbox/services_lua.py)
 
 # License
->You can check out the full license [here](https://github.com/bb-Ricardo/fritzinfluxdb/blob/master/LICENSE.txt)
+>You can check out the full license [here](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/LICENSE.txt)
 
 This project is licensed under the terms of the **MIT** license.
