@@ -364,7 +364,7 @@ class InfluxHandler:
         self.last_write_retry = datetime.now(pytz.utc)
         try:
             if self.config.version == 1:
-                write_successful = self.session_v1.write_points(data, time_precision=WritePrecision.US)
+                write_successful = self.session_v1.write_points(data, time_precision="u")
             elif self.config.version == 2:
                 self.session_v2_write_api.write(bucket=self.config.bucket, record=data,
                                                 write_precision=WritePrecision.US)

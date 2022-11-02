@@ -3,6 +3,15 @@
 "fritzinfluxdb" is a tool written in python to fetch data from a FritzBox router and writes it to InfluxDB.
 It is equal capable as fritzcollectd and directly writing to InfluxDB.
 
+Data collected:
+* connection related information (amount of data, throughput, daily up/download statistics)
+* all log messages
+* home automation (temperature, power consumption, heating settings)
+* phone call list (incoming, outgoing, missed, blocked)
+* system stats (cpu usage/temp, memory usage)
+* WLAN information (num clients, status, channels)
+* VPN/DynDNS information (active users, vpn hostname, DynDNS settings)
+
 Both InfluxDB 1 and InfluxDB 2 are supported
 
 ![Grafana Dashboard](https://raw.githubusercontent.com/bb-Ricardo/fritzinfluxdb/main/grafana/grafana_dashboard.png)
@@ -185,7 +194,7 @@ For InfluxDB 2 it is highly recommended creating a specific write only token for
 usage: fritzinfluxdb.py [-h] [-c fritzinfluxdb.ini [fritzinfluxdb.ini ...]] [-d] [-v]
 
 fritzinfluxdb
-Version: 1.1.0 (2022-11-XX)
+Version: 1.1.0 (2022-11-02)
 Project URL: https://github.com/bb-Ricardo/fritzinfluxdb
 
 optional arguments:
@@ -232,8 +241,7 @@ InfluxDB >=2.2.0:
 check here to find an overview of more attributes which probably could be added
 https://wiki.fhem.de/w/index.php?title=FRITZBOX
 
-New TR-069 services can be defined in [fritzinfluxdb/classes/fritzbox/services_tr069.py](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/fritzinfluxdb/classes/fritzbox/services_tr069.py) <br>
-New LUA services can be defined in [fritzinfluxdb/classes/fritzbox/services_lua.py](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/fritzinfluxdb/classes/fritzbox/services_lua.py)
+New services can be defined in [fritzinfluxdb/classes/fritzbox/service_definitions](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/fritzinfluxdb/classes/fritzbox/service_definitions)
 
 # License
 >You can check out the full license [here](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/LICENSE.txt)
