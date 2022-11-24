@@ -467,7 +467,8 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
             try:
                 metric_value = data_type(metric_value)
             except Exception as e:
-                log.error(f"Unable to convert {self.name} value '{metric_value}' to '{data_type}': {e}")
+                log.error(f"Unable to convert {self.name} value '{metric_value}' "
+                          f"for '{metric_name}' to '{data_type}': {e}")
 
             metric = FritzMeasurement(metric_name, metric_value, data_type=data_type, box_tag=self.config.box_tag,
                                       additional_tags=metric_tags, timestamp=timestamp)
@@ -483,7 +484,8 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
             return
 
         if type(metric_value) != data_type:
-            log.error(f"FritzBox metric type '{data_type}' does not match data: {type(metric_value)}")
+            log.error(f"FritzBox metric type '{data_type}' for '{metric_name}' "
+                      f"does not match '{type(metric_value)}' data: {metric_value}")
             return
 
         if data_type == list and data_next is not None:
