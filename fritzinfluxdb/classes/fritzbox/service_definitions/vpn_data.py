@@ -97,7 +97,7 @@ lua_services.append({
 )
 
 lua_services.append({
-        "name": "VPN Users",
+        "name": "VPN Users - IPSec",
         "os_versions": [
             "7.39",
             "7.50"
@@ -110,15 +110,15 @@ lua_services.append({
         },
         "response_parser": prepare_json_response_data,
         "value_instances": {
-            "myfritz_host_name": {
+            "myfritz_host_name_ipsec": {
                 "data_path": "data.init.server",
                 "type": str
             },
-            "vpn_type": {
+            "vpn_type_ipsec": {
                 "data_path": "data.init.type",
                 "type": str
             },
-            "vpn_user_connected": {
+            "vpn_user_connected_ipsec": {
                 "data_path": "data.init.userConnections",
                 "type": dict,
                 "next": {
@@ -128,7 +128,7 @@ lua_services.append({
                 },
                 "exclude_filter_function": lambda data: not isinstance(grab(data, "data.init.userConnections"), dict)
             },
-            "vpn_user_active": {
+            "vpn_user_active_ipsec": {
                 "data_path": "data.init.userConnections",
                 "type": dict,
                 "next": {
@@ -138,7 +138,7 @@ lua_services.append({
                 },
                 "exclude_filter_function": lambda data: not isinstance(grab(data, "data.init.userConnections"), dict)
             },
-            "vpn_user_virtual_address": {
+            "vpn_user_virtual_address_ipsec": {
                 "data_path": "data.init.userConnections",
                 "type": dict,
                 "next": {
@@ -148,7 +148,7 @@ lua_services.append({
                 },
                 "exclude_filter_function": lambda data: not isinstance(grab(data, "data.init.userConnections"), dict)
             },
-            "vpn_user_remote_address": {
+            "vpn_user_remote_address_ipsec": {
                 "data_path": "data.init.userConnections",
                 "type": dict,
                 "next": {
@@ -158,7 +158,7 @@ lua_services.append({
                 },
                 "exclude_filter_function": lambda data: not isinstance(grab(data, "data.init.userConnections"), dict)
             },
-            "vpn_user_num_active": {
+            "vpn_user_num_active_ipsec": {
                 "type": int,
                 "value_function": (lambda data:
                                    len(
@@ -167,6 +167,82 @@ lua_services.append({
                                    )
                                    ),
                 "exclude_filter_function": lambda data: not isinstance(grab(data, "data.init.userConnections"), dict)
+            }
+        }
+    }
+)
+
+lua_services.append({
+        "name": "VPN Users - WireGuard",
+        "os_versions": [
+                "7.39",
+                "7.50"
+        ],
+        "method": "POST",
+        "params": {
+            "page": "shareWireguard",
+            "xhrId": "all",
+            "xhr": 1,
+        },
+        "response_parser": prepare_json_response_data,
+        "value_instances": {
+            "myfritz_host_name_wg": {
+                "data_path": "data.init.server",
+                "type": str
+            },
+            "vpn_type_wg": {
+                "data_path": "data.init.type",  # currently falsely returns "IPSec Xauth PSK"
+                "type": str
+            },
+            "vpn_user_connected_wg": {
+                "data_path": "data.init.boxConnections",
+                "type": dict,
+                "next": {
+                    "type": str,
+                    "value_function": lambda data: data.get("connected"),
+                    "tags_function": lambda data: {"name": data.get("name")}
+                },
+                "exclude_filter_function": lambda data: not isinstance(grab(data, "data.init.boxConnections"), dict)
+            },
+            "vpn_user_active_wg": {
+                "data_path": "data.init.boxConnections",
+                "type": dict,
+                "next": {
+                    "type": str,
+                    "value_function": lambda data: data.get("active"),
+                    "tags_function": lambda data: {"name": data.get("name")}
+                },
+                "exclude_filter_function": lambda data: not isinstance(grab(data, "data.init.boxConnections"), dict)
+            },
+            "vpn_user_virtual_address_wg": {
+                "data_path": "data.init.boxConnections",
+                "type": dict,
+                "next": {
+                    "type": str,
+                    "value_function": lambda data: data.get("remoteNet"),
+                    "tags_function": lambda data: {"name": data.get("name")}
+                },
+                "exclude_filter_function": lambda data: not isinstance(grab(data, "data.init.boxConnections"), dict)
+            },
+            "vpn_user_remote_address_wg": {
+                "data_path": "data.init.boxConnections",
+                "type": dict,
+                "next": {
+                    "type": str,
+                    "value_function": lambda data: data.get("remoteIp"),
+                    "tags_function": lambda data: {"name": data.get("name")}
+                },
+                "exclude_filter_function": lambda data: not isinstance(grab(data, "data.init.boxConnections"), dict)
+            },
+            "vpn_user_num_active_wg": {
+                "type": int,
+                "value_function": (lambda data:
+                                len(
+                                    [x for x in grab(data, "data.init.boxConnections", fallback=dict()).values()
+                                        if x.get("connected") is True]
+                                )
+                                ),
+                "exclude_filter_function": lambda data: not isinstance(grab(data, "data.init.boxConnections"), dict)
             }
         }
     }

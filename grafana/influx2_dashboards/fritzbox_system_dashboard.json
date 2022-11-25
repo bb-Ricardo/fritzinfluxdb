@@ -4607,795 +4607,761 @@
       },
       "id": 70,
       "panels": [
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
           },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 39,
-                "gradientMode": "opacity",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "decimals": 0,
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 39,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
             },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 17,
-            "x": 0,
-            "y": 5
-          },
-          "id": 64,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
             },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
             }
           },
-          "targets": [
-            {
-              "alias": "Num Users",
-              "datasource": {
-                "type": "influxdb",
-                "uid": "${DS_INFLUXDB}"
+          "decimals": 0,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
               },
-              "groupBy": [
-                {
-                  "params": [
-                    "$__interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
-              "measurement": "/^$measurement$/",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "query": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and r._field == \"vpn_user_num_active\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\"])",
-              "refId": "A",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "vpn_user_num_active"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "last"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "box",
-                  "operator": "=~",
-                  "value": "/^$boxtag$/"
-                }
-              ]
-            }
-          ],
-          "title": "Active VPN User",
-          "transformations": [
-            {
-              "id": "organize",
-              "options": {
-                "excludeByName": {},
-                "indexByName": {},
-                "renameByName": {
-                  "vpn_user_num_active": "Num Users"
-                }
+              {
+                "color": "red",
+                "value": 80
               }
-            }
-          ],
-          "type": "timeseries"
+            ]
+          }
         },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 17,
+        "x": 0,
+            "y": 5
+      },
+      "id": 64,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
         {
+          "alias": "Num Users",
           "datasource": {
             "type": "influxdb",
             "uid": "${DS_INFLUXDB}"
           },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "custom": {
-                "align": "auto",
-                "displayMode": "auto",
-                "inspect": false
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 7,
-            "x": 17,
-            "y": 5
-          },
-          "id": 68,
-          "options": {
-            "footer": {
-              "fields": "",
-              "reducer": [
-                "sum"
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
               ],
-              "show": false
+              "type": "time"
             },
-            "showHeader": false
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "/^$measurement$/",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and (r._field == \"vpn_user_num_active\" or r._field == \"vpn_user_num_active_ipsec\" or r._field == \"vpn_user_num_active_wg\"))\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\"])\n  |> map(fn: (r) =>  ({\n        r with _field:\n          if r._field == \"vpn_user_num_active\" then \"Active User\"\n          else if r._field == \"vpn_user_num_active_ipsec\" then \"Active User - IPSec\"\n          else if r._field == \"vpn_user_num_active_wg\" then \"Active User - WireGuard\"\n          else r._field\n        })\n      )",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "vpn_user_num_active"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$boxtag$/"
+            }
+          ]
+        }
+      ],
+      "title": "Active VPN User",
+      "transformations": [],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
           },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 7,
+        "x": 17,
+            "y": 5
+      },
+      "id": 68,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": false
+      },
           "pluginVersion": "9.1.6",
-          "targets": [
-            {
-              "alias": "MyFritz Hostname",
-              "datasource": {
-                "type": "influxdb",
-                "uid": "${DS_INFLUXDB}"
-              },
-              "groupBy": [],
-              "measurement": "/^$measurement$/",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "query": "from(bucket: v.defaultBucket)\n  |> range(start: -1d)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and\n    (\n      r._field == \"myfritz_host_name\" or\n      r._field == \"vpn_type\" or\n      r._field == \"vpn_user_num_active\"\n    ) \n  )\n  |> last()\n  |> toString()\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"_time\"])\n  |> map(fn: (r) =>  ({\n        r with _field:\n          if r._field == \"myfritz_host_name\" then \"MyFritz Hostname\"\n          else if r._field == \"vpn_type\" then \"VPN Type\"\n          else if r._field == \"vpn_user_num_active\" then \"VPN User Active\"\n          else r._field\n        })\n      )\n",
-              "refId": "A",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "myfritz_host_name"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "last"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "box",
-                  "operator": "=~",
-                  "value": "/^$boxtag$/"
-                }
-              ]
-            }
-          ],
-          "title": "VPN Infos",
-          "transformations": [
-            {
-              "id": "labelsToFields",
-              "options": {
-                "mode": "columns"
-              }
-            },
-            {
-              "id": "merge",
-              "options": {}
-            },
-            {
-              "id": "organize",
-              "options": {
-                "excludeByName": {
-                  "Time": true
-                },
-                "indexByName": {
-                  "_field": 0,
-                  "_value": 1
-                },
-                "renameByName": {}
-              }
-            }
-          ],
-          "type": "table"
-        },
+      "targets": [
         {
+          "alias": "MyFritz Hostname",
           "datasource": {
             "type": "influxdb",
             "uid": "${DS_INFLUXDB}"
           },
-          "description": "",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
+          "groupBy": [],
+          "measurement": "/^$measurement$/",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "from(bucket: v.defaultBucket)\n  |> range(start: -1d)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and\n    (\n      r._field == \"myfritz_host_name\" or\n      r._field == \"vpn_type\" or\n      r._field == \"vpn_user_num_active\" or\n      r._field == \"myfritz_host_name_ipsec\" or\n      r._field == \"vpn_type_ipsec\" or\n      r._field == \"vpn_user_num_active_ipsec\" or\n      r._field == \"myfritz_host_name_wg\" or\n      r._field == \"vpn_type_wg\" or\n      r._field == \"vpn_user_num_active_wg\"\n    ) \n  )\n  |> last()\n  |> toString()\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"_time\"])\n  |> map(fn: (r) =>  ({\n        r with _field:\n          if r._field == \"myfritz_host_name\" then \"MyFritz Hostname\"\n          else if r._field == \"vpn_type\" then \"VPN Type\"\n          else if r._field == \"vpn_user_num_active\" then \"VPN User Active\"\n          else if r._field == \"myfritz_host_name_ipsec\" then \"MyFritz Hostname\"\n          else if r._field == \"vpn_type_ipsec\" then \"VPN Type - IPSec\"\n          else if r._field == \"vpn_user_num_active_ipsec\" then \"VPN User Active - IPSec\"\n          else if r._field == \"myfritz_host_name_wg\" then \"MyFritz Hostname\"\n          else if r._field == \"vpn_type_wg\" then \"VPN Type - WireGuard\"\n          else if r._field == \"vpn_user_num_active_wg\" then \"VPN User Active - WireGuard\"\n          else r._field\n        })\n      )\n",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "myfritz_host_name"
+                ],
+                "type": "field"
               },
-              "custom": {
-                "align": "auto",
-                "displayMode": "auto",
-                "inspect": false
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
+              {
+                "params": [],
+                "type": "last"
               }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$boxtag$/"
+            }
+          ]
+        }
+      ],
+      "title": "VPN Infos",
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "mode": "columns"
+          }
+        },
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
             },
-            "overrides": []
+            "indexByName": {
+              "_field": 0,
+              "_value": 1
+            },
+            "renameByName": {}
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
           },
-          "gridPos": {
-            "h": 8,
-            "w": 9,
-            "x": 0,
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 9,
+        "x": 0,
             "y": 13
-          },
-          "id": 62,
-          "options": {
-            "footer": {
-              "fields": "",
-              "reducer": [
-                "sum"
-              ],
-              "show": false
-            },
-            "showHeader": false
-          },
+      },
+      "id": 62,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": false
+      },
           "pluginVersion": "9.1.6",
-          "targets": [
-            {
-              "datasource": {
-                "type": "influxdb",
-                "uid": "${DS_INFLUXDB}"
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "groupBy": [],
+          "limit": "1",
+          "measurement": "/^$measurement$/",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "from(bucket: v.defaultBucket)\n  |> range(start: -1d)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and\n    (\n      r._field == \"ddns_domain\" or\n      r._field == \"ddns_enabled\" or\n      r._field == \"ddns_mode\" or\n      r._field == \"ddns_provider_name\" or\n      r._field == \"ddns_status_ipv4\" or\n      r._field == \"ddns_status_ipv6\"\n    ) \n  )\n  |> last()\n  |> toString()\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"_time\"])\n  |> map(fn: (r) =>  ({\n        r with _field:\n          if r._field == \"ddns_domain\" then \"Domain\"\n          else if r._field == \"ddns_enabled\" then \"Enabled\"\n          else if r._field == \"ddns_mode\" then \"Mode\"\n          else if r._field == \"ddns_provider_name\" then \"Provider\"\n          else if r._field == \"ddns_status_ipv4\" then \"Status IPv4\"\n          else if r._field == \"ddns_status_ipv6\" then \"Status IPv6\"\n          else r._field\n        })\n      )\n",
+          "refId": "A",
+          "resultFormat": "table",
+          "select": [
+            [
+              {
+                "params": [
+                  "ddns_domain"
+                ],
+                "type": "field"
               },
-              "groupBy": [],
-              "limit": "1",
-              "measurement": "/^$measurement$/",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "query": "from(bucket: v.defaultBucket)\n  |> range(start: -1d)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and\n    (\n      r._field == \"ddns_domain\" or\n      r._field == \"ddns_enabled\" or\n      r._field == \"ddns_mode\" or\n      r._field == \"ddns_provider_name\" or\n      r._field == \"ddns_status_ipv4\" or\n      r._field == \"ddns_status_ipv6\"\n    ) \n  )\n  |> last()\n  |> toString()\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"_time\"])\n  |> map(fn: (r) =>  ({\n        r with _field:\n          if r._field == \"ddns_domain\" then \"Domain\"\n          else if r._field == \"ddns_enabled\" then \"Enabled\"\n          else if r._field == \"ddns_mode\" then \"Mode\"\n          else if r._field == \"ddns_provider_name\" then \"Provider\"\n          else if r._field == \"ddns_status_ipv4\" then \"Status IPv4\"\n          else if r._field == \"ddns_status_ipv6\" then \"Status IPv6\"\n          else r._field\n        })\n      )\n",
-              "refId": "A",
-              "resultFormat": "table",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "ddns_domain"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [
-                      "Domain"
-                    ],
-                    "type": "alias"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "box",
-                  "operator": "=~",
-                  "value": "/^$boxtag$/"
-                }
-              ]
-            },
-            {
-              "datasource": {
-                "type": "influxdb",
-                "uid": "${DS_INFLUXDB}"
-              },
-              "groupBy": [],
-              "hide": false,
-              "limit": "1",
-              "measurement": "/^$measurement$/",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "refId": "B",
-              "resultFormat": "table",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "ddns_enabled"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [
-                      "Enabled"
-                    ],
-                    "type": "alias"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "box",
-                  "operator": "=~",
-                  "value": "/^$boxtag$/"
-                }
-              ]
-            },
-            {
-              "datasource": {
-                "type": "influxdb",
-                "uid": "${DS_INFLUXDB}"
-              },
-              "groupBy": [],
-              "hide": false,
-              "limit": "1",
-              "measurement": "/^$measurement$/",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "refId": "C",
-              "resultFormat": "table",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "ddns_mode"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [
-                      "Mode"
-                    ],
-                    "type": "alias"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "box",
-                  "operator": "=~",
-                  "value": "/^$boxtag$/"
-                }
-              ]
-            },
-            {
-              "datasource": {
-                "type": "influxdb",
-                "uid": "${DS_INFLUXDB}"
-              },
-              "groupBy": [],
-              "hide": false,
-              "limit": "1",
-              "measurement": "/^$measurement$/",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "refId": "D",
-              "resultFormat": "table",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "ddns_provider_name"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [
-                      "Provider"
-                    ],
-                    "type": "alias"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "box",
-                  "operator": "=~",
-                  "value": "/^$boxtag$/"
-                }
-              ]
-            },
-            {
-              "datasource": {
-                "type": "influxdb",
-                "uid": "${DS_INFLUXDB}"
-              },
-              "groupBy": [],
-              "hide": false,
-              "limit": "1",
-              "measurement": "/^$measurement$/",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "refId": "E",
-              "resultFormat": "table",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "ddns_status_ipv4"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [
-                      "Status IPv4"
-                    ],
-                    "type": "alias"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "box",
-                  "operator": "=~",
-                  "value": "/^$boxtag$/"
-                }
-              ]
-            },
-            {
-              "datasource": {
-                "type": "influxdb",
-                "uid": "${DS_INFLUXDB}"
-              },
-              "groupBy": [],
-              "hide": false,
-              "limit": "1",
-              "measurement": "/^$measurement$/",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "refId": "F",
-              "resultFormat": "table",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "ddns_status_ipv6"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [
-                      "Status IPv6"
-                    ],
-                    "type": "alias"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "box",
-                  "operator": "=~",
-                  "value": "/^$boxtag$/"
-                }
-              ]
-            }
-          ],
-          "title": "DynDNS Info",
-          "transformations": [
-            {
-              "id": "labelsToFields",
-              "options": {}
-            },
-            {
-              "id": "merge",
-              "options": {}
-            },
-            {
-              "id": "organize",
-              "options": {
-                "excludeByName": {
-                  "Time": true
-                },
-                "indexByName": {
-                  "_field": 0,
-                  "_value": 1
-                },
-                "renameByName": {}
+              {
+                "params": [
+                  "Domain"
+                ],
+                "type": "alias"
               }
-            }
+            ]
           ],
-          "type": "table"
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$boxtag$/"
+            }
+          ]
         },
         {
           "datasource": {
             "type": "influxdb",
             "uid": "${DS_INFLUXDB}"
           },
-          "description": "",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
+          "groupBy": [],
+          "hide": false,
+          "limit": "1",
+          "measurement": "/^$measurement$/",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "B",
+          "resultFormat": "table",
+          "select": [
+            [
+              {
+                "params": [
+                  "ddns_enabled"
+                ],
+                "type": "field"
               },
-              "custom": {
-                "align": "auto",
-                "displayMode": "auto",
-                "inspect": false
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  }
-                ]
+              {
+                "params": [
+                  "Enabled"
+                ],
+                "type": "alias"
               }
-            },
-            "overrides": [
+            ]
+          ],
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$boxtag$/"
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "groupBy": [],
+          "hide": false,
+          "limit": "1",
+          "measurement": "/^$measurement$/",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "C",
+          "resultFormat": "table",
+          "select": [
+            [
               {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Connected"
-                },
-                "properties": [
-                  {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
-                  },
-                  {
-                    "id": "mappings",
-                    "value": [
-                      {
-                        "options": {
-                          "False": {
-                            "color": "light-blue",
-                            "index": 1
-                          },
-                          "True": {
-                            "color": "light-green",
-                            "index": 0
-                          }
-                        },
-                        "type": "value"
-                      }
-                    ]
-                  }
-                ]
+                "params": [
+                  "ddns_mode"
+                ],
+                "type": "field"
               },
               {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Name"
-                },
-                "properties": [
+                "params": [
+                  "Mode"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$boxtag$/"
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "groupBy": [],
+          "hide": false,
+          "limit": "1",
+          "measurement": "/^$measurement$/",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "D",
+          "resultFormat": "table",
+          "select": [
+            [
+              {
+                "params": [
+                  "ddns_provider_name"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [
+                  "Provider"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$boxtag$/"
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "groupBy": [],
+          "hide": false,
+          "limit": "1",
+          "measurement": "/^$measurement$/",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "E",
+          "resultFormat": "table",
+          "select": [
+            [
+              {
+                "params": [
+                  "ddns_status_ipv4"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [
+                  "Status IPv4"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$boxtag$/"
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "groupBy": [],
+          "hide": false,
+          "limit": "1",
+          "measurement": "/^$measurement$/",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "F",
+          "resultFormat": "table",
+          "select": [
+            [
+              {
+                "params": [
+                  "ddns_status_ipv6"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [
+                  "Status IPv6"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$boxtag$/"
+            }
+          ]
+        }
+      ],
+      "title": "DynDNS Info",
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {}
+        },
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {
+              "_field": 0,
+              "_value": 1
+            },
+            "renameByName": {}
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Connected"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-text"
+              },
+              {
+                "id": "mappings",
+                "value": [
                   {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "light-yellow",
-                      "mode": "fixed"
-                    }
-                  },
-                  {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "options": {
+                      "False": {
+                        "color": "light-blue",
+                        "index": 1
+                      },
+                      "True": {
+                        "color": "light-green",
+                        "index": 0
+                      }
+                    },
+                    "type": "value"
                   }
                 ]
               }
             ]
           },
-          "gridPos": {
-            "h": 8,
-            "w": 15,
-            "x": 9,
-            "y": 13
-          },
-          "id": 66,
-          "options": {
-            "footer": {
-              "fields": "",
-              "reducer": [
-                "sum"
-              ],
-              "show": false
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Name"
             },
-            "frameIndex": 1,
-            "showHeader": true
-          },
-          "pluginVersion": "9.1.6",
-          "targets": [
-            {
-              "datasource": {
-                "type": "influxdb",
-                "uid": "${DS_INFLUXDB}"
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-yellow",
+                  "mode": "fixed"
+                }
               },
-              "groupBy": [
-                {
-                  "params": [
-                    "name"
-                  ],
-                  "type": "tag"
-                }
+              {
+                "id": "custom.displayMode",
+                "value": "color-text"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 15,
+        "x": 9,
+            "y": 13
+      },
+      "id": 66,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": true
+      },
+          "pluginVersion": "9.1.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "name"
               ],
-              "limit": "1",
-              "measurement": "/^$measurement$/",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "query": "from(bucket: v.defaultBucket)\n  |> range(start: -1d)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and\n    (\n      r._field == \"vpn_user_active\" or\n      r._field == \"vpn_user_connected\" or\n      r._field == \"vpn_user_virtual_address\" or\n      r._field == \"vpn_user_remote_address\"\n    ) \n  )\n  |> last()\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"_time\"])\n\n",
-              "refId": "A",
-              "resultFormat": "table",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "vpn_user_active"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "last"
-                  },
-                  {
-                    "params": [
-                      "Active"
-                    ],
-                    "type": "alias"
-                  }
-                ],
-                [
-                  {
-                    "params": [
-                      "vpn_user_connected"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "last"
-                  },
-                  {
-                    "params": [
-                      "Connected"
-                    ],
-                    "type": "alias"
-                  }
-                ],
-                [
-                  {
-                    "params": [
-                      "vpn_user_virtual_address"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "last"
-                  },
-                  {
-                    "params": [
-                      "Virtual Address"
-                    ],
-                    "type": "alias"
-                  }
-                ],
-                [
-                  {
-                    "params": [
-                      "vpn_user_remote_address"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "last"
-                  },
-                  {
-                    "params": [
-                      "Remote Address"
-                    ],
-                    "type": "alias"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "box",
-                  "operator": "=~",
-                  "value": "/^$boxtag$/"
-                }
-              ]
+              "type": "tag"
             }
           ],
-          "title": "VPN User Overview",
-          "transformations": [
-            {
-              "id": "joinByLabels",
-              "options": {
-                "value": "_field"
+          "limit": "1",
+          "measurement": "/^$measurement$/",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "from(bucket: v.defaultBucket)\n  |> range(start: -1d)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and\n    (\n      r._field == \"vpn_user_active\" or\n      r._field == \"vpn_user_connected\" or\n      r._field == \"vpn_user_virtual_address\" or\n      r._field == \"vpn_user_remote_address\" or\n      r._field == \"vpn_user_active_ipsec\" or\n      r._field == \"vpn_user_connected_ipsec\" or\n      r._field == \"vpn_user_virtual_address_ipsec\" or\n      r._field == \"vpn_user_remote_address_ipsec\" or\n      r._field == \"vpn_user_active_wg\" or\n      r._field == \"vpn_user_connected_wg\" or\n      r._field == \"vpn_user_virtual_address_wg\" or\n      r._field == \"vpn_user_remote_address_wg\"\n    ) \n  )\n  |> last()\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"_time\"])\n  |> map(fn: (r) =>  ({\n        r with _field:\n          if r._field == \"name\" then \"Name\"\n          else if r._field == \"vpn_user_active\" then \"Active\"\n          else if r._field == \"vpn_user_connected\" then \"Connected\"\n          else if r._field == \"vpn_user_virtual_address\" then \"Virtual Address\"\n          else if r._field == \"vpn_user_remote_address\" then \"Remote Address\"\n          else if r._field == \"vpn_user_active_ipsec\" then \"Active\"\n          else if r._field == \"vpn_user_connected_ipsec\" then \"Connected\"\n          else if r._field == \"vpn_user_virtual_address_ipsec\" then \"Virtual Address\"\n          else if r._field == \"vpn_user_remote_address_ipsec\" then \"Remote Address\"\n          else if r._field == \"vpn_user_active_wg\" then \"Active\"\n          else if r._field == \"vpn_user_connected_wg\" then \"Connected\"\n          else if r._field == \"vpn_user_virtual_address_wg\" then \"Virtual Address\"\n          else if r._field == \"vpn_user_remote_address_wg\" then \"Remote Address\"\n          else r._field\n        })\n      )\n",
+          "refId": "A",
+          "resultFormat": "table",
+          "select": [
+            [
+              {
+                "params": [
+                  "vpn_user_active"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              },
+              {
+                "params": [
+                  "Active"
+                ],
+                "type": "alias"
               }
-            },
-            {
-              "id": "organize",
-              "options": {
-                "excludeByName": {
-                  "Time": true
-                },
-                "indexByName": {
-                  "name": 0,
-                  "vpn_user_active": 1,
-                  "vpn_user_connected": 2,
-                  "vpn_user_remote_address": 4,
-                  "vpn_user_virtual_address": 3
-                },
-                "renameByName": {
-                  "Active": "",
-                  "name": "Name",
-                  "vpn_user_active": "Active",
-                  "vpn_user_connected": "Connected",
-                  "vpn_user_remote_address": "Remote Address",
-                  "vpn_user_virtual_address": "Virtual Address"
-                }
+            ],
+            [
+              {
+                "params": [
+                  "vpn_user_connected"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              },
+              {
+                "params": [
+                  "Connected"
+                ],
+                "type": "alias"
               }
-            }
+            ],
+            [
+              {
+                "params": [
+                  "vpn_user_virtual_address"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              },
+              {
+                "params": [
+                  "Virtual Address"
+                ],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "vpn_user_remote_address"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              },
+              {
+                "params": [
+                  "Remote Address"
+                ],
+                "type": "alias"
+              }
+            ]
           ],
-          "type": "table"
+          "tags": [
+            {
+              "key": "box",
+              "operator": "=~",
+              "value": "/^$boxtag$/"
+            }
+          ]
+        }
+      ],
+      "title": "VPN User Overview",
+      "transformations": [
+        {
+          "id": "joinByLabels",
+          "options": {
+            "value": "_field"
+          }
+        }
+      ],
+      "type": "table"
         }
       ],
       "title": "VPN and DynDNS Info",
