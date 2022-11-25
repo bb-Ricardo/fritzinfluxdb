@@ -4707,7 +4707,7 @@
               "measurement": "/^$measurement$/",
               "orderByTime": "ASC",
               "policy": "default",
-              "query": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and r._field == \"vpn_user_num_active\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\"])",
+              "query": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and r._field == \"vpn_user_num_active\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"vpntype\"])",
               "refId": "A",
               "resultFormat": "time_series",
               "select": [
@@ -4808,7 +4808,7 @@
               "measurement": "/^$measurement$/",
               "orderByTime": "ASC",
               "policy": "default",
-              "query": "from(bucket: v.defaultBucket)\n  |> range(start: -1d)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and\n    (\n      r._field == \"myfritz_host_name\" or\n      r._field == \"vpn_type\" or\n      r._field == \"vpn_user_num_active\"\n    ) \n  )\n  |> last()\n  |> toString()\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"_time\"])\n  |> map(fn: (r) =>  ({\n        r with _field:\n          if r._field == \"myfritz_host_name\" then \"MyFritz Hostname\"\n          else if r._field == \"vpn_type\" then \"VPN Type\"\n          else if r._field == \"vpn_user_num_active\" then \"VPN User Active\"\n          else r._field\n        })\n      )\n",
+              "query": "from(bucket: v.defaultBucket)\n  |> range(start: -1d)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and\n    (\n      r._field == \"myfritz_host_name\" or\n      r._field == \"vpn_type\" or\n      r._field == \"vpn_user_num_active\"\n    ) \n  )\n  |> last()\n  |> toString()\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"_time\", \"vpntype\"])\n  |> map(fn: (r) =>  ({\n        r with _field:\n          if r._field == \"myfritz_host_name\" then \"MyFritz Hostname\"\n          else if r._field == \"vpn_type\" then \"VPN Type\"\n          else if r._field == \"vpn_user_num_active\" then \"VPN User Active\"\n          else r._field\n        })\n      )\n",
               "refId": "A",
               "resultFormat": "time_series",
               "select": [
@@ -5277,7 +5277,7 @@
               "measurement": "/^$measurement$/",
               "orderByTime": "ASC",
               "policy": "default",
-              "query": "from(bucket: v.defaultBucket)\n  |> range(start: -1d)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and\n    (\n      r._field == \"vpn_user_active\" or\n      r._field == \"vpn_user_connected\" or\n      r._field == \"vpn_user_virtual_address\" or\n      r._field == \"vpn_user_remote_address\"\n    ) \n  )\n  |> last()\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"_time\"])\n\n",
+              "query": "from(bucket: v.defaultBucket)\n  |> range(start: -1d)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and\n    (\n      r._field == \"vpn_user_active\" or\n      r._field == \"vpn_user_connected\" or\n      r._field == \"vpn_user_virtual_address\" or\n      r._field == \"vpn_user_remote_address\"\n    ) \n  )\n  |> last()\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"_time\", \"vpntype\"])\n\n",
               "refId": "A",
               "resultFormat": "table",
               "select": [
