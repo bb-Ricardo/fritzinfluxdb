@@ -148,7 +148,8 @@ class FritzBoxLuaService(FritzBoxService):
     a single Lua service
     """
 
-    os_versions = None
+    os_min_versions = None
+    os_max_versions = None
     url_path = None
     default_method = "GET"
     default_url_path = FritzBoxLuaURLPath.data
@@ -158,15 +159,16 @@ class FritzBoxLuaService(FritzBoxService):
         super().__init__(service_data)
 
         self.url_path = service_data.get("url_path", self.default_url_path)
-        self.os_versions = service_data.get("os_versions", list())
+        self.os_min_versions = service_data.get("os_min_versions")
+        self.os_max_versions = service_data.get("os_max_versions")
         self.method = service_data.get("method", self.default_method)
         self.response_parser = service_data.get("response_parser", self.response_parser)
 
         if len(self.url_path) == 0:
             do_error_exit(f"FritzBoxLuaService '{self.name}' instance has no url_path defined")
 
-        if len(self.os_versions) == 0:
-            do_error_exit(f"FritzBoxLuaService '{self.name}' instance has no supported 'os_versions' defined")
+        if self.os_min_versions is None:
+            do_error_exit(f"FritzBoxLuaService '{self.name}' instance has no supported 'os_min_versions' defined")
 
         if not callable(self.response_parser):
             do_error_exit(f"FritzBoxLuaService '{self.name}' instance 'response_parser' is not a callable function")
@@ -220,3 +222,14 @@ class FritzBoxLuaService(FritzBoxService):
         """
 
         return response.text
+
+    def os_version_match(self, current_os_version):
+
+        # very simple version comparison but should do with the current AVM version schema.
+        def versiontuple(v):
+            return tuple(map(int, (v.split("."))))
+
+        if self.os_max_versions is None:
+            return versiontuple(current_os_version) >= versiontuple(self.os_min_versions)
+
+        return versiontuple(self.os_min_versions) <= versiontuple(current_os_version) <= versiontuple(self.os_max_versions)

@@ -23,11 +23,8 @@ def prepare_json_response_data(response):
 lua_services.append(
     {
         "name": "System logs",
-        "os_versions": [
-            "7.29",
-            "7.30",
-            "7.31"
-        ],
+        "os_min_versions": "7.29",
+        "os_max_versions": "7.38",
         "method": "POST",
         "params": {
             "filter": 1,
@@ -59,10 +56,7 @@ lua_services.append(
 lua_services.append(
     {
         "name": "System logs",
-        "os_versions": [
-            "7.39",
-            "7.50"
-        ],
+        "os_min_versions": "7.39",
         "method": "POST",
         "params": {
             "filter": "sys",
@@ -94,11 +88,8 @@ lua_services.append(
 lua_services.append(
     {
         "name": "Internet connection logs",
-        "os_versions": [
-            "7.29",
-            "7.30",
-            "7.31"
-        ],
+        "os_min_versions": "7.29",
+        "os_max_versions": "7.38",
         "method": "POST",
         "params": {
             "filter": 2,
@@ -130,10 +121,7 @@ lua_services.append(
 lua_services.append(
     {
         "name": "Internet connection logs",
-        "os_versions": [
-            "7.39",
-            "7.50"
-        ],
+        "os_min_versions": "7.39",
         "method": "POST",
         "params": {
             "filter": "net",
@@ -165,11 +153,8 @@ lua_services.append(
 lua_services.append(
     {
         "name": "Telephony logs",
-        "os_versions": [
-            "7.29",
-            "7.30",
-            "7.31"
-        ],
+        "os_min_versions": "7.29",
+        "os_max_versions": "7.38",
         "method": "POST",
         "params": {
             "filter": 3,
@@ -201,10 +186,7 @@ lua_services.append(
 lua_services.append(
     {
         "name": "Telephony logs",
-        "os_versions": [
-            "7.39",
-            "7.50"
-        ],
+        "os_min_versions": "7.39",
         "method": "POST",
         "params": {
             "filter": "fon",
@@ -236,11 +218,8 @@ lua_services.append(
 lua_services.append(
     {
         "name": "WLAN logs",
-        "os_versions": [
-            "7.29",
-            "7.30",
-            "7.31"
-        ],
+        "os_min_versions": "7.29",
+        "os_max_versions": "7.38",
         "method": "POST",
         "params": {
             "filter": 4,
@@ -272,10 +251,7 @@ lua_services.append(
 lua_services.append(
     {
         "name": "WLAN logs",
-        "os_versions": [
-            "7.39",
-            "7.50"
-        ],
+        "os_min_versions": "7.39",
         "method": "POST",
         "params": {
             "filter": "wlan",
@@ -307,11 +283,8 @@ lua_services.append(
 lua_services.append(
     {
         "name": "USB Devices logs",
-        "os_versions": [
-            "7.29",
-            "7.30",
-            "7.31"
-        ],
+        "os_min_versions": "7.29",
+        "os_max_versions": "7.38",
         "method": "POST",
         "params": {
             "filter": 5,
@@ -343,10 +316,7 @@ lua_services.append(
 lua_services.append(
     {
         "name": "USB Devices logs",
-        "os_versions": [
-            "7.39",
-            "7.50"
-        ],
+        "os_min_versions": "7.39",
         "method": "POST",
         "params": {
             "filter": "usb",

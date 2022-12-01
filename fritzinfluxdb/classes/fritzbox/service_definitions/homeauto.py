@@ -42,13 +42,7 @@ def prepare_response_data(response):
 lua_services.append(
     {
         "name": "Home Automation",
-        "os_versions": [
-            "7.29",
-            "7.30",
-            "7.31",
-            "7.39",
-            "7.50"
-        ],
+        "os_min_versions": "7.29",
         "url_path": FritzBoxLuaURLPath.homeautomation,
         "method": "GET",
         "params": {
