@@ -21,11 +21,8 @@ def prepare_json_response_data(response):
 
 lua_services.append({
         "name": "VPN Users",
-        "os_versions": [
-            "7.29",
-            "7.30",
-            "7.31"
-        ],
+        "os_min_versions": "7.29",
+        "os_max_versions": "7.38",
         "method": "POST",
         "params": {
             "page": "shareVpn",
@@ -98,10 +95,7 @@ lua_services.append({
 
 lua_services.append({
         "name": "VPN Users - IPSec",
-        "os_versions": [
-            "7.39",
-            "7.50"
-        ],
+        "os_min_versions": "7.39",
         "method": "POST",
         "params": {
             "page": "shareVpn",
