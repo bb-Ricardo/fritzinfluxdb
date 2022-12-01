@@ -73,7 +73,6 @@ tr069_services.extend([
             "NewModelName": "model",
             "NewSoftwareVersion": "softwareversion",
         },
-        "interval": 60
     },
     {
         "name": "LANEthernetInterfaceConfig:1",

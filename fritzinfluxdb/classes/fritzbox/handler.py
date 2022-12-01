@@ -245,6 +245,10 @@ class FritzBoxHandler(FritzBoxHandlerBase):
                         FritzMeasurement(metric_name, value, box_tag=self.config.box_tag)
                     )
 
+            # special case: update firmware version when requested
+            if service.name == "DeviceInfo" and action.name == "GetInfo":
+                self.config.fw_version = call_result.get("NewSoftwareVersion", "154.7.50")
+
         if self.discovery_done is False:
             if True not in [x.available for x in service.actions]:
                 service_invalid_log(f"All actions for service '{service.name}' are unavailable. Disabling service.")
