@@ -911,7 +911,7 @@
         }
       ],
       "timeFrom": "5m",
-      "title": "DSL Link Uptime",
+      "title": "IP connection Uptime",
       "type": "stat"
     },
     {
@@ -2022,8 +2022,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -2154,8 +2153,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2316,8 +2314,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2497,8 +2494,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2600,8 +2596,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2778,7 +2773,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 3
+            "y": 23
           },
           "id": 55,
           "options": {
@@ -3001,7 +2996,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 3
+            "y": 23
           },
           "id": 56,
           "options": {
@@ -3166,7 +3161,7 @@
             "h": 5,
             "w": 24,
             "x": 0,
-            "y": 11
+            "y": 31
           },
           "id": 60,
           "options": {
@@ -3180,7 +3175,7 @@
             "frameIndex": 10,
             "showHeader": true
           },
-          "pluginVersion": "9.1.6",
+          "pluginVersion": "9.2.2",
           "targets": [
             {
               "alias": "2.4 GHz Status",
@@ -3623,7 +3618,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -3652,7 +3648,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 4
+            "y": 24
           },
           "id": 45,
           "options": {
@@ -3767,7 +3763,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               },
@@ -3837,7 +3834,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 4
+            "y": 24
           },
           "id": 49,
           "options": {
@@ -4012,7 +4009,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4028,7 +4026,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 12
+            "y": 32
           },
           "id": 51,
           "options": {
@@ -4112,7 +4110,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "#EAB839",
@@ -4128,7 +4127,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 12
+            "y": 32
           },
           "id": 53,
           "options": {
@@ -4149,7 +4148,7 @@
               "valueSize": 12
             }
           },
-          "pluginVersion": "9.1.6",
+          "pluginVersion": "9.2.2",
           "targets": [
             {
               "alias": "$tag_name",
@@ -4240,7 +4239,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "dark-yellow"
+                    "color": "dark-yellow",
+                    "value": null
                   }
                 ]
               }
@@ -4275,7 +4275,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 21
+            "y": 41
           },
           "hideTimeOverride": true,
           "id": 20,
@@ -4292,7 +4292,7 @@
             "frameIndex": 2,
             "showHeader": false
           },
-          "pluginVersion": "9.1.6",
+          "pluginVersion": "9.2.2",
           "targets": [
             {
               "datasource": {
@@ -4388,7 +4388,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "dark-yellow"
+                    "color": "dark-yellow",
+                    "value": null
                   }
                 ]
               }
@@ -4423,7 +4424,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 21
+            "y": 41
           },
           "hideTimeOverride": true,
           "id": 74,
@@ -4439,7 +4440,7 @@
             },
             "showHeader": false
           },
-          "pluginVersion": "9.1.6",
+          "pluginVersion": "9.2.2",
           "targets": [
             {
               "datasource": {
@@ -4451,7 +4452,7 @@
               "measurement": "/^$measurement$/",
               "orderByTime": "ASC",
               "policy": "default",
-              "query": "from(bucket: v.defaultBucket)\n  |> range(start: -1d)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and\n    (\n      r._field == \"physicallinktype\" or\n      r._field == \"dsl_line_length\" or\n      r._field == \"dsl_dslam_vendor\" or\n      r._field == \"dsl_dslam_sw_version\" or\n      r._field == \"dsl_line_mode\" or\n      r._field == \"cable_cmts_vendor\" or\n      r._field == \"cable_line_mode\" or\n      r._field == \"cable_modem_version\" or\n      r._field == \"cable_num_ds_channels\" or\n      r._field == \"cable_num_us_channels\" or\n      r._field == \"connection_status\" or\n      r._field == \"last_connection_error\" or\n      r._field == \"remote_pop\"\n    ) \n  )\n  |> last()\n  |> toString()\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"_time\"])\n  |> map(fn: (r) =>  ({\n        r with _field:\n          if r._field == \"physicallinktype\" then \"Link Type\"\n          else if r._field == \"dsl_line_length\" then \"DSL Line Length\"\n          else if r._field == \"dsl_dslam_vendor\" then \"DSL DSLAM Vendor\"\n          else if r._field == \"dsl_dslam_sw_version\" then \"DSL Model Version\"\n          else if r._field == \"dsl_line_mode\" then \"DSL Line Mode\"\n          else if r._field == \"cable_cmts_vendor\" then \"Cable Vendor\"\n          else if r._field == \"cable_line_mode\" then \"Cable Line Mode\"\n          else if r._field == \"cable_modem_version\" then \"Cable Modem Version\"\n          else if r._field == \"cable_num_ds_channels\" then \"Cable Downstream Channels\"\n          else if r._field == \"cable_num_us_channels\" then \"Cable Upstream Channels\"\n          else if r._field == \"connection_status\" then \"Connection Status\"\n          else if r._field == \"last_connection_error\" then \"Last Connection Error\"\n          else if r._field == \"remote_pop\" then \"Remote Pop\"\n          else r._field\n        })\n      )\n",
+              "query": "from(bucket: v.defaultBucket)\n  |> range(start: -1d)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and\n    (\n      r._field == \"physicallinktype\" or\n      r._field == \"dsl_line_length\" or\n      r._field == \"dsl_dslam_vendor\" or\n      r._field == \"dsl_dslam_sw_version\" or\n      r._field == \"dsl_line_mode\" or\n      r._field == \"cable_cmts_vendor\" or\n      r._field == \"cable_line_mode\" or\n      r._field == \"cable_modem_version\" or\n      r._field == \"cable_num_ds_channels\" or\n      r._field == \"cable_num_us_channels\" or\n      r._field == \"connection_status\" or\n      r._field == \"last_connection_error\" or\n      r._field == \"remote_pop\" or\n      r._field == \"physical_connection_status\"\n    ) \n  )\n  |> last()\n  |> toString()\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"_time\"])\n  |> map(fn: (r) =>  ({\n        r with _field:\n          if r._field == \"physicallinktype\" then \"Link Type\"\n          else if r._field == \"dsl_line_length\" then \"DSL Line Length\"\n          else if r._field == \"dsl_dslam_vendor\" then \"DSL DSLAM Vendor\"\n          else if r._field == \"dsl_dslam_sw_version\" then \"DSL Model Version\"\n          else if r._field == \"dsl_line_mode\" then \"DSL Line Mode\"\n          else if r._field == \"cable_cmts_vendor\" then \"Cable Vendor\"\n          else if r._field == \"cable_line_mode\" then \"Cable Line Mode\"\n          else if r._field == \"cable_modem_version\" then \"Cable Modem Version\"\n          else if r._field == \"cable_num_ds_channels\" then \"Cable Downstream Channels\"\n          else if r._field == \"cable_num_us_channels\" then \"Cable Upstream Channels\"\n          else if r._field == \"connection_status\" then \"IP Connection Status\"\n          else if r._field == \"last_connection_error\" then \"Last Connection Error\"\n          else if r._field == \"remote_pop\" then \"Remote Pop\"\n          else if r._field == \"physical_connection_status\" then \"Link Connection Status\"\n          else r._field\n        })\n      )\n",
               "refId": "B",
               "resultFormat": "table",
               "select": [
@@ -4653,7 +4654,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4668,7 +4670,7 @@
             "h": 8,
             "w": 17,
             "x": 0,
-            "y": 5
+            "y": 25
           },
           "id": 64,
           "options": {
@@ -4707,7 +4709,7 @@
               "measurement": "/^$measurement$/",
               "orderByTime": "ASC",
               "policy": "default",
-              "query": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and r._field == \"vpn_user_num_active\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"vpntype\"])",
+              "query": "from(bucket: v.defaultBucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and r._field == \"vpn_user_num_active\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\"])",
               "refId": "A",
               "resultFormat": "time_series",
               "select": [
@@ -4768,7 +4770,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4783,7 +4786,7 @@
             "h": 8,
             "w": 7,
             "x": 17,
-            "y": 5
+            "y": 25
           },
           "id": 68,
           "options": {
@@ -4796,7 +4799,7 @@
             },
             "showHeader": false
           },
-          "pluginVersion": "9.1.6",
+          "pluginVersion": "9.2.2",
           "targets": [
             {
               "alias": "MyFritz Hostname",
@@ -4808,7 +4811,7 @@
               "measurement": "/^$measurement$/",
               "orderByTime": "ASC",
               "policy": "default",
-              "query": "from(bucket: v.defaultBucket)\n  |> range(start: -1d)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and\n    (\n      r._field == \"myfritz_host_name\" or\n      r._field == \"vpn_type\" or\n      r._field == \"vpn_user_num_active\"\n    ) \n  )\n  |> last()\n  |> toString()\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"_time\", \"vpntype\"])\n  |> map(fn: (r) =>  ({\n        r with _field:\n          if r._field == \"myfritz_host_name\" then \"MyFritz Hostname\"\n          else if r._field == \"vpn_type\" then \"VPN Type\"\n          else if r._field == \"vpn_user_num_active\" then \"VPN User Active\"\n          else r._field\n        })\n      )\n",
+              "query": "from(bucket: v.defaultBucket)\n  |> range(start: -1d)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and\n    (\n      r._field == \"myfritz_host_name\" or\n      r._field == \"vpn_type\" or\n      r._field == \"vpn_user_num_active\"\n    ) \n  )\n  |> last()\n  |> toString()\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"_time\"])\n  |> map(fn: (r) =>  ({\n        r with _field:\n          if r._field == \"myfritz_host_name\" then \"MyFritz Hostname\"\n          else if r._field == \"vpn_type\" then \"VPN Type\"\n          else if r._field == \"vpn_user_num_active\" then \"VPN User Active\"\n          else r._field\n        })\n      )\n",
               "refId": "A",
               "resultFormat": "time_series",
               "select": [
@@ -4883,7 +4886,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4898,7 +4902,7 @@
             "h": 8,
             "w": 9,
             "x": 0,
-            "y": 13
+            "y": 33
           },
           "id": 62,
           "options": {
@@ -4911,7 +4915,7 @@
             },
             "showHeader": false
           },
-          "pluginVersion": "9.1.6",
+          "pluginVersion": "9.2.2",
           "targets": [
             {
               "datasource": {
@@ -5183,7 +5187,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               }
@@ -5244,7 +5249,7 @@
             "h": 8,
             "w": 15,
             "x": 9,
-            "y": 13
+            "y": 33
           },
           "id": 66,
           "options": {
@@ -5258,7 +5263,7 @@
             "frameIndex": 1,
             "showHeader": true
           },
-          "pluginVersion": "9.1.6",
+          "pluginVersion": "9.2.2",
           "targets": [
             {
               "datasource": {
@@ -5277,7 +5282,7 @@
               "measurement": "/^$measurement$/",
               "orderByTime": "ASC",
               "policy": "default",
-              "query": "from(bucket: v.defaultBucket)\n  |> range(start: -1d)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and\n    (\n      r._field == \"vpn_user_active\" or\n      r._field == \"vpn_user_connected\" or\n      r._field == \"vpn_user_virtual_address\" or\n      r._field == \"vpn_user_remote_address\"\n    ) \n  )\n  |> last()\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"_time\", \"vpntype\"])\n\n",
+              "query": "from(bucket: v.defaultBucket)\n  |> range(start: -1d)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box == \"${boxtag}\" and\n    (\n      r._field == \"vpn_user_active\" or\n      r._field == \"vpn_user_connected\" or\n      r._field == \"vpn_user_virtual_address\" or\n      r._field == \"vpn_user_remote_address\"\n    ) \n  )\n  |> last()\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"_time\"])\n\n",
               "refId": "A",
               "resultFormat": "table",
               "select": [
@@ -5387,11 +5392,23 @@
                 "renameByName": {
                   "Active": "",
                   "name": "Name",
+                  "vpn_type": "Type",
                   "vpn_user_active": "Active",
                   "vpn_user_connected": "Connected",
                   "vpn_user_remote_address": "Remote Address",
                   "vpn_user_virtual_address": "Virtual Address"
                 }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "Name"
+                  }
+                ]
               }
             }
           ],
@@ -5524,7 +5541,7 @@
             "h": 18,
             "w": 24,
             "x": 0,
-            "y": 6
+            "y": 26
           },
           "id": 72,
           "options": {
@@ -5543,7 +5560,7 @@
               }
             ]
           },
-          "pluginVersion": "9.1.6",
+          "pluginVersion": "9.2.2",
           "targets": [
             {
               "datasource": {
@@ -5834,7 +5851,7 @@
             "h": 17,
             "w": 24,
             "x": 0,
-            "y": 24
+            "y": 44
           },
           "id": 73,
           "options": {
@@ -5847,7 +5864,7 @@
             },
             "showHeader": true
           },
-          "pluginVersion": "9.1.6",
+          "pluginVersion": "9.2.2",
           "targets": [
             {
               "datasource": {
@@ -6102,6 +6119,6 @@
   "timezone": "",
   "title": "FRITZ!Box Router Status",
   "uid": "fritzbox-system-flux",
-  "version": 5,
+  "version": 8,
   "weekStart": ""
 }
