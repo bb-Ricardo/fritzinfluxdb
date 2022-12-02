@@ -9,6 +9,7 @@
 
 from fritzinfluxdb.common import grab
 from fritzinfluxdb.classes.fritzbox.service_definitions import lua_services
+from fritzinfluxdb.classes.fritzbox.model import FritzBoxLinkTypes
 
 
 def prepare_json_response_data(response):
@@ -29,6 +30,7 @@ lua_services.append({
             "xhr": 1,
             "useajax": 1
         },
+        "link_type": FritzBoxLinkTypes.DSL,
         "response_parser": prepare_json_response_data,
         "interval": 600,
         "value_instances": {
@@ -61,6 +63,7 @@ lua_services.append({
             "xhrId": "all",
             "xhr": 1
         },
+        "link_type": FritzBoxLinkTypes.Cable,
         "response_parser": prepare_json_response_data,
         "interval": 600,
         "value_instances": {

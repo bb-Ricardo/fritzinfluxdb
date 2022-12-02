@@ -153,6 +153,7 @@ class FritzBoxLuaService(FritzBoxService):
     url_path = None
     default_method = "GET"
     default_url_path = FritzBoxLuaURLPath.data
+    link_type = None
 
     def __init__(self, service_data=None):
 
@@ -163,6 +164,7 @@ class FritzBoxLuaService(FritzBoxService):
         self.os_max_versions = service_data.get("os_max_versions")
         self.method = service_data.get("method", self.default_method)
         self.response_parser = service_data.get("response_parser", self.response_parser)
+        self.link_type = service_data.get("link_type")  # defines for which link type this service is valid for
 
         if len(self.url_path) == 0:
             do_error_exit(f"FritzBoxLuaService '{self.name}' instance has no url_path defined")

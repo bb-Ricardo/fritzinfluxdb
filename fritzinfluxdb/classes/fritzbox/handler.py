@@ -24,6 +24,7 @@ from fritzinfluxdb.classes.fritzbox.service_handler import FritzBoxTR069Service,
 import fritzinfluxdb.classes.fritzbox.service_definitions as service_definitions
 from fritzinfluxdb.classes.common import FritzMeasurement
 from fritzinfluxdb.common import grab
+from fritzinfluxdb.classes.fritzbox.model import FritzBoxModel
 
 log = get_logger()
 
@@ -154,11 +155,12 @@ class FritzBoxHandler(FritzBoxHandlerBase):
             self.config.model = device_info.get("NewModelName")
             self.config.fw_version = device_info.get("NewSoftwareVersion")
 
-        # get link type (DSL or Cable)
+        # get link type
         # noinspection PyBroadException
         try:
             link_info = self.session.call_action("WANCommonIFC", "GetCommonLinkProperties")
-            self.config.link_type = link_info.get("NewWANAccessType")
+            link_type = FritzBoxModel.get_link_type(self.config.model, link_info.get("NewWANAccessType"))
+            self.config.link_type = link_type
         except BaseException:
             pass
 
@@ -218,7 +220,7 @@ class FritzBoxHandler(FritzBoxHandlerBase):
                 if "401" in str(e):
                     log.error(f"Failed to connect to {self.name} '{self.config.hostname}' using credentials. "
                               "Check username and password!")
-                elif "820" in str(e):
+                elif "820" in str(e) and self.discovery_done is False:
                     service_invalid_log(f"Querying action '{action.name}' will be disabled")
                     action.available = False
                 else:
@@ -467,7 +469,7 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
             pass
 
         if metric_value is None:
-            log.debug(f"Unable to extract '{metric_name}' form '{data}', got '{type(metric_value)}'")
+            log.error(f"Unable to extract '{metric_name}' form '{data}', got '{type(metric_value)}'")
             return
 
         if data_type in [int, float, bool, str]:
@@ -519,12 +521,19 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
         if self.discovery_done is True and service.should_be_requested() is False:
             return
 
-        if self.discovery_done is False and service.os_version_match(self.config.fw_version) is False:
-            log.debug(f"FritzOS version {self.config.fw_version} not compatible with "
-                      f"supported versions for {service.name}: "
-                      f"{service.os_min_versions} - {service.os_max_versions or 'latest'}")
-            service.available = False
-            return
+        if self.discovery_done is False:
+            if service.os_version_match(self.config.fw_version) is False:
+                log.debug(f"FritzOS version {self.config.fw_version} not compatible with "
+                          f"supported versions for {service.name}: "
+                          f"{service.os_min_versions} - {service.os_max_versions or 'latest'}")
+                service.available = False
+                return
+
+            if service.link_type is not None and self.config.link_type != service.link_type:
+                log.warning(f"Service '{service.name}' not applicable for this "
+                          f"FritzBox Model Link type '{self.config.link_type}'")
+                service.available = False
+                return
 
         # request data
         result = self.request(service, additional_params=service.params)

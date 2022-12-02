@@ -8,6 +8,7 @@
 #  repository or visit: <https://opensource.org/licenses/MIT>.
 
 from fritzinfluxdb.classes.fritzbox.service_definitions import tr069_services
+from fritzinfluxdb.classes.fritzbox.model import FritzBoxLinkTypes
 
 tr069_services.extend([
     {
@@ -89,7 +90,7 @@ tr069_services.extend([
             "GetStatisticsTotal",
             "X_AVM-DE_GetDSLInfo"
         ],
-        "link_type": "DSL",
+        "link_type": FritzBoxLinkTypes.DSL,
         "value_instances": {
             "NewDownstreamMaxRate": "maxBitRate_downstream",
             "NewUpstreamMaxRate": "maxBitRate_upstream",
@@ -117,7 +118,7 @@ tr069_services.extend([
     {
         "name": "WANPPPConnection:1",
         "actions": ["GetInfo"],
-        "link_type": "DSL",
+        "link_type": FritzBoxLinkTypes.DSL,
         "value_instances": {
             "NewExternalIPAddress": "external_ip",
             "NewLastAuthErrorInfo": "last_auth_error",
@@ -130,7 +131,7 @@ tr069_services.extend([
     {
         "name": "WANIPConnection:1",
         "actions": ["GetInfo"],
-        "link_type": "Cable",
+        "link_type": FritzBoxLinkTypes.Cable,
         "value_instances": {
             "NewExternalIPAddress": "external_ip",
             "NewUptime": "phyiscal_linkuptime",
