@@ -218,6 +218,9 @@ class FritzBoxHandler(FritzBoxHandlerBase):
                 if "401" in str(e):
                     log.error(f"Failed to connect to {self.name} '{self.config.hostname}' using credentials. "
                               "Check username and password!")
+                elif "820" in str(e):
+                    service_invalid_log(f"Querying action '{action.name}' will be disabled")
+                    action.available = False
                 else:
                     log.error(f"Failed to connect to {self.name} '{self.config.hostname}': {e}")
                 continue
@@ -464,7 +467,7 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
             pass
 
         if metric_value is None:
-            log.error(f"Unable to extract '{metric_name}' form '{data}', got '{type(metric_value)}'")
+            log.debug(f"Unable to extract '{metric_name}' form '{data}', got '{type(metric_value)}'")
             return
 
         if data_type in [int, float, bool, str]:
