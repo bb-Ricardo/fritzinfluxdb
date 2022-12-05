@@ -7,11 +7,73 @@
 #  For a copy, see file LICENSE.txt included in this
 #  repository or visit: <https://opensource.org/licenses/MIT>.
 
+"""
+    FritzBox home automation interface description (German):
+    https://avm.de/fileadmin/user_upload/Global/Service/Schnittstellen/AHA-HTTP-Interface.pdf
+"""
+
 import xmltodict
 
 from fritzinfluxdb.common import grab
 from fritzinfluxdb.classes.fritzbox.service_handler import FritzBoxLuaURLPath
 from fritzinfluxdb.classes.fritzbox.service_definitions import lua_services
+
+home_automation_device_classes = {
+    0:  "HAN-FUN",
+    1:  "UNDEFINED 1",
+    2:  "Light",
+    3:  "UNDEFINED 3",
+    4:  "Alarm Sensor",
+    5:  "AVM Button",
+    6:  "Heating Regulator",
+    7:  "Energy Measurement",
+    8:  "Temperature Sensor",
+    9:  "Switchable Power Sockets",
+    10: "AVM DECT Repeater",
+    11: "Microphone",
+    12: "UNDEFINED 12",
+    13: "HAN-FUN-Unit",
+    14: "UNDEFINED 14",
+    15: "Switchable Device",
+    16: "Dimmable Device",
+    17: "Light with Adjustable Color",
+    18: "Blinds"
+}
+
+hun_fun_unit_types = {
+    "273": "SIMPLE_BUTTON",
+    "256": "SIMPLE_ON_OFF_SWITCHABLE",
+    "257": "SIMPLE_ON_OFF_SWITCH",
+    "262": "AC_OUTLET",
+    "263": "AC_OUTLET_SIMPLE_POWER_METERING",
+    "264": "SIMPLE_LIGHT",
+    "265": "DIMMABLE_LIGHT",
+    "266": "DIMMER_SWITCH",
+    "277": "COLOR_BULB",
+    "278": "DIMMABLE_COLOR_BULB",
+    "281": "BLIND",
+    "282": "LAMELLAR",
+    "512": "SIMPLE_DETECTOR",
+    "513": "DOOR_OPEN_CLOSE_DETECTOR",
+    "514": "WINDOW_OPEN_CLOSE_DETECTOR",
+    "515": "MOTION_DETECTOR",
+    "518": "FLOOD_DETECTOR",
+    "519": "GLAS_BREAK_DETECTOR",
+    "520": "VIBRATION_DETECTOR",
+    "640": "SIREN"
+}
+
+hun_fun_interface_types = {
+    "277": "KEEP_ALIVE",
+    "256": "ALERT",
+    "512": "ON_OFF",
+    "513": "LEVEL_CTRL",
+    "514": "COLOR_CTRL",
+    "516": "OPEN_CLOSE",
+    "517": "OPEN_CLOSE_CONFIG",
+    "772": "SIMPLE_BUTTON",
+    "1024": "SUOTA-Update"
+}
 
 
 def avm_temp_map(value, input_min, input_max, output_min, output_max):
@@ -31,12 +93,68 @@ def avm_temp_map(value, input_min, input_max, output_min, output_max):
     return float((int_value-input_min)/(input_max-input_min)*(output_max-output_min)+output_min)
 
 
+def decode_function_bitmask(bitmask: int):
+
+    return_values = list()
+    # noinspection PyBroadException
+    try:
+        binary_value = int(bitmask)
+    except Exception:
+        return return_values
+
+    for bit_shift, value in home_automation_device_classes.items():
+
+        if binary_value & 1 << bit_shift:
+            return_values.append(value)
+
+    return return_values
+
+
+def reformat_homeauto_device_list(data):
+
+    device_list = data.get("devicelist")
+
+    devices_by_id = {x.get("@id"): x for x in device_list.get("device")}
+
+    hun_fun_device_id = 0  # these need to be skipped and only scraped for the @fwversion
+    hun_fun_unit_id = 13   # these ones are kept
+
+    new_device_list = list()
+    for device in device_list.get("device"):
+
+        device_functions = decode_function_bitmask(device.get("@functionbitmask"))
+
+        # add function list
+        device["@devicefunctions"] = device_functions
+
+        if home_automation_device_classes[hun_fun_device_id] in device_functions:
+            continue
+
+        if home_automation_device_classes[hun_fun_unit_id] in device_functions:
+
+            parent_unit_id = grab(device, "etsiunitinfo.etsideviceid")
+            if parent_unit_id is None:
+                continue
+
+            device["etsiunitinfo"]["unittype"] = hun_fun_unit_types.get(grab(device, "etsiunitinfo.unittype"), "")
+            device["etsiunitinfo"]["interfaces"] = hun_fun_unit_types.get(grab(device, "etsiunitinfo.interfaces"), "")
+
+            hun_fun_device_fw = devices_by_id.get(parent_unit_id, dict()).get("@fwversion")
+            if hun_fun_device_fw is not None:
+                device["@fwversion"] = hun_fun_device_fw
+
+        new_device_list.append(device)
+
+    data["devicelist"]["device"] = new_device_list
+    return data
+
+
 def prepare_response_data(response):
     """
     handler to prepare returned data for parsing
     """
 
-    return xmltodict.parse(response.content, force_list=('device',))
+    return reformat_homeauto_device_list(xmltodict.parse(response.content, force_list=('device',)))
 
 
 lua_services.append(
@@ -84,6 +202,18 @@ lua_services.append(
                 },
                 "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
+            "ha_devicefunctions": {
+                "data_path": "devicelist.device",
+                "type": list,
+                "next": {
+                    # data struct type: dict
+                    "type": str,
+                    "tags_function": lambda data: {"name": data.get("name")},
+                    "value_function": lambda data: ", ".join(data.get("@devicefunctions"))
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
+            },
+
             "ha_device_present": {
                 "data_path": "devicelist.device",
                 "type": list,
@@ -139,7 +269,6 @@ lua_services.append(
                 },
                 "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
-
             "ha_temperature_celsius": {
                 "data_path": "devicelist.device",
                 "type": list,
@@ -154,7 +283,6 @@ lua_services.append(
                 },
                 "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
-
             "ha_temperature_offset": {
                 "data_path": "devicelist.device",
                 "type": list,
@@ -285,6 +413,93 @@ lua_services.append(
                 },
                 "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
+
+            # HUN-FUN device data
+            "ha_hun_fun_interfaces": {
+                "data_path": "devicelist.device",
+                "type": str,
+                "next": {
+                    # data struct type: dict
+                    "type": float,
+                    "tags_function": lambda data: {"name": data.get("name")},
+                    "value_function": lambda data: grab(data, "etsiunitinfo.interfaces"),
+                    "exclude_filter_function": lambda data: "etsiunitinfo" not in data.keys()
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
+            },
+            "ha_hun_fun_unittype": {
+                "data_path": "devicelist.device",
+                "type": list,
+                "next": {
+                    # data struct type: dict
+                    "type": str,
+                    "tags_function": lambda data: {"name": data.get("name")},
+                    "value_function": lambda data: grab(data, "etsiunitinfo.unittype"),
+                    "exclude_filter_function": lambda data: "etsiunitinfo" not in data.keys()
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
+            },
+
+            # Colorcontrol
+            # colorcontrol: { supported_modes: '5', current_mode: '1', hue: '35', saturation: '214', temperature: '' },
+            "ha_colorcontrol_current_mode": {
+                "data_path": "devicelist.device",
+                "type": list,
+                "next": {
+                    "type": int,
+                    "tags_function": lambda data: {"name": data.get("name")},
+                    "value_function": lambda data: "0" + grab(data, "colorcontrol.current_mode", fallback="0"),
+                    "exclude_filter_function": lambda data: "colorcontrol" not in data.keys()
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
+            },
+            "ha_colorcontrol_hue": {
+                "data_path": "devicelist.device",
+                "type": list,
+                "next": {
+                    "type": int,
+                    "tags_function": lambda data: {"name": data.get("name")},
+                    "value_function": lambda data: "0" + grab(data, "colorcontrol.hue", fallback="0"),
+                    "exclude_filter_function": lambda data: "colorcontrol" not in data.keys()
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
+            },
+            "ha_colorcontrol_saturation": {
+                "data_path": "devicelist.device",
+                "type": list,
+                "next": {
+                    "type": int,
+                    "tags_function": lambda data: {"name": data.get("name")},
+                    "value_function": lambda data: "0" + grab(data, "colorcontrol.saturation", fallback="0"),
+                    "exclude_filter_function": lambda data: "colorcontrol" not in data.keys()
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
+            },
+            "ha_colorcontrol_temperature": {
+                "data_path": "devicelist.device",
+                "type": list,
+                "next": {
+                    "type": int,
+                    "tags_function": lambda data: {"name": data.get("name")},
+                    "value_function": lambda data: "0" + grab(data, "colorcontrol.temperature", fallback="0"),
+                    "exclude_filter_function": lambda data: "colorcontrol" not in data.keys()
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
+            },
+
+            # Alarm
+            "ha_alarm": {
+                "data_path": "devicelist.device",
+                "type": list,
+                "next": {
+                    "tags_function": lambda data: {"name": data.get("name")},
+                    "value_function": lambda data: "0" + grab(data, "alarm.state", fallback="0"),
+                    "exclude_filter_function": lambda data: "alarm" not in data.keys()
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
+            },
+
+            # Heating
             "ha_heating_tist": {
                 "data_path": "devicelist.device",
                 "type": list,
