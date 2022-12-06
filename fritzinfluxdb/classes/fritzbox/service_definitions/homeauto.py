@@ -417,10 +417,10 @@ lua_services.append(
             # HUN-FUN device data
             "ha_hun_fun_interfaces": {
                 "data_path": "devicelist.device",
-                "type": str,
+                "type": list,
                 "next": {
                     # data struct type: dict
-                    "type": float,
+                    "type": str,
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: grab(data, "etsiunitinfo.interfaces"),
                     "exclude_filter_function": lambda data: "etsiunitinfo" not in data.keys()
@@ -488,13 +488,14 @@ lua_services.append(
             },
 
             # Alarm
-            "ha_alarm": {
+            "ha_alert": {
                 "data_path": "devicelist.device",
                 "type": list,
                 "next": {
+                    "type": int,
                     "tags_function": lambda data: {"name": data.get("name")},
-                    "value_function": lambda data: "0" + grab(data, "alarm.state", fallback="0"),
-                    "exclude_filter_function": lambda data: "alarm" not in data.keys()
+                    "value_function": lambda data: "0" + grab(data, "alert.state", fallback="0"),
+                    "exclude_filter_function": lambda data: "alert" not in data.keys()
                 },
                 "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
