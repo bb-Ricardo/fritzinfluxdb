@@ -203,15 +203,18 @@ class InfluxHandler:
             log.debug(f"InfluxDB database '{self.config.database}' exists")
 
         retention_policies = list()
+        retention_policies_query_successful = False
         try:
             retention_policies = self.session_v1.get_list_retention_policies(self.config.database)
+            retention_policies_query_successful = True
         except Exception as e:
-            log.warning(f"Problem querying database retention policy: {e}")
+            log.warning(f"Problem querying database retention policies: {e}")
 
-        if "1year" not in [x.get("name") for x in retention_policies]:
+        if retention_policies_query_successful and len(retention_policies) == 0:
             try:
                 self.session_v1.create_retention_policy(
-                    name="1year", duration=f"{self.config.data_retention_days}d", replication="1",
+                    name=f"fritzinfluxdb-{self.config.data_retention_days}-days",
+                    duration=f"{self.config.data_retention_days}d", replication="1",
                     database=self.config.database, shard_duration="24h", default=True
                 )
             except Exception as e:
