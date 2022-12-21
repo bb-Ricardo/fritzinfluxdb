@@ -521,17 +521,19 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
         if self.discovery_done is True and service.should_be_requested() is False:
             return
 
+        service_and_version_name = f"{service.name} " \
+                                   f"(Fritz!OS {service.os_min_versions} - {service.os_max_versions or 'latest'})"
         if self.discovery_done is False:
             if service.os_version_match(self.config.fw_version) is False:
                 log.debug(f"FritzOS version {self.config.fw_version} not compatible with "
-                          f"supported versions for {service.name}: "
+                          f"supported versions for '{service.name}': "
                           f"{service.os_min_versions} - {service.os_max_versions or 'latest'}")
                 service.available = False
                 return
 
             if service.link_type is not None and self.config.link_type != service.link_type:
-                log.warning(f"Service '{service.name}' not applicable for this "
-                          f"FritzBox Model Link type '{self.config.link_type}'")
+                log.warning(f"Service '{service_and_version_name}' not applicable for this "
+                            f"FritzBox Model Link type '{self.config.link_type}'")
                 service.available = False
                 return
 
@@ -550,11 +552,11 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
             message_handler(message_text)
 
             if self.discovery_done is False:
-                log.info(f"{self.name} service '{service.name}' will be disabled.")
+                log.info(f"{self.name} service '{service_and_version_name}' will be disabled.")
                 service.available = False
             return
 
-        log.debug(f"Request {self.name} service '{service.name}' returned successfully")
+        log.debug(f"Request {self.name} service '{service_and_version_name}' returned successfully")
 
         # set time stamp of this query
         service.set_last_query_now()

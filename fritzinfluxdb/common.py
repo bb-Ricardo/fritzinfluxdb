@@ -8,6 +8,10 @@
 #  repository or visit: <https://opensource.org/licenses/MIT>.
 
 import sys
+import os
+
+test_mode_state = False
+test_env_var_read = False
 
 
 def do_error_exit(log_text):
@@ -103,3 +107,16 @@ def grab(structure=None, path=None, separator=".", fallback=None):
                 return traverse(data, separator.join(r_path.split(separator)[1:]))
 
     return traverse(structure, path)
+
+
+def in_test_mode():
+
+    global test_env_var_read, test_mode_state
+
+    if test_env_var_read is False:
+        test_mode_state = True if os.environ.get("TESTMODE") else False
+        test_env_var_read = True
+        if test_mode_state is True:
+            print("Running in TESTMODE")
+
+    return test_mode_state

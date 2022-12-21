@@ -13,8 +13,10 @@
 """
 
 import xmltodict
+import random
+from datetime import datetime
 
-from fritzinfluxdb.common import grab
+from fritzinfluxdb.common import grab, in_test_mode
 from fritzinfluxdb.classes.fritzbox.service_handler import FritzBoxLuaURLPath
 from fritzinfluxdb.classes.fritzbox.service_definitions import lua_services
 
@@ -75,6 +77,10 @@ hun_fun_interface_types = {
     "1024": "SUOTA-Update"
 }
 
+test_data = None
+test_file_location = "test/homeauto_sample.xml"
+test_start_ts = datetime.now().timestamp()
+
 
 def avm_temp_map(value, input_min, input_max, output_min, output_max):
     """
@@ -91,6 +97,47 @@ def avm_temp_map(value, input_min, input_max, output_min, output_max):
         return float(input_max)
 
     return float((int_value-input_min)/(input_max-input_min)*(output_max-output_min)+output_min)
+
+
+def get_ha_temperature(data):
+
+    if in_test_mode():
+        return random.randrange(220, 250) / 10
+
+    return float((int(grab(data, "temperature.celsius")) + int(grab(data, "temperature.offset")))/10)
+
+
+def get_ha_powermeter_power(data):
+
+    if in_test_mode():
+        return random.randrange(300_000, 500_000) / 1000
+
+    return float(int(grab(data, "powermeter.power")) / 1000)
+
+
+def get_ha_powermeter_energy(data):
+
+    energy = grab(data, "powermeter.energy")
+    if in_test_mode():
+        return float(energy) + float(datetime.now().timestamp() - test_start_ts)
+
+    return energy
+
+
+def get_ha_powermeter_voltage(data):
+
+    if in_test_mode():
+        return random.randrange(225_000, 234_000) / 1000
+
+    return float(int(grab(data, "powermeter.voltage")) / 1000)
+
+
+def get_ha_switch_state(data):
+
+    if in_test_mode():
+        return int((datetime.now().timestamp() - test_start_ts) / 1000) % 2
+
+    return "0"+grab(data, "switch.state", fallback="0")
 
 
 def decode_function_bitmask(bitmask: int):
@@ -114,13 +161,13 @@ def reformat_homeauto_device_list(data):
 
     device_list = data.get("devicelist")
 
-    devices_by_id = {x.get("@id"): x for x in device_list.get("device")}
+    devices_by_id = {x.get("@id"): x for x in device_list.get("device", [])}
 
     hun_fun_device_id = 0  # these need to be skipped and only scraped for the @fwversion
     hun_fun_unit_id = 13   # these ones are kept
 
     new_device_list = list()
-    for device in device_list.get("device"):
+    for device in device_list.get("device", []):
 
         device_functions = decode_function_bitmask(device.get("@functionbitmask"))
 
@@ -152,9 +199,29 @@ def reformat_homeauto_device_list(data):
 def prepare_response_data(response):
     """
     handler to prepare returned data for parsing
+
+    Parameters
+    ----------
+    response: requests.response
+        the FritzBox request response
+
+    Return
+    ------
+    dict: xml response parsed to dict
     """
 
-    return reformat_homeauto_device_list(xmltodict.parse(response.content, force_list=('device',)))
+    global test_data
+
+    if in_test_mode():
+        if test_data is None:
+            with open(test_file_location) as f:
+                test_data = f.read()
+
+        content = test_data
+    else:
+        content = response.content
+
+    return reformat_homeauto_device_list(xmltodict.parse(content, force_list=('device',)))
 
 
 lua_services.append(
@@ -260,9 +327,7 @@ lua_services.append(
                     # data struct type: dict
                     "type": float,
                     "tags_function": lambda data: {"name": data.get("name")},
-                    "value_function": lambda data: (
-                        float((int(grab(data, "temperature.celsius")) + int(grab(data, "temperature.offset")))/10)
-                    ),
+                    "value_function": get_ha_temperature,
                     "exclude_filter_function": lambda data: (
                         grab(data, "temperature.celsius") is None or grab(data, "temperature.offset") is None
                     )
@@ -306,9 +371,7 @@ lua_services.append(
                     # data struct type: dict
                     "type": float,
                     "tags_function": lambda data: {"name": data.get("name")},
-                    "value_function": lambda data: (
-                        float(int(grab(data, "powermeter.power")) / 1000)
-                    ),
+                    "value_function": get_ha_powermeter_power,
                     "exclude_filter_function": lambda data: grab(data, "powermeter.power") is None
                 },
                 "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
@@ -320,7 +383,7 @@ lua_services.append(
                     # data struct type: dict
                     "type": float,
                     "tags_function": lambda data: {"name": data.get("name")},
-                    "value_function": lambda data: grab(data, "powermeter.energy"),
+                    "value_function": get_ha_powermeter_energy,
                     "exclude_filter_function": lambda data: grab(data, "powermeter.energy") is None
                 },
                 "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
@@ -332,9 +395,7 @@ lua_services.append(
                     # data struct type: dict
                     "type": float,
                     "tags_function": lambda data: {"name": data.get("name")},
-                    "value_function": lambda data: (
-                        float(int(grab(data, "powermeter.voltage")) / 1000)
-                    ),
+                    "value_function": get_ha_powermeter_voltage,
                     "exclude_filter_function": lambda data: grab(data, "powermeter.voltage") is None
                 },
                 "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
@@ -348,7 +409,7 @@ lua_services.append(
                     # data struct type: dict
                     "type": int,
                     "tags_function": lambda data: {"name": data.get("name")},
-                    "value_function": lambda data: "0"+grab(data, "switch.state", fallback="0"),
+                    "value_function": get_ha_switch_state,
                     "exclude_filter_function": lambda data: "switch" not in data.keys()
                 },
                 "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
