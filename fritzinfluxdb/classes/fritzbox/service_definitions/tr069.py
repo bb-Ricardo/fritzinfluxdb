@@ -25,7 +25,7 @@ tr069_services.extend([
             "NewLayer1DownstreamMaxBitRate": "downstreammax",
             "NewLayer1UpstreamMaxBitRate": "upstreammax",
             "NewPhysicalLinkStatus": "physicallinkstatus",
-            "NewWANAccessType": "physicallinktype"
+            "NewX_AVM_DE_WANAccessType": "physicallinktype"
         }
     },
     {
