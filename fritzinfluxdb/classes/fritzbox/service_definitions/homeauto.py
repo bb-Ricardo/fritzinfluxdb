@@ -92,9 +92,9 @@ def avm_temp_map(value, input_min, input_max, output_min, output_max):
     if int_value in [253, 254]:
         return float(int_value)
     if int_value < input_min:
-        return float(input_min)
+        return float(output_min)
     if int_value > input_max:
-        return float(input_max)
+        return float(output_max)
 
     return float((int_value-input_min)/(input_max-input_min)*(output_max-output_min)+output_min)
 
@@ -138,6 +138,14 @@ def get_ha_switch_state(data):
         return int((datetime.now().timestamp() - test_start_ts) / 1000) % 2
 
     return "0"+grab(data, "switch.state", fallback="0")
+
+
+def get_ha_alert_state(data):
+
+    if in_test_mode():
+        return int((datetime.now().timestamp() - test_start_ts) / 600) % 2
+
+    return "0"+grab(data, "alert.state", fallback="0")
 
 
 def decode_function_bitmask(bitmask: int):
@@ -555,7 +563,7 @@ lua_services.append(
                 "next": {
                     "type": int,
                     "tags_function": lambda data: {"name": data.get("name")},
-                    "value_function": lambda data: "0" + grab(data, "alert.state", fallback="0"),
+                    "value_function": get_ha_alert_state,
                     "exclude_filter_function": lambda data: "alert" not in data.keys()
                 },
                 "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
@@ -584,7 +592,7 @@ lua_services.append(
                     "type": float,
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: (
-                        avm_temp_map("0" + grab(data, "hkr.tsoll", fallback="0"), 16, 56, 8, 28)
+                        avm_temp_map("0" + grab(data, "hkr.tsoll", fallback="253"), 16, 56, 8, 28)
                     ),
                     "exclude_filter_function": lambda data: "hkr" not in data.keys()
                 },
@@ -598,7 +606,7 @@ lua_services.append(
                     "type": float,
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: (
-                        avm_temp_map("0" + grab(data, "hkr.komfort", fallback="0"), 16, 56, 8, 28)
+                        avm_temp_map("0" + grab(data, "hkr.komfort", fallback="253"), 16, 56, 8, 28)
                     ),
                     "exclude_filter_function": lambda data: "hkr" not in data.keys()
                 },
@@ -612,7 +620,7 @@ lua_services.append(
                     "type": float,
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: (
-                        avm_temp_map("0" + grab(data, "hkr.absenk", fallback="0"), 16, 56, 8, 28)
+                        avm_temp_map("0" + grab(data, "hkr.absenk", fallback="253"), 16, 56, 8, 28)
                     ),
                     "exclude_filter_function": lambda data: "hkr" not in data.keys()
                 },

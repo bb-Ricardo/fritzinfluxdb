@@ -16,7 +16,7 @@
       "description": ""
     }
   ],
-  "__elements": [],
+  "__elements": {},
   "__requires": [
     {
       "type": "panel",
@@ -34,7 +34,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "v1.0"
+      "version": "9.2.2"
     },
     {
       "type": "datasource",
@@ -87,7 +87,6 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1666187242115,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -170,7 +169,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.2.2",
       "targets": [
         {
           "datasource": {
@@ -196,6 +195,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -208,9 +209,6 @@
               "viz": false
             },
             "lineInterpolation": "linear",
-            "lineStyle": {
-              "fill": "solid"
-            },
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
@@ -226,7 +224,6 @@
               "mode": "off"
             }
           },
-          "decimals": 1,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -234,643 +231,21 @@
               {
                 "color": "green",
                 "value": null
-              }
-            ]
-          },
-          "unit": "celsius"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": ".*? \\(set\\)$"
-            },
-            "properties": [
-              {
-                "id": "custom.fillOpacity",
-                "value": 6
               },
               {
-                "id": "custom.lineWidth",
-                "value": 0
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#7f7f7f",
-                  "mode": "fixed"
-                }
+                "color": "red",
+                "value": 80
               }
             ]
           }
-        ]
+        },
+        "overrides": []
       },
       "gridPos": {
-        "h": 7,
+        "h": 8,
         "w": 24,
         "x": 0,
         "y": 8
-      },
-      "id": 22,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "9.1.5",
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
-          },
-          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_tist\" and r.box =~ /^${boxtag}$/)\r\n  |> aggregateWindow(every: v.windowPeriod, fn: median)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _field: r.name + \" (actual)\", _value: r._value}))\r\n",
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
-          },
-          "hide": false,
-          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_tsoll\" and r.box =~ /^${boxtag}$/)\r\n  |> aggregateWindow(every: v.windowPeriod, fn: first)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _field: r.name + \" (set)\", _value: r._value}))\r\n",
-          "refId": "B"
-        }
-      ],
-      "title": "Heating",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "${DS_INFLUXDB}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "displayMode": "auto",
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "bool_on_off"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byType",
-              "options": "number"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 80
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 15
-      },
-      "id": 20,
-      "options": {
-        "footer": {
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "frameIndex": 2,
-        "showHeader": true
-      },
-      "pluginVersion": "v1.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
-          },
-          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_boostactive\" and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({Device: r.name, Boost: r._value}))\r\n",
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
-          },
-          "hide": false,
-          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_holidayactive\" and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({Device: r.name, Holiday: r._value}))\r\n",
-          "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
-          },
-          "hide": false,
-          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_summeractive\" and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({Device: r.name, Summer: r._value}))\r\n",
-          "refId": "C"
-        },
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
-          },
-          "hide": false,
-          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_devicelock\" and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({Device: r.name, Locked: r._value}))\r\n",
-          "refId": "D"
-        }
-      ],
-      "title": "Last device modes",
-      "transformations": [
-        {
-          "id": "seriesToColumns",
-          "options": {
-            "byField": "Device"
-          }
-        }
-      ],
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "${DS_INFLUXDB}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "max": 100,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              },
-              {
-                "color": "#EAB839",
-                "value": 20
-              },
-              {
-                "color": "green",
-                "value": 50
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 15
-      },
-      "id": 8,
-      "options": {
-        "displayMode": "lcd",
-        "minVizHeight": 10,
-        "minVizWidth": 0,
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true
-      },
-      "pluginVersion": "v1.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
-          },
-          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_battery_percent\" and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({\"\": r._value, _measurement: r.name}))",
-          "refId": "A"
-        }
-      ],
-      "title": "Last battery status",
-      "type": "bargauge"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "${DS_INFLUXDB}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "fillOpacity": 70,
-            "lineWidth": 0,
-            "spanNulls": false
-          },
-          "mappings": [
-            {
-              "options": {
-                "match": "true",
-                "result": {
-                  "color": "blue",
-                  "index": 0,
-                  "text": "open"
-                }
-              },
-              "type": "special"
-            },
-            {
-              "options": {
-                "match": "false",
-                "result": {
-                  "color": "#7f7f7f",
-                  "index": 1,
-                  "text": "closed"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 23
-      },
-      "id": 18,
-      "options": {
-        "alignValue": "left",
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "mergeValues": true,
-        "rowHeight": 0.9,
-        "showValue": "auto",
-        "tooltip": {
-          "mode": "none",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
-          },
-          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field =~ /^ha_heating_windowopenactive?$/ and r.box =~ /^${boxtag}$/)\r\n  |> aggregateWindow(every: v.windowPeriod, fn: first)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _field: r.name, _value: if r._value != 0 then true else false}))\r\n",
-          "refId": "A"
-        }
-      ],
-      "title": "Window states",
-      "type": "state-timeline"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 31
-      },
-      "id": 12,
-      "panels": [],
-      "title": "Energy",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "${DS_INFLUXDB}"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineStyle": {
-              "fill": "solid"
-            },
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "watt"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "voltage"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "volt"
-              },
-              {
-                "id": "custom.lineStyle",
-                "value": {
-                  "dash": [
-                    0,
-                    10
-                  ],
-                  "fill": "dot"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 32
-      },
-      "id": 6,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "timezone": [
-          ""
-        ],
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
-          },
-          "query": "import \"strings\"\r\n\r\nfrom(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_powermeter_power\" and r.box =~ /^${boxtag}$/)\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _value: r._value, _measurement: r.name, _field: strings.replaceAll(v: r._field, t: \"ha_powermeter_\", u: \"\")}))",
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
-          },
-          "hide": false,
-          "query": "import \"strings\"\r\n\r\nfrom(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_powermeter_voltage\" and r.box =~ /^${boxtag}$/)\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _value: r._value, _measurement: r.name, _field: strings.replaceAll(v: r._field, t: \"ha_powermeter_\", u: \"\")}))",
-          "refId": "B"
-        }
-      ],
-      "title": "Energy",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "${DS_INFLUXDB}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "#808080",
-            "mode": "thresholds"
-          },
-          "custom": {
-            "fillOpacity": 70,
-            "lineWidth": 0,
-            "spanNulls": false
-          },
-          "decimals": 0,
-          "mappings": [
-            {
-              "options": {
-                "match": "true",
-                "result": {
-                  "color": "green",
-                  "index": 0,
-                  "text": "On"
-                }
-              },
-              "type": "special"
-            },
-            {
-              "options": {
-                "match": "false",
-                "result": {
-                  "color": "#7f7f7f",
-                  "index": 1,
-                  "text": "Off"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "max": 1,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "bool_on_off"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 40
-      },
-      "id": 4,
-      "options": {
-        "alignValue": "left",
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "mergeValues": true,
-        "rowHeight": 0.9,
-        "showValue": "auto",
-        "tooltip": {
-          "mode": "none",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
-          },
-          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field =~ /^ha_simpleonoff_state$/ and r.box =~ /^${boxtag}$/)\r\n  |> aggregateWindow(every: v.windowPeriod, fn: first)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _field: r.name, _value: if r._value != 0 then true else false}))\r\n",
-          "refId": "A"
-        }
-      ],
-      "title": "Switch states",
-      "type": "state-timeline"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 48
-      },
-      "id": 16,
-      "panels": [],
-      "title": "Misc",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "${DS_INFLUXDB}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 18,
-        "x": 0,
-        "y": 49
       },
       "id": 24,
       "options": {
@@ -899,68 +274,1471 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "${DS_INFLUXDB}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "displayMode": "auto",
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "string"
-        },
-        "overrides": []
-      },
+      "collapsed": true,
       "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 18,
-        "y": 49
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 16
       },
-      "id": 14,
-      "options": {
-        "footer": {
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": false
-      },
-      "pluginVersion": "v1.0",
-      "targets": [
+      "id": 30,
+      "panels": [
         {
           "datasource": {
             "type": "influxdb",
             "uid": "${DS_INFLUXDB}"
           },
-          "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_device_present\" and r._value >= 1 and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({Devices: r.name}))",
-          "refId": "A"
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineStyle": {
+                  "fill": "solid"
+                },
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "decimals": 1,
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "celsius"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": ".*? \\(set\\)$"
+                },
+                "properties": [
+                  {
+                    "id": "custom.fillOpacity",
+                    "value": 8
+                  },
+                  {
+                    "id": "custom.lineWidth",
+                    "value": 0
+                  },
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#7f7f7f",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 24,
+            "x": 0,
+            "y": 2
+          },
+          "id": 22,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_tist\" and r.box =~ /^${boxtag}$/ and r._value < 253)\r\n  |> aggregateWindow(every: v.windowPeriod, fn: median)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _field: r.name + \" (actual)\", _value: r._value}))\r\n",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "hide": false,
+              "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_tsoll\" and r.box =~ /^${boxtag}$/ and r._value < 253)\r\n  |> aggregateWindow(every: v.windowPeriod, fn: first)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _field: r.name + \" (set)\", _value: r._value}))\r\n",
+              "refId": "B"
+            }
+          ],
+          "title": "Heating",
+          "transformations": [
+            {
+              "id": "filterByValue",
+              "options": {
+                "filters": [
+                  {
+                    "config": {
+                      "id": "equal",
+                      "options": {
+                        "value": 253
+                      }
+                    },
+                    "fieldName": "Arbeitszimmer offline (set)"
+                  }
+                ],
+                "match": "any",
+                "type": "exclude"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto",
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byType",
+                  "options": "number"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 110
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "/Boost|Holiday|Summer|Locked/"
+                },
+                "properties": [
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "0": {
+                            "index": 0,
+                            "text": "OFF"
+                          },
+                          "1": {
+                            "index": 1,
+                            "text": "ON"
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "/Temp.*/"
+                },
+                "properties": [
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "0": {
+                            "index": 4,
+                            "text": "<=0 °C"
+                          },
+                          "8": {
+                            "index": 2,
+                            "text": "<=8 °C"
+                          },
+                          "28": {
+                            "index": 3,
+                            "text": ">=28 °C"
+                          },
+                          "253": {
+                            "index": 0,
+                            "text": "OFF"
+                          },
+                          "254": {
+                            "index": 1,
+                            "text": "ON"
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "/Temp:*/"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "celsius"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 18,
+            "x": 0,
+            "y": 9
+          },
+          "id": 20,
+          "options": {
+            "footer": {
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 2,
+            "showHeader": true
+          },
+          "pluginVersion": "9.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_boostactive\" and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({Device: r.name, Boost: r._value}))\r\n",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "hide": false,
+              "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_summeractive\" and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({Device: r.name, Summer: r._value}))\r\n",
+              "refId": "C"
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "hide": false,
+              "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_holidayactive\" and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({Device: r.name, Holiday: r._value}))\r\n",
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "hide": false,
+              "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_lock\" and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({Device: r.name, Locked: r._value}))\r\n",
+              "refId": "I"
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "hide": false,
+              "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_devicelock\" and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({Device: r.name, \"Device Locked\": r._value}))\r\n",
+              "refId": "D"
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "hide": false,
+              "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_tist\" and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({Device: r.name, \"Temp ist\": r._value}))\r\n",
+              "refId": "E"
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "hide": false,
+              "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_tsoll\" and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({Device: r.name, \"Temp soll\": r._value}))\r\n",
+              "refId": "F"
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "hide": false,
+              "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_komfort\" and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({Device: r.name, \"Temp komfort\": r._value}))\r\n",
+              "refId": "G"
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "hide": false,
+              "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_absenk\" and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({Device: r.name, \"Temp absenk\": r._value}))\r\n",
+              "refId": "H"
+            }
+          ],
+          "title": "Last heating device modes and temperatures",
+          "transformations": [
+            {
+              "id": "joinByField",
+              "options": {
+                "byField": "Device",
+                "mode": "outer"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "indexByName": {
+                  "Boost": 1,
+                  "Device": 0,
+                  "Device Locked": 5,
+                  "Holiday": 2,
+                  "Locked": 4,
+                  "Summer": 3,
+                  "Temp absenk": 9,
+                  "Temp ist": 6,
+                  "Temp komfort": 8,
+                  "Temp soll": 7
+                },
+                "renameByName": {}
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "max": 100,
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 20
+                  },
+                  {
+                    "color": "green",
+                    "value": 50
+                  }
+                ]
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 18,
+            "y": 9
+          },
+          "id": 8,
+          "options": {
+            "displayMode": "lcd",
+            "minVizHeight": 10,
+            "minVizWidth": 0,
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showUnfilled": true
+          },
+          "pluginVersion": "9.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_heating_battery\" and r.box =~ /^${boxtag}$/)\r\n  |> last()\r\n  |> map(fn: (r) => ({\"\": r._value, _measurement: r.name}))",
+              "refId": "A"
+            }
+          ],
+          "title": "Last heating battery status",
+          "type": "bargauge"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "fillOpacity": 70,
+                "lineWidth": 0,
+                "spanNulls": false
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "match": "true",
+                    "result": {
+                      "color": "blue",
+                      "index": 0,
+                      "text": "open"
+                    }
+                  },
+                  "type": "special"
+                },
+                {
+                  "options": {
+                    "match": "false",
+                    "result": {
+                      "color": "#7f7f7f",
+                      "index": 1,
+                      "text": "closed"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 17
+          },
+          "id": 18,
+          "options": {
+            "alignValue": "left",
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "mergeValues": true,
+            "rowHeight": 0.9,
+            "showValue": "auto",
+            "tooltip": {
+              "mode": "none",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field =~ /^ha_heating_windowopenactive?$/ and r.box =~ /^${boxtag}$/)\r\n  |> aggregateWindow(every: v.windowPeriod, fn: first)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _field: r.name, _value: if r._value != 0 then true else false}))\r\n",
+              "refId": "A"
+            }
+          ],
+          "title": "Window states",
+          "type": "state-timeline"
         }
       ],
-      "title": "Known devices",
-      "type": "table"
+      "title": "Heating",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 17
+      },
+      "id": 12,
+      "panels": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineStyle": {
+                  "fill": "solid"
+                },
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "watt"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "voltage"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "volt"
+                  },
+                  {
+                    "id": "custom.lineStyle",
+                    "value": {
+                      "dash": [
+                        0,
+                        10
+                      ],
+                      "fill": "dot"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 3
+          },
+          "id": 6,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "timezone": [
+              ""
+            ],
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "query": "import \"strings\"\r\n\r\nfrom(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_powermeter_power\" and r.box =~ /^${boxtag}$/)\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _value: r._value, _measurement: r.name, _field: strings.replaceAll(v: r._field, t: \"ha_powermeter_\", u: \"\")}))",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "hide": false,
+              "query": "import \"strings\"\r\n\r\nfrom(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field == \"ha_powermeter_voltage\" and r.box =~ /^${boxtag}$/)\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _value: r._value, _measurement: r.name, _field: strings.replaceAll(v: r._field, t: \"ha_powermeter_\", u: \"\")}))",
+              "refId": "B"
+            }
+          ],
+          "title": "Energy",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Energy",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "id": 26,
+      "panels": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto",
+                "filterable": true,
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Device Present"
+                },
+                "properties": [
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "0": {
+                            "color": "red",
+                            "index": 1,
+                            "text": "No"
+                          },
+                          "1": {
+                            "color": "green",
+                            "index": 0,
+                            "text": "Yes"
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "custom.align",
+                    "value": "left"
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 113
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Product Name"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 193
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Firmware Version"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 135
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Manufacturer"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 138
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Devie Functions"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 236
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 4
+          },
+          "id": 28,
+          "options": {
+            "footer": {
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "9.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "query": "from(bucket: v.defaultBucket)\n  |> range(start: -12h)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box =~ /^${boxtag}$/ and \n    (\n      r._field == \"ha_fw_version\" or\n      r._field == \"ha_product_name\" or\n      r._field == \"ha_manufacturer\" or\n      r._field == \"ha_devicefunctions\" or\n      r._field == \"ha_hun_fun_interfaces\" or\n      r._field == \"ha_hun_fun_unittype\" or\n      r._field == \"ha_device_present\" or \n      r._field == \"ha_device_present\"\n    )\n  )\n  |> last()\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"_time\"])\n",
+              "refId": "A"
+            }
+          ],
+          "title": "Device Details",
+          "transformations": [
+            {
+              "id": "joinByLabels",
+              "options": {
+                "value": "_field"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "indexByName": {
+                  "ha_device_present": 2,
+                  "ha_devicefunctions": 3,
+                  "ha_fw_version": 4,
+                  "ha_hun_fun_interfaces": 5,
+                  "ha_hun_fun_unittype": 6,
+                  "ha_manufacturer": 7,
+                  "ha_product_name": 1,
+                  "name": 0
+                },
+                "renameByName": {
+                  "ha_device_present": "Device Present",
+                  "ha_devicefunctions": "Devie Functions",
+                  "ha_fw_version": "Firmware Version",
+                  "ha_hun_fun_interfaces": "HAN-FAN Functions",
+                  "ha_hun_fun_unittype": "HAN-FAN Unit Type",
+                  "ha_manufacturer": "Manufacturer",
+                  "ha_product_name": "Product Name",
+                  "name": "Name"
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto",
+                "filterable": true,
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Battery Low"
+                },
+                "properties": [
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "0": {
+                            "color": "red",
+                            "index": 1,
+                            "text": "No"
+                          },
+                          "1": {
+                            "color": "green",
+                            "index": 0,
+                            "text": "Yes"
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "custom.align",
+                    "value": "left"
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 113
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Battery Level"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "percent"
+                  },
+                  {
+                    "id": "custom.align",
+                    "value": "left"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "/.*State.*/"
+                },
+                "properties": [
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "0": {
+                            "index": 0,
+                            "text": "Off"
+                          },
+                          "1": {
+                            "index": 1,
+                            "text": "On"
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "custom.align",
+                    "value": "left"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "/.*Lock.*/"
+                },
+                "properties": [
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "0": {
+                            "index": 0,
+                            "text": "Unlocked"
+                          },
+                          "1": {
+                            "index": 1,
+                            "text": "Locked"
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "custom.align",
+                    "value": "left"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 13
+          },
+          "id": 34,
+          "options": {
+            "footer": {
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "9.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "query": "from(bucket: v.defaultBucket)\n  |> range(start: -12h)\n  |> filter(fn: (r) => r._measurement == \"${measurement}\" and r.box =~ /^${boxtag}$/ and \n    (\n      r._field == \"ha_battery_percent\" or\n      r._field == \"ha_product_name\" or\n      r._field == \"ha_battery_low\" or\n      r._field == \"ha_switch_state\" or\n      r._field == \"ha_switch_mode\" or\n      r._field == \"ha_switch_lock\" or\n      r._field == \"ha_switch_devicelock\" or \n      r._field == \"ha_simpleonoff_state\"\n    )\n  )\n  |> last()\n  |> drop(columns: [\"box\", \"_measurement\", \"_start\", \"_stop\", \"_time\"])\n",
+              "refId": "A"
+            }
+          ],
+          "title": "Device Details",
+          "transformations": [
+            {
+              "id": "joinByLabels",
+              "options": {
+                "value": "_field"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "indexByName": {
+                  "ha_battery_low": 2,
+                  "ha_battery_percent": 3,
+                  "ha_product_name": 1,
+                  "ha_simpleonoff_state": 4,
+                  "ha_switch_devicelock": 6,
+                  "ha_switch_lock": 7,
+                  "ha_switch_mode": 8,
+                  "ha_switch_state": 5,
+                  "name": 0
+                },
+                "renameByName": {
+                  "ha_battery_low": "Battery Low",
+                  "ha_battery_percent": "Battery Level",
+                  "ha_device_present": "Device Present",
+                  "ha_devicefunctions": "Devie Functions",
+                  "ha_fw_version": "Firmware Version",
+                  "ha_hun_fun_interfaces": "HAN-FAN Functions",
+                  "ha_hun_fun_unittype": "HAN-FAN Unit Type",
+                  "ha_manufacturer": "Manufacturer",
+                  "ha_product_name": "Product Name",
+                  "ha_simpleonoff_state": "Device State",
+                  "ha_switch_devicelock": "Switch Device Lock",
+                  "ha_switch_lock": "Switch Lock",
+                  "ha_switch_mode": "Switch Mode",
+                  "ha_switch_state": "Switch State",
+                  "name": "Name"
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "Name"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "filterByValue",
+              "options": {
+                "filters": [
+                  {
+                    "config": {
+                      "id": "isNull",
+                      "options": {}
+                    },
+                    "fieldName": "Battery Low"
+                  },
+                  {
+                    "config": {
+                      "id": "isNull",
+                      "options": {}
+                    },
+                    "fieldName": "Battery Level"
+                  },
+                  {
+                    "config": {
+                      "id": "isNull",
+                      "options": {}
+                    },
+                    "fieldName": "Device State"
+                  },
+                  {
+                    "config": {
+                      "id": "isNull",
+                      "options": {}
+                    },
+                    "fieldName": "Switch Device Lock"
+                  },
+                  {
+                    "config": {
+                      "id": "isNull",
+                      "options": {}
+                    },
+                    "fieldName": "Switch Lock"
+                  },
+                  {
+                    "config": {
+                      "id": "isNull",
+                      "options": {}
+                    },
+                    "fieldName": "Switch State"
+                  }
+                ],
+                "match": "all",
+                "type": "exclude"
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "Device Data",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 19
+      },
+      "id": 16,
+      "panels": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "fillOpacity": 70,
+                "lineWidth": 0,
+                "spanNulls": false
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "match": "true",
+                    "result": {
+                      "color": "semi-dark-green",
+                      "index": 0,
+                      "text": "ON"
+                    }
+                  },
+                  "type": "special"
+                },
+                {
+                  "options": {
+                    "match": "false",
+                    "result": {
+                      "color": "#7f7f7f",
+                      "index": 1,
+                      "text": "OFF"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 5
+          },
+          "id": 32,
+          "options": {
+            "alignValue": "left",
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "mergeValues": true,
+            "rowHeight": 0.9,
+            "showValue": "auto",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field =~ /^ha_switch_state$/ and r.box =~ /^${boxtag}$/)\r\n  |> aggregateWindow(every: v.windowPeriod, fn: first)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _field: r.name, _value: if r._value != 0 then true else false}))\r\n",
+              "refId": "A"
+            }
+          ],
+          "title": "Switch states",
+          "type": "state-timeline"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "#808080",
+                "mode": "thresholds"
+              },
+              "custom": {
+                "fillOpacity": 70,
+                "lineWidth": 0,
+                "spanNulls": false
+              },
+              "decimals": 0,
+              "mappings": [
+                {
+                  "options": {
+                    "match": "true",
+                    "result": {
+                      "color": "green",
+                      "index": 0,
+                      "text": "On"
+                    }
+                  },
+                  "type": "special"
+                },
+                {
+                  "options": {
+                    "match": "false",
+                    "result": {
+                      "color": "#7f7f7f",
+                      "index": 1,
+                      "text": "Off"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "max": 1,
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bool_on_off"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 13
+          },
+          "id": 4,
+          "options": {
+            "alignValue": "left",
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "mergeValues": true,
+            "rowHeight": 0.9,
+            "showValue": "auto",
+            "tooltip": {
+              "mode": "none",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field =~ /^ha_simpleonoff_state$/ and r.box =~ /^${boxtag}$/)\r\n  |> aggregateWindow(every: v.windowPeriod, fn: first)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _field: r.name, _value: if r._value != 0 then true else false}))\r\n",
+              "refId": "A"
+            }
+          ],
+          "title": "Device states",
+          "type": "state-timeline"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "fillOpacity": 70,
+                "lineWidth": 0,
+                "spanNulls": false
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "match": "true",
+                    "result": {
+                      "color": "dark-orange",
+                      "index": 0,
+                      "text": "ON"
+                    }
+                  },
+                  "type": "special"
+                },
+                {
+                  "options": {
+                    "match": "false",
+                    "result": {
+                      "color": "#7f7f7f",
+                      "index": 1,
+                      "text": "OFF"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 21
+          },
+          "id": 33,
+          "options": {
+            "alignValue": "left",
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "mergeValues": true,
+            "rowHeight": 0.9,
+            "showValue": "auto",
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb",
+                "uid": "${DS_INFLUXDB}"
+              },
+              "query": "from(bucket: v.defaultBucket)\r\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\r\n  |> filter(fn: (r) => r._measurement == \"$measurement\" and r._field =~ /^ha_alert$/ and r.box =~ /^${boxtag}$/)\r\n  |> aggregateWindow(every: v.windowPeriod, fn: first)\r\n  |> fill(usePrevious: true)\r\n  |> map(fn: (r) => ({_time: r._time, _field: r.name, _value: if r._value != 0 then true else false}))\r\n",
+              "refId": "A"
+            }
+          ],
+          "title": "Alert states",
+          "type": "state-timeline"
+        }
+      ],
+      "title": "Sensor States",
+      "type": "row"
     }
   ],
   "refresh": false,
-  "schemaVersion": 36,
+  "schemaVersion": 37,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -1017,6 +1795,6 @@
   "timezone": "",
   "title": "FRITZ!Box Home Automation",
   "uid": "fritzbox-home-automation-flux",
-  "version": 1,
+  "version": 4,
   "weekStart": ""
 }
