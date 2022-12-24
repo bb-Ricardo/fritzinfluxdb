@@ -532,8 +532,8 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
                 return
 
             if service.link_type is not None and self.config.link_type != service.link_type:
-                log.warning(f"Service '{service_and_version_name}' not applicable for this "
-                            f"FritzBox Model Link type '{self.config.link_type}'")
+                log.info(f"Service '{service_and_version_name}' not applicable for this "
+                         f"FritzBox Model Link type '{self.config.link_type}'")
                 service.available = False
                 return
 
