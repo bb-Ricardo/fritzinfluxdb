@@ -328,8 +328,14 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
         try:
             response = self.session.get(login_url, timeout=self.config.connect_timeout, params=login_params)
             sid = fromstring(response.content).findtext('./SID')
+            blocktime = fromstring(response.content).findtext('./BlockTime')
         except Exception as e:
             log.error(f"Unable to parse {self.name} login response: {e} {response.content}")
+            return
+
+        if blocktime != "0":
+            log.error(f"Failed to connect to {self.name} '{self.config.hostname}'. "
+                     "Logins blocked for {blocktime} seconds")
             return
 
         if sid == "0000000000000000":
