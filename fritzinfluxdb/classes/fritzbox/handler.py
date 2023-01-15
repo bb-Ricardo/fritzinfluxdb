@@ -74,7 +74,7 @@ class FritzBoxHandlerBase:
             self.services.append(new_service)
 
     def query_service_data(self, _):
-        # dummy service to make IDE happy
+        # stub for the default function
         pass
 
     async def task_loop(self, queue):
@@ -328,14 +328,14 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
         try:
             response = self.session.get(login_url, timeout=self.config.connect_timeout, params=login_params)
             sid = fromstring(response.content).findtext('./SID')
-            blocktime = fromstring(response.content).findtext('./BlockTime')
+            block_time = fromstring(response.content).findtext('./BlockTime')
         except Exception as e:
             log.error(f"Unable to parse {self.name} login response: {e} {response.content}")
             return
 
-        if blocktime != "0":
+        if block_time != "0":
             log.error(f"Failed to connect to {self.name} '{self.config.hostname}'. "
-                     "Logins blocked for {blocktime} seconds")
+                      f"Logins blocked for '{block_time}' seconds!")
             return
 
         if sid == "0000000000000000":
