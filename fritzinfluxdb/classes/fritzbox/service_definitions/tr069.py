@@ -40,8 +40,8 @@ tr069_services.extend([
             "NewConnectionStatus": "connection_status:str",
             "NewLastConnectionError": "last_connection_error:str",
             "NewExternalIPv6Address": "external_ipv6:str",
-            "NewIPv6Prefix" : "ipv6_prefix:str",
-            "NewPrefixLength": "ipv6_prefix_length:str"
+            "NewIPv6Prefix": "ipv6_prefix:str",
+            "NewPrefixLength": "ipv6_prefix_length:int"
         }
     },
     {
