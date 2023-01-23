@@ -74,7 +74,7 @@ class FritzBoxHandlerBase:
             self.services.append(new_service)
 
     def query_service_data(self, _):
-        # dummy service to make IDE happy
+        # stub for the default function
         pass
 
     async def task_loop(self, queue):
@@ -246,8 +246,27 @@ class FritzBoxHandler(FritzBoxHandlerBase):
                 metric_name = service.value_instances.get(key)
 
                 if metric_name is not None:
+
+                    data_type = None
+
+                    # support setting a data type by appending it to the metric name by a double colon
+                    if ":" in metric_name:
+                        metric_data_type = metric_name.split(":")[1]
+                        metric_name = metric_name.split(":")[0]
+
+                        data_type = {
+                            "str": str,
+                            "int": int,
+                            "float": float,
+                            "bool": bool
+                        }.get(metric_data_type)
+
+                        if data_type is None:
+                            log.warning(f"Unknown data type '{metric_data_type}' for metric '{key}' "
+                                        f"in service '{service.name}'")
+
                     self.current_result_list.append(
-                        FritzMeasurement(metric_name, value, box_tag=self.config.box_tag)
+                        FritzMeasurement(metric_name, value, box_tag=self.config.box_tag, data_type=data_type)
                     )
 
             # special case: update firmware version when requested
@@ -328,8 +347,14 @@ class FritzBoxLuaHandler(FritzBoxHandlerBase):
         try:
             response = self.session.get(login_url, timeout=self.config.connect_timeout, params=login_params)
             sid = fromstring(response.content).findtext('./SID')
+            block_time = fromstring(response.content).findtext('./BlockTime')
         except Exception as e:
             log.error(f"Unable to parse {self.name} login response: {e} {response.content}")
+            return
+
+        if block_time != "0":
+            log.error(f"Failed to connect to {self.name} '{self.config.hostname}'. "
+                      f"Logins blocked for '{block_time}' seconds!")
             return
 
         if sid == "0000000000000000":
