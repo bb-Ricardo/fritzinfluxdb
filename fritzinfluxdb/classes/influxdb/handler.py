@@ -395,6 +395,9 @@ class InfluxHandler:
                     num_purged = len([x for x in self.buffer if x.timestamp <= newest_measurement.timestamp])
                     log.info(f"Purging '{num_purged}' measurements which are older ({newest_measurement.timestamp}) "
                              f"then the InfluxDB configured retention period")
+                    for entry in self.buffer:
+                        if entry.timestamp <= newest_measurement.timestamp:
+                            log.debug(f"Dropped measurement: {entry}")
                     self.buffer[:] = [x for x in self.buffer if x.timestamp > newest_measurement.timestamp]
                 else:
                     self.set_num_current_measurements_to_write(int(self.current_measurements_per_write/2))
@@ -422,7 +425,7 @@ class InfluxHandler:
             self.current_retry_interval = self.retry_interval
 
             self.out_of_retention_period_range = False
-            self.set_num_current_measurements_to_write(self.current_measurements_per_write * 2)
+            self.set_num_current_measurements_to_write(self.current_measurements_per_write * 4)
 
         else:
             if self.connection_lost is True:
