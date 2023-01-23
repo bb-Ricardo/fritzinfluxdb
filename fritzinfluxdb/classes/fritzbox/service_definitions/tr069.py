@@ -32,13 +32,16 @@ tr069_services.extend([
         "name": "WANIPConn",
         "actions": [
             "GetStatusInfo",
-            "X_AVM_DE_GetExternalIPv6Address"
+            "X_AVM_DE_GetExternalIPv6Address",
+            "X_AVM_DE_GetIPv6Prefix"
         ],
         "value_instances": {
             "NewUptime": "linkuptime",
             "NewConnectionStatus": "connection_status",
             "NewLastConnectionError": "last_connection_error",
-            "NewExternalIPv6Address": "external_ipv6"
+            "NewExternalIPv6Address": "external_ipv6",
+            "NewIPv6Prefix" : "ipv6_prefix",
+            "NewPrefixLength": "ipv6_prefix_length"
         }
     },
     {
