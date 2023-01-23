@@ -246,8 +246,27 @@ class FritzBoxHandler(FritzBoxHandlerBase):
                 metric_name = service.value_instances.get(key)
 
                 if metric_name is not None:
+
+                    data_type = None
+
+                    # support setting a data type by appending it to the metric name by a double colon
+                    if ":" in metric_name:
+                        metric_data_type = metric_name.split(":")[1]
+                        metric_name = metric_name.split(":")[0]
+
+                        data_type = {
+                            "str": str,
+                            "int": int,
+                            "float": float,
+                            "bool": bool
+                        }.get(metric_data_type)
+
+                        if data_type is None:
+                            log.warning(f"Unknown data type '{metric_data_type}' for metric '{key}' "
+                                        f"in service '{service.name}'")
+
                     self.current_result_list.append(
-                        FritzMeasurement(metric_name, value, box_tag=self.config.box_tag)
+                        FritzMeasurement(metric_name, value, box_tag=self.config.box_tag, data_type=data_type)
                     )
 
             # special case: update firmware version when requested

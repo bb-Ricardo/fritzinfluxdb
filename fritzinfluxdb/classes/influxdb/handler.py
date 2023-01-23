@@ -374,8 +374,14 @@ class InfluxHandler:
                 write_successful = True
         except (ApiException, InfluxDBClientError) as e:
 
-            if (isinstance(e, ApiException) and e.status == 422) or \
-                    (isinstance(e, InfluxDBClientError) and "points beyond retention policy" in f"{e}"):
+            exception_message = getattr(e, "message", "")
+            http_code = 0
+            if isinstance(e, ApiException):
+                http_code = e.status
+            if isinstance(e, InfluxDBClientError):
+                http_code = e.code
+
+            if "points beyond retention policy" in f"{exception_message}":
 
                 log.debug("InfluxDB refused to write data as there seems to be measurements "
                           "which are older then the defined retention period")
@@ -393,7 +399,7 @@ class InfluxHandler:
                 else:
                     self.set_num_current_measurements_to_write(int(self.current_measurements_per_write/2))
             else:
-                log.error(f"Failed to write to InfluxDB '{self.config.hostname}': {e}")
+                log.error(f"Failed to write to InfluxDB '{self.config.hostname}': {http_code}: {exception_message}")
 
         except Exception as e:
             self.connection_lost = True
