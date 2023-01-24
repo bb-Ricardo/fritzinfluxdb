@@ -374,12 +374,17 @@ class InfluxHandler:
                 write_successful = True
         except (ApiException, InfluxDBClientError) as e:
 
-            exception_message = getattr(e, "message", "")
+            exception_message = None
             http_code = 0
             if isinstance(e, ApiException):
                 http_code = e.status
+                exception_message = e.message
             if isinstance(e, InfluxDBClientError):
                 http_code = e.code
+                exception_message = e.content
+
+            if exception_message is None:
+                exception_message = str(e)
 
             if "points beyond retention policy" in f"{exception_message}":
 
