@@ -102,7 +102,7 @@ class FritzMeasurement:
         if "." in value:
             # noinspection PyBroadException
             try:
-                # try to convert value to int
+                # try to convert value to float
                 return float(value)
             except Exception:
                 pass
