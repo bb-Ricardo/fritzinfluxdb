@@ -5,12 +5,11 @@ After=network-online.target
 
 [Service]
 Type=simple
-User=nobody
-Group=nogroup
+DynamicUser=yes
 WorkingDirectory=/opt/fritzinfluxdb
 ExecStart=/opt/fritzinfluxdb/.venv/bin/python /opt/fritzinfluxdb/fritzinfluxdb.py -d
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=fritzinfluxdb
 RemainAfterExit=no
 Restart=always
