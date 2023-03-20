@@ -117,6 +117,8 @@ lua_services.append({
                     "value_function": lambda data: data.get("type"),
                     "tags_function": lambda data: {"id": data.get("channelID")}
                 },
+                "exclude_filter_function": lambda data: "docsis31" not in grab(data, "data.channelDs",
+                                                                               fallback={}).keys()
             },
             "cable_channel_ds_docsis31_power_level": {
                 "data_path": "data.channelDs.docsis31",
@@ -126,6 +128,8 @@ lua_services.append({
                     "value_function": lambda data: data.get("powerLevel"),
                     "tags_function": lambda data: {"id": data.get("channelID")}
                 },
+                "exclude_filter_function": lambda data: "docsis31" not in grab(data, "data.channelDs",
+                                                                               fallback={}).keys()
             },
             "cable_channel_ds_docsis31_channel": {
                 "data_path": "data.channelDs.docsis31",
@@ -135,6 +139,8 @@ lua_services.append({
                     "value_function": lambda data: data.get("channel"),
                     "tags_function": lambda data: {"id": data.get("channelID")}
                 },
+                "exclude_filter_function": lambda data: "docsis31" not in grab(data, "data.channelDs",
+                                                                               fallback={}).keys()
             },
             "cable_channel_ds_docsis31_frequency": {
                 "data_path": "data.channelDs.docsis31",
@@ -144,6 +150,8 @@ lua_services.append({
                     "value_function": lambda data: data.get("frequency"),
                     "tags_function": lambda data: {"id": data.get("channelID")}
                 },
+                "exclude_filter_function": lambda data: "docsis31" not in grab(data, "data.channelDs",
+                                                                               fallback={}).keys()
             },
             "cable_channel_ds_docsis30_type": {
                 "data_path": "data.channelDs.docsis30",
@@ -153,6 +161,8 @@ lua_services.append({
                     "value_function": lambda data: data.get("type"),
                     "tags_function": lambda data: {"id": data.get("channelID")}
                 },
+                "exclude_filter_function": lambda data: "docsis30" not in grab(data, "data.channelDs",
+                                                                               fallback={}).keys()
             },
             "cable_channel_ds_docsis30_power_level": {
                 "data_path": "data.channelDs.docsis30",
@@ -162,6 +172,8 @@ lua_services.append({
                     "value_function": lambda data: data.get("powerLevel"),
                     "tags_function": lambda data: {"id": data.get("channelID")}
                 },
+                "exclude_filter_function": lambda data: "docsis30" not in grab(data, "data.channelDs",
+                                                                               fallback={}).keys()
             },
             "cable_channel_ds_docsis30_channel": {
                 "data_path": "data.channelDs.docsis30",
@@ -171,6 +183,8 @@ lua_services.append({
                     "value_function": lambda data: data.get("channel"),
                     "tags_function": lambda data: {"id": data.get("channelID")}
                 },
+                "exclude_filter_function": lambda data: "docsis30" not in grab(data, "data.channelDs",
+                                                                               fallback={}).keys()
             },
             "cable_channel_ds_docsis30_frequency": {
                 "data_path": "data.channelDs.docsis30",
@@ -180,6 +194,8 @@ lua_services.append({
                     "value_function": lambda data: data.get("frequency"),
                     "tags_function": lambda data: {"id": data.get("channelID")}
                 },
+                "exclude_filter_function": lambda data: "docsis30" not in grab(data, "data.channelDs",
+                                                                               fallback={}).keys()
             },
             "cable_channel_ds_docsis30_latency": {
                 "data_path": "data.channelDs.docsis30",
@@ -189,6 +205,8 @@ lua_services.append({
                     "value_function": lambda data: data.get("latency"),
                     "tags_function": lambda data: {"id": data.get("channelID")}
                 },
+                "exclude_filter_function": lambda data: "docsis30" not in grab(data, "data.channelDs",
+                                                                               fallback={}).keys()
             },
             "cable_channel_ds_docsis30_mse": {
                 "data_path": "data.channelDs.docsis30",
@@ -198,6 +216,8 @@ lua_services.append({
                     "value_function": lambda data: data.get("mse"),
                     "tags_function": lambda data: {"id": data.get("channelID")}
                 },
+                "exclude_filter_function": lambda data: "docsis30" not in grab(data, "data.channelDs",
+                                                                               fallback={}).keys()
             },
             "cable_channel_ds_docsis30_corrected_errors": {
                 "data_path": "data.channelDs.docsis30",
@@ -207,6 +227,8 @@ lua_services.append({
                     "value_function": lambda data: data.get("corrErrors"),
                     "tags_function": lambda data: {"id": data.get("channelID")}
                 },
+                "exclude_filter_function": lambda data: "docsis30" not in grab(data, "data.channelDs",
+                                                                               fallback={}).keys()
             },
             "cable_channel_ds_docsis30_non_corrected_errors": {
                 "data_path": "data.channelDs.docsis30",
@@ -216,6 +238,8 @@ lua_services.append({
                     "value_function": lambda data: data.get("nonCorrErrors"),
                     "tags_function": lambda data: {"id": data.get("channelID")}
                 },
+                "exclude_filter_function": lambda data: "docsis30" not in grab(data, "data.channelDs",
+                                                                               fallback={}).keys()
             },
             "cable_channel_us_docsis31_type": {
                 "data_path": "data.channelUs.docsis31",
@@ -225,6 +249,8 @@ lua_services.append({
                     "value_function": lambda data: data.get("type"),
                     "tags_function": lambda data: {"id": data.get("channelID")}
                 },
+                "exclude_filter_function": lambda data: "docsis31" not in grab(data, "data.channelUs",
+                                                                               fallback={}).keys()
             },
             "cable_channel_us_docsis31_power_level": {
                 "data_path": "data.channelUs.docsis31",
@@ -234,6 +260,8 @@ lua_services.append({
                     "value_function": lambda data: data.get("powerLevel"),
                     "tags_function": lambda data: {"id": data.get("channelID")}
                 },
+                "exclude_filter_function": lambda data: "docsis31" not in grab(data, "data.channelUs",
+                                                                               fallback={}).keys()
             },
             "cable_channel_us_docsis31_channel": {
                 "data_path": "data.channelUs.docsis31",
@@ -243,6 +271,8 @@ lua_services.append({
                     "value_function": lambda data: data.get("channel"),
                     "tags_function": lambda data: {"id": data.get("channelID")}
                 },
+                "exclude_filter_function": lambda data: "docsis31" not in grab(data, "data.channelUs",
+                                                                               fallback={}).keys()
             },
             "cable_channel_us_docsis31_frequency": {
                 "data_path": "data.channelUs.docsis31",
@@ -252,6 +282,8 @@ lua_services.append({
                     "value_function": lambda data: data.get("frequency"),
                     "tags_function": lambda data: {"id": data.get("channelID")}
                 },
+                "exclude_filter_function": lambda data: "docsis31" not in grab(data, "data.channelUs",
+                                                                               fallback={}).keys()
             },
             "cable_channel_us_docsis31_multiplex": {
                 "data_path": "data.channelUs.docsis31",
@@ -261,6 +293,8 @@ lua_services.append({
                     "value_function": lambda data: data.get("multiplex"),
                     "tags_function": lambda data: {"id": data.get("channelID")}
                 },
+                "exclude_filter_function": lambda data: "docsis31" not in grab(data, "data.channelUs",
+                                                                               fallback={}).keys()
             },
             "cable_channel_us_docsis30_type": {
                 "data_path": "data.channelUs.docsis30",
@@ -270,6 +304,8 @@ lua_services.append({
                     "value_function": lambda data: data.get("type"),
                     "tags_function": lambda data: {"id": data.get("channelID")}
                 },
+                "exclude_filter_function": lambda data: "docsis30" not in grab(data, "data.channelUs",
+                                                                               fallback={}).keys()
             },
             "cable_channel_us_docsis30_power_level": {
                 "data_path": "data.channelUs.docsis30",
@@ -279,6 +315,8 @@ lua_services.append({
                     "value_function": lambda data: data.get("powerLevel"),
                     "tags_function": lambda data: {"id": data.get("channelID")}
                 },
+                "exclude_filter_function": lambda data: "docsis30" not in grab(data, "data.channelUs",
+                                                                               fallback={}).keys()
             },
             "cable_channel_us_docsis30_channel": {
                 "data_path": "data.channelUs.docsis30",
@@ -288,6 +326,8 @@ lua_services.append({
                     "value_function": lambda data: data.get("channel"),
                     "tags_function": lambda data: {"id": data.get("channelID")}
                 },
+                "exclude_filter_function": lambda data: "docsis30" not in grab(data, "data.channelUs",
+                                                                               fallback={}).keys()
             },
             "cable_channel_us_docsis30_frequency": {
                 "data_path": "data.channelUs.docsis30",
@@ -297,6 +337,8 @@ lua_services.append({
                     "value_function": lambda data: data.get("frequency"),
                     "tags_function": lambda data: {"id": data.get("channelID")}
                 },
+                "exclude_filter_function": lambda data: "docsis30" not in grab(data, "data.channelUs",
+                                                                               fallback={}).keys()
             },
             "cable_channel_us_docsis30_multiplex": {
                 "data_path": "data.channelUs.docsis30",
@@ -306,6 +348,8 @@ lua_services.append({
                     "value_function": lambda data: data.get("multiplex"),
                     "tags_function": lambda data: {"id": data.get("channelID")}
                 },
+                "exclude_filter_function": lambda data: "docsis30" not in grab(data, "data.channelUs",
+                                                                               fallback={}).keys()
             },
         }
     }
