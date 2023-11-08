@@ -138,7 +138,8 @@ def main():
              f"Model: {fritzbox_connection.config.model} ({fritzbox_connection.config.link_type}) - "
              f"FW: {fritzbox_connection.config.fw_version}")
 
-    loop = asyncio.get_event_loop()
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
 
     for fb_signal in [signal.SIGHUP, signal.SIGTERM, signal.SIGINT]:
         loop.add_signal_handler(
