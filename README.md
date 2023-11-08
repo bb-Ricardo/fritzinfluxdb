@@ -234,7 +234,7 @@ InfluxDB >=2.2.0:
 * [fritzbox_call_log_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/grafana/influx2_dashboards/fritzbox_call_log_dashboard.json)
 * [fritzbox_home_automation_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/grafana/influx2_dashboards/fritzbox_home_automation_dashboard.json)
 
-*This was heavily inspired by: https://grafana.com/dashboards/713*
+*This was heavily inspired by: [https://grafana.com/grafana/dashboards/713-fritz-box-router-status/](https://grafana.com/grafana/dashboards/713-fritz-box-router-status/)*
 
 ## Configure more attributes
 
