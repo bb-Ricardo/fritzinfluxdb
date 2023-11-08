@@ -18,6 +18,7 @@ class FritzBoxLinkTypes:
     DSL = "DSL"
     NO_MODEM = "NoModem"
     Mobile = "Mobile"
+    Ethernet = "Ethernet"
     Other = "Other"
 
 
