@@ -137,7 +137,11 @@ def get_ha_switch_state(data):
     if in_test_mode():
         return int((datetime.now().timestamp() - test_start_ts) / 1000) % 2
 
-    return "0"+grab(data, "switch.state", fallback="0")
+    # noinspection PyBroadException
+    try:
+        return int(grab(data, "switch.state", fallback="0"))
+    except Exception:
+        return 0
 
 
 def get_ha_alert_state(data):
@@ -145,7 +149,11 @@ def get_ha_alert_state(data):
     if in_test_mode():
         return int((datetime.now().timestamp() - test_start_ts) / 600) % 2
 
-    return "0"+grab(data, "alert.state", fallback="0")
+    # noinspection PyBroadException
+    try:
+        return int(grab(data, "alert.state", fallback="0"))
+    except Exception:
+        return 0
 
 
 def decode_function_bitmask(bitmask: int):
