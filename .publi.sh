@@ -11,7 +11,7 @@ DOCKERHUB_IMAGE_PATH="bbricardo/fritzinfluxdb"
 
 [[ -z "$1" ]] && echo "please define a version tag" && exit
 
-read -p "Is this a beta (b) release or final (f) release: " -n1 ANSWER && echo
+read -rp "Is this a beta (b) release or final (f) release: " -n1 ANSWER && echo
 
 [[ $ANSWER =~ [bB] ]] && FINAL=false
 [[ $ANSWER =~ [fF] ]] && FINAL=true
@@ -27,13 +27,13 @@ if [[ $FINAL == true ]]; then
   docker --config ./docker-tmp buildx build --push \
     --platform linux/arm/v7,linux/arm64/v8,linux/amd64 \
     --tag ${DOCKERHUB_IMAGE_PATH}:latest \
-    --tag ${DOCKERHUB_IMAGE_PATH}:${1} .
+    --tag ${DOCKERHUB_IMAGE_PATH}:"${1}" .
   [[ $? -ne 0 ]] && exit 1
   which docker-pushrm >/dev/null 2>&1 &&  docker-pushrm ${DOCKERHUB_IMAGE_PATH}:latest
 else
   docker --config ./docker-tmp buildx build --push \
     --platform linux/arm/v7,linux/arm64/v8,linux/amd64 \
-    --tag ${DOCKERHUB_IMAGE_PATH}:${1} .
+    --tag ${DOCKERHUB_IMAGE_PATH}:"${1}" .
 fi
 
 rm -rf ./docker-tmp

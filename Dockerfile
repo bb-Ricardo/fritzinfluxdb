@@ -11,7 +11,12 @@ COPY fritzinfluxdb.py requirements.txt /app/
 COPY fritzinfluxdb /app/fritzinfluxdb
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
+RUN apt-get update && apt-get install -y --no-install-recommends gcc g++ && \
+    pip install --trusted-host pypi.python.org -r requirements.txt && \
+    apt-get remove --yes gcc g++ && \
+    apt-get clean autoclean && \
+    apt-get autoremove --yes && \
+    rm -rf /var/lib/apt/lists/*
 
 # run daemon
 CMD [ "python", "/app/fritzinfluxdb.py", "-d" ]
