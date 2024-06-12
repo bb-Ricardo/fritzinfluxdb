@@ -18,50 +18,74 @@ hash_cache = dict()
 
 read_interval = 60
 
-
-def get_hash(data):
-    """
-    compute a MD5 hash and use as ID to track and group log data by uid tag
-    """
-
-    hit = hash_cache.get(data)
-    if hit is not None:
-        return hit
-
-    hash_cache[data] = hashlib.md5(data.encode("UTF-8")).hexdigest()
-
-    return hash_cache.get(data)
+call_types = {
+    "1": "incoming",
+    "2": "unanswered",
+    "3": "blocked",
+    "4": "outgoing"
+}
 
 
-def get_date(data):
-    return datetime.strptime(data.split(";")[1], '%d.%m.%y %H:%M')
+class CallLogEntry:
 
+    def __init__(self, data: str):
 
-def get_call_type(data):
+        # compute a MD5 hash and use as ID to track and group log data by uid tag
+        self._hash = hashlib.md5(data.encode("UTF-8")).hexdigest()
 
-    call_types = {
-        "1": "incoming",
-        "2": "unanswered",
-        "3": "blocked",
-        "4": "outgoing"
-    }
+        data_fields = data.split(";")
 
-    return call_types.get(data.split(";")[0], "undefined")
+        self._call_type = call_types.get(data_fields[0], "undefined")
+        self._date_time = datetime.strptime(data_fields[1], '%d.%m.%y %H:%M')
+        self._caller_name = data_fields[2]
+        self._caller_number = data_fields[3]
+        if len(data_fields) == 7:
+            self._extension = data_fields[4]
+            self._number_called = data_fields[5]
+            self._duration = self.get_call_duration(data_fields[6])
+        else:
+            self._extension = data_fields[5]
+            self._number_called = data_fields[6]
+            self._duration = self.get_call_duration(data_fields[7])
 
+    @staticmethod
+    def get_call_duration(field) -> int:
+        """
+        returns call duration in minutes
+        """
 
-def get_call_duration(data):
-    """
-    returns call duration in minutes
-    """
+        # noinspection PyBroadException
+        try:
+            hours, minutes = field.split(":")
+            duration = int(hours) * 60 + int(minutes)
+        except Exception:
+            duration = 0
 
-    # noinspection PyBroadException
-    try:
-        hours, minutes = data.split(";")[6].split(":")
-        duration = int(hours) * 60 + int(minutes)
-    except Exception:
-        return 0
+        return duration
 
-    return duration
+    def hash(self) -> str:
+        return self._hash
+
+    def type(self) -> str:
+        return self._call_type
+
+    def date_time(self) -> datetime:
+        return self._date_time
+
+    def caller_name(self) -> str:
+        return self._caller_name
+
+    def caller_number(self) -> str:
+        return self._caller_number
+
+    def extension(self) -> str:
+        return self._extension
+
+    def number_called(self) -> str:
+        return self._number_called
+
+    def duration(self) -> int:
+        return self._duration
 
 
 def prepare_response_data(response):
@@ -73,10 +97,11 @@ def prepare_response_data(response):
     filter_strings = [
         'sep=;',
         'Typ;Datum;Name;Rufnummer;Nebenstelle;Eigene Rufnummer;Dauer',
+        'Typ;Datum;Name;Rufnummer;Landes-/Ortsnetzbereich;Nebenstelle;Eigene Rufnummer;Dauer',
         ''
     ]
 
-    return [x for x in response.text.split("\n") if x not in filter_strings]
+    return [CallLogEntry(x) for x in response.text.split("\n") if x not in filter_strings]
 
 
 # due to the tracking of measurements multiple short calls from the same number within the same minute
@@ -100,9 +125,9 @@ lua_services.append(
                 "value_function": lambda data: data,
                 "next": {
                     "type": str,
-                    "tags_function": lambda data: {"uid": get_hash(data)},
-                    "value_function": get_call_type,
-                    "timestamp_function": get_date,
+                    "tags_function": lambda entry: {"uid": entry.hash()},
+                    "value_function": lambda entry: entry.type(),
+                    "timestamp_function": lambda entry: entry.date_time(),
                 }
             },
             "call_list_caller_name": {
@@ -110,9 +135,9 @@ lua_services.append(
                 "value_function": lambda data: data,
                 "next": {
                     "type": str,
-                    "tags_function": lambda data: {"uid": get_hash(data)},
-                    "value_function": lambda data: data.split(";")[2],
-                    "timestamp_function": get_date,
+                    "tags_function": lambda entry: {"uid": entry.hash()},
+                    "value_function": lambda entry: entry.caller_name(),
+                    "timestamp_function": lambda entry: entry.date_time(),
                 }
             },
             "call_list_caller_number": {
@@ -120,9 +145,9 @@ lua_services.append(
                 "value_function": lambda data: data,
                 "next": {
                     "type": str,
-                    "tags_function": lambda data: {"uid": get_hash(data)},
-                    "value_function": lambda data: data.split(";")[3],
-                    "timestamp_function": get_date,
+                    "tags_function": lambda entry: {"uid": entry.hash()},
+                    "value_function": lambda entry: entry.caller_number(),
+                    "timestamp_function": lambda entry: entry.date_time(),
                 }
             },
             "call_list_extension": {
@@ -130,9 +155,9 @@ lua_services.append(
                 "value_function": lambda data: data,
                 "next": {
                     "type": str,
-                    "tags_function": lambda data: {"uid": get_hash(data)},
-                    "value_function": lambda data: data.split(";")[4],
-                    "timestamp_function": get_date,
+                    "tags_function": lambda entry: {"uid": entry.hash()},
+                    "value_function": lambda entry: entry.extension(),
+                    "timestamp_function": lambda entry: entry.date_time(),
                 }
             },
             "call_list_number_called": {
@@ -140,9 +165,9 @@ lua_services.append(
                 "value_function": lambda data: data,
                 "next": {
                     "type": str,
-                    "tags_function": lambda data: {"uid": get_hash(data)},
-                    "value_function": lambda data: data.split(";")[5],
-                    "timestamp_function": get_date,
+                    "tags_function": lambda entry: {"uid": entry.hash()},
+                    "value_function": lambda entry: entry.number_called(),
+                    "timestamp_function": lambda entry: entry.date_time(),
                 }
             },
             "call_list_duration": {
@@ -150,11 +175,11 @@ lua_services.append(
                 "value_function": lambda data: data,
                 "next": {
                     "type": int,
-                    "tags_function": lambda data: {"uid": get_hash(data)},
-                    "value_function": get_call_duration,
-                    "timestamp_function": get_date,
+                    "tags_function": lambda entry: {"uid": entry.hash()},
+                    "value_function": lambda entry: entry.duration(),
+                    "timestamp_function": lambda entry: entry.date_time(),
                 }
-            },
+            }
         }
     }
 )
