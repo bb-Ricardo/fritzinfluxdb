@@ -1,4 +1,4 @@
-fritzconnection==1.9.1
-influxdb==5.3.1
-influxdb_client==1.29.1
+fritzconnection==1.13.2
+influxdb==5.3.2
+influxdb_client==1.43.0
 xmltodict==0.13.0
