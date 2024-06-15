@@ -18,35 +18,49 @@ hash_cache = dict()
 
 read_interval = 60
 
-call_types = {
-    "1": "incoming",
-    "2": "unanswered",
-    "3": "blocked",
-    "4": "outgoing"
-}
+
+class CallLogConfig:
+
+    def __init__(self, sep, header):
+
+        self.sep = ";"
+        self.header_list = list()
+
+        if len(sep) > 0:
+            self.sep = sep
+
+        if len(header) > 0:
+            self.header_list = [x.strip('"') for x in header.split(self.sep)]
 
 
 class CallLogEntry:
+    """
+    parse a single call log entry
+    maps columns to be backwards compatible
+    """
 
-    def __init__(self, data: str):
+    call_types = {
+        "1": "incoming",
+        "2": "unanswered",
+        "3": "blocked",
+        "4": "outgoing"
+    }
+
+    def __init__(self, entry: str, config: CallLogConfig):
 
         # compute a MD5 hash and use as ID to track and group log data by uid tag
-        self._hash = hashlib.md5(data.encode("UTF-8")).hexdigest()
+        self._hash = hashlib.md5(entry.encode("UTF-8")).hexdigest()
 
-        data_fields = data.split(";")
+        entry_dict = dict(zip(config.header_list, entry.split(config.sep)))
 
-        self._call_type = call_types.get(data_fields[0], "undefined")
-        self._date_time = datetime.strptime(data_fields[1], '%d.%m.%y %H:%M')
-        self._caller_name = data_fields[2]
-        self._caller_number = data_fields[3]
-        if len(data_fields) == 7:
-            self._extension = data_fields[4]
-            self._number_called = data_fields[5]
-            self._duration = self.get_call_duration(data_fields[6])
-        else:
-            self._extension = data_fields[5]
-            self._number_called = data_fields[6]
-            self._duration = self.get_call_duration(data_fields[7])
+        self._call_type = self.call_types.get(entry_dict.get("Typ"), "undefined")
+        self._date_time = datetime.strptime(entry_dict.get("Datum"), '%d.%m.%y %H:%M')
+        self._caller_name = entry_dict.get("Name", "")
+        self._caller_number = entry_dict.get("Rufnummer", "")
+        self._caller_location = entry_dict.get("Landes-/Ortsnetzbereich", "")
+        self._extension = entry_dict.get("Nebenstelle", "")
+        self._number_called = entry_dict.get("Eigene Rufnummer", "")
+        self._duration = self.get_call_duration(entry_dict.get("Dauer"))
 
     @staticmethod
     def get_call_duration(field) -> int:
@@ -73,35 +87,66 @@ class CallLogEntry:
         return self._date_time
 
     def caller_name(self) -> str:
-        return self._caller_name
+        return self._caller_name.strip('"')
 
     def caller_number(self) -> str:
-        return self._caller_number
+        return self._caller_number.strip('"')
+
+    def caller_location(self) -> str:
+        return self._caller_location.strip('"')
 
     def extension(self) -> str:
-        return self._extension
+        return self._extension.strip('"')
 
     def number_called(self) -> str:
-        return self._number_called
+        return self._number_called.strip('"')
 
     def duration(self) -> int:
         return self._duration
 
 
-def prepare_response_data(response):
+class CallLog:
     """
-    handler to prepare returned data for parsing
+    Parse FritzBox call log entries csv list
+    extracts separator and header and
     """
 
-    # exclude from csv output
-    filter_strings = [
-        'sep=;',
-        'Typ;Datum;Name;Rufnummer;Nebenstelle;Eigene Rufnummer;Dauer',
-        'Typ;Datum;Name;Rufnummer;Landes-/Ortsnetzbereich;Nebenstelle;Eigene Rufnummer;Dauer',
-        ''
-    ]
+    new_line_char = "\n"
 
-    return [CallLogEntry(x) for x in response.text.split("\n") if x not in filter_strings]
+    def __init__(self, data):
+
+        self.entries = list()
+        if not isinstance(data, str):
+            return
+
+        lines = data.split(self.new_line_char)
+
+        if len(lines) == 0:
+            return
+
+        sep = ""
+        header = ""
+
+        # extract separator
+        if lines[0].startswith("sep="):
+            sep = lines[0].split("=")[-1]
+            lines = lines[1:]
+
+        # extract header
+        if lines[0].strip('"').startswith("Typ"):
+            header = lines[0]
+            lines = lines[1:]
+
+        config = CallLogConfig(sep, header)
+
+        if len(config.header_list) == 0:
+            return
+
+        for line in lines:
+            if len(line) == 0:
+                continue
+
+            self.entries.append(CallLogEntry(line, config))
 
 
 # due to the tracking of measurements multiple short calls from the same number within the same minute
@@ -116,7 +161,7 @@ lua_services.append(
             "switchcmd": "getdevicelistinfos",
             "csv": "",
         },
-        "response_parser": prepare_response_data,
+        "response_parser": lambda response: CallLog(response.text).entries,
         "interval": read_interval,
         "track": True,
         "value_instances": {
@@ -147,6 +192,16 @@ lua_services.append(
                     "type": str,
                     "tags_function": lambda entry: {"uid": entry.hash()},
                     "value_function": lambda entry: entry.caller_number(),
+                    "timestamp_function": lambda entry: entry.date_time(),
+                }
+            },
+            "call_list_caller_location": {
+                "type": list,
+                "value_function": lambda data: data,
+                "next": {
+                    "type": str,
+                    "tags_function": lambda entry: {"uid": entry.hash()},
+                    "value_function": lambda entry: entry.caller_location(),
                     "timestamp_function": lambda entry: entry.date_time(),
                 }
             },
