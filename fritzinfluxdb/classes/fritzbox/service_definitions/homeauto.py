@@ -82,7 +82,7 @@ test_file_location = "test/homeauto_sample.xml"
 test_start_ts = datetime.now().timestamp()
 
 
-def force_int(data, path: string, default: int = 0):
+def force_int(data, path: str, default: int = 0):
     """
     cast 'path' in data (object) to integer,
     if this fails return default
