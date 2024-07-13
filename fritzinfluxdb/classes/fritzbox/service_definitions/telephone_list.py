@@ -77,30 +77,39 @@ class CallLogEntry:
 
         return duration
 
+    @property
     def hash(self) -> str:
         return self._hash
 
+    @property
     def type(self) -> str:
         return self._call_type
 
+    @property
     def date_time(self) -> datetime:
         return self._date_time
 
+    @property
     def caller_name(self) -> str:
         return self._caller_name.strip('"')
 
+    @property
     def caller_number(self) -> str:
         return self._caller_number.strip('"')
 
+    @property
     def caller_location(self) -> str:
         return self._caller_location.strip('"')
 
+    @property
     def extension(self) -> str:
         return self._extension.strip('"')
 
+    @property
     def number_called(self) -> str:
         return self._number_called.strip('"')
 
+    @property
     def duration(self) -> int:
         return self._duration
 
@@ -108,7 +117,7 @@ class CallLogEntry:
 class CallLog:
     """
     Parse FritzBox call log entries csv list
-    extracts separator and header and
+    extracts separator and header, parses each line with given seperator
     """
 
     new_line_char = "\n"
@@ -170,9 +179,9 @@ lua_services.append(
                 "value_function": lambda data: data,
                 "next": {
                     "type": str,
-                    "tags_function": lambda entry: {"uid": entry.hash()},
-                    "value_function": lambda entry: entry.type(),
-                    "timestamp_function": lambda entry: entry.date_time(),
+                    "tags_function": lambda entry: {"uid": entry.hash},
+                    "value_function": lambda entry: entry.type,
+                    "timestamp_function": lambda entry: entry.date_time,
                 }
             },
             "call_list_caller_name": {
@@ -180,9 +189,9 @@ lua_services.append(
                 "value_function": lambda data: data,
                 "next": {
                     "type": str,
-                    "tags_function": lambda entry: {"uid": entry.hash()},
-                    "value_function": lambda entry: entry.caller_name(),
-                    "timestamp_function": lambda entry: entry.date_time(),
+                    "tags_function": lambda entry: {"uid": entry.hash},
+                    "value_function": lambda entry: entry.caller_name,
+                    "timestamp_function": lambda entry: entry.date_time,
                 }
             },
             "call_list_caller_number": {
@@ -190,9 +199,9 @@ lua_services.append(
                 "value_function": lambda data: data,
                 "next": {
                     "type": str,
-                    "tags_function": lambda entry: {"uid": entry.hash()},
-                    "value_function": lambda entry: entry.caller_number(),
-                    "timestamp_function": lambda entry: entry.date_time(),
+                    "tags_function": lambda entry: {"uid": entry.hash},
+                    "value_function": lambda entry: entry.caller_number,
+                    "timestamp_function": lambda entry: entry.date_time,
                 }
             },
             "call_list_caller_location": {
@@ -200,9 +209,9 @@ lua_services.append(
                 "value_function": lambda data: data,
                 "next": {
                     "type": str,
-                    "tags_function": lambda entry: {"uid": entry.hash()},
-                    "value_function": lambda entry: entry.caller_location(),
-                    "timestamp_function": lambda entry: entry.date_time(),
+                    "tags_function": lambda entry: {"uid": entry.hash},
+                    "value_function": lambda entry: entry.caller_location,
+                    "timestamp_function": lambda entry: entry.date_time,
                 }
             },
             "call_list_extension": {
@@ -210,9 +219,9 @@ lua_services.append(
                 "value_function": lambda data: data,
                 "next": {
                     "type": str,
-                    "tags_function": lambda entry: {"uid": entry.hash()},
-                    "value_function": lambda entry: entry.extension(),
-                    "timestamp_function": lambda entry: entry.date_time(),
+                    "tags_function": lambda entry: {"uid": entry.hash},
+                    "value_function": lambda entry: entry.extension,
+                    "timestamp_function": lambda entry: entry.date_time,
                 }
             },
             "call_list_number_called": {
@@ -220,9 +229,9 @@ lua_services.append(
                 "value_function": lambda data: data,
                 "next": {
                     "type": str,
-                    "tags_function": lambda entry: {"uid": entry.hash()},
-                    "value_function": lambda entry: entry.number_called(),
-                    "timestamp_function": lambda entry: entry.date_time(),
+                    "tags_function": lambda entry: {"uid": entry.hash},
+                    "value_function": lambda entry: entry.number_called,
+                    "timestamp_function": lambda entry: entry.date_time,
                 }
             },
             "call_list_duration": {
@@ -230,9 +239,9 @@ lua_services.append(
                 "value_function": lambda data: data,
                 "next": {
                     "type": int,
-                    "tags_function": lambda entry: {"uid": entry.hash()},
-                    "value_function": lambda entry: entry.duration(),
-                    "timestamp_function": lambda entry: entry.date_time(),
+                    "tags_function": lambda entry: {"uid": entry.hash},
+                    "value_function": lambda entry: entry.duration,
+                    "timestamp_function": lambda entry: entry.date_time,
                 }
             }
         }
