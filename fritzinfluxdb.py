@@ -118,7 +118,7 @@ def main():
     fritzbox_connection.connect()
 
     # Lua handler is only useful with FritzBox FW >= 7.X
-    if fritzbox_connection.config.fw_version is not None and fritzbox_connection.config.fw_version[0] == "7":
+    if fritzbox_connection.config.fw_version is not None and fritzbox_connection.config.fw_version[0] > "6":
         fritzbox_lua_connection.connect()
     else:
         log.info("Disabling queries via Lua. Fritz!OS version must be at least 7.XX")
