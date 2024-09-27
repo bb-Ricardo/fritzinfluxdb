@@ -27,8 +27,8 @@ from fritzinfluxdb.configparser import import_config
 from fritzinfluxdb.classes.fritzbox.handler import FritzBoxHandler, FritzBoxLuaHandler
 from fritzinfluxdb.classes.influxdb.handler import InfluxHandler, InfluxLogAndConfigWriter
 
-__version__ = "1.2.2"
-__version_date__ = "2024-07-13"
+__version__ = "1.2.3"
+__version_date__ = "2024-09-27"
 __author__ = "Ricardo Bartels <ricardo@bitchbrothers.com>"
 __description__ = "fritzinfluxdb"
 __license__ = "MIT"
@@ -118,7 +118,7 @@ def main():
     fritzbox_connection.connect()
 
     # Lua handler is only useful with FritzBox FW >= 7.X
-    if fritzbox_connection.config.fw_version is not None and fritzbox_connection.config.fw_version[0] > "6":
+    if fritzbox_connection.config.fw_version is not None and int(fritzbox_connection.config.fw_version[0]) >= 7:
         fritzbox_lua_connection.connect()
     else:
         log.info("Disabling queries via Lua. Fritz!OS version must be at least 7.XX")

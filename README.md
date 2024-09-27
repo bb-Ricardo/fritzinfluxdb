@@ -194,7 +194,7 @@ For InfluxDB 2 it is highly recommended creating a specific write only token for
 usage: fritzinfluxdb.py [-h] [-c fritzinfluxdb.ini [fritzinfluxdb.ini ...]] [-d] [-v]
 
 fritzinfluxdb
-Version: 1.2.2 (2024-07-13)
+Version: 1.2.3 (2024-09-27)
 Project URL: https://github.com/bb-Ricardo/fritzinfluxdb
 
 optional arguments:
