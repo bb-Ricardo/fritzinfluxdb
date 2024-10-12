@@ -34,23 +34,33 @@ lua_services.append(
         "value_instances": {
             "cpu_temp": {
                 "data_path": "data.cputemp.series.0.-1",
-                "type": int
+                "type": int,
+                # Cable FritzBox with FritzOS 8.00 got these stats removed
+                "exclude_filter_function": lambda data: "cputemp" not in data.get("data", {}).keys()
             },
             "cpu_utilization": {
                 "data_path": "data.cpuutil.series.0.-1",
-                "type": int
+                "type": int,
+                # Cable FritzBox with FritzOS 8.00 got these stats removed
+                "exclude_filter_function": lambda data: "cpuutil" not in data.get("data", {}).keys()
             },
             "ram_usage_fixed": {
                 "data_path": "data.ramusage.series.0.-1",
-                "type": int
+                "type": int,
+                # Cable FritzBox with FritzOS 8.00 got these stats removed
+                "exclude_filter_function": lambda data: "ramusage" not in data.get("data", {}).keys()
             },
             "ram_usage_dynamic": {
                 "data_path": "data.ramusage.series.1.-1",
-                "type": int
+                "type": int,
+                # Cable FritzBox with FritzOS 8.00 got these stats removed
+                "exclude_filter_function": lambda data: "ramusage" not in data.get("data", {}).keys()
             },
             "ram_usage_free": {
                 "data_path": "data.ramusage.series.2.-1",
-                "type": int
+                "type": int,
+                # Cable FritzBox with FritzOS 8.00 got these stats removed
+                "exclude_filter_function": lambda data: "ramusage" not in data.get("data", {}).keys()
             }
         }
     })
@@ -76,7 +86,9 @@ lua_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: data.get("actPerc"),
                     "exclude_filter_function": lambda data: "lan" in data.keys()
-                }
+                },
+                # Cable FritzBox with FritzOS 8.00 got these stats removed
+                "exclude_filter_function": lambda data: "drain" not in data.get("data", {}).keys()
             }
         }
     })
