@@ -7,6 +7,7 @@ Data collected:
 * connection related information (amount of data, throughput, daily up/download statistics)
 * all log messages
 * home automation (temperature, power consumption, heating settings)
+* FRITZ!Smart Energy 250 grid meter (import/export direction detection, net power, per-channel energy)
 * phone call list (incoming, outgoing, missed, blocked)
 * system stats (cpu usage/temp, memory usage)
 * WLAN information (num clients, status, channels)
@@ -233,8 +234,49 @@ InfluxDB >=2.2.0:
 * [fritzbox_logs_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/grafana/influx2_dashboards/fritzbox_logs_dashboard.json)
 * [fritzbox_call_log_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/grafana/influx2_dashboards/fritzbox_call_log_dashboard.json)
 * [fritzbox_home_automation_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/grafana/influx2_dashboards/fritzbox_home_automation_dashboard.json)
+* [fritzbox_smart_energy_250_dashboard.json](https://github.com/bb-Ricardo/fritzinfluxdb/blob/main/grafana/influx2_dashboards/fritzbox_smart_energy_250_dashboard.json) — grid import/export monitoring for PV systems
 
 *This was heavily inspired by: [https://grafana.com/grafana/dashboards/713-fritz-box-router-status/](https://grafana.com/grafana/dashboards/713-fritz-box-router-status/)*
+
+## FRITZ!Smart Energy 250
+
+The FRITZ!Smart Energy 250 is a smart meter reader that clips onto the utility meter's optical interface.
+It reports two sub-devices via the AHA-HTTP-Interface:
+
+| AIN Suffix | Channel | Measurement |
+|-----------|---------|-------------|
+| `-1` | Grid import (Bezug, A+) | Energy consumed from the grid |
+| `-2` | Grid export (Einspeisung, A-) | Energy fed into the grid (solar) |
+
+Both channels share the same instantaneous power reading. The energy counters (Wh) differ by direction.
+
+### Direction detection
+
+Since the power value alone cannot distinguish import from export, fritzinfluxdb uses a **sliding window comparison** (default: 300 seconds) over the cumulative energy counters of both channels. The channel whose counter grows faster determines the current direction.
+
+At low power levels (< 120 W), a single 30-second interval may not produce a 1 Wh delta — the sliding window accumulates enough energy to detect direction reliably.
+
+### Additional metrics
+
+These metrics are automatically collected when a Smart Energy 250 is detected:
+
+| Metric | Type | Description |
+|--------|------|-------------|
+| `ha_energy_direction` | string | Current flow direction: `import`, `export`, `balanced`, or `unknown` |
+| `ha_energy_direction_numeric` | int | Numeric direction: `1` (import), `-1` (export), `0` (balanced/unknown) |
+| `ha_energy_net_power` | float | Signed power in Watt — positive for import, negative for export |
+
+These complement the existing `ha_powermeter_power` and `ha_powermeter_energy` metrics which are collected per channel.
+
+### Grafana Dashboard
+
+A dedicated dashboard is included: `grafana/influx2_dashboards/fritzbox_smart_energy_250_dashboard.json`
+
+Panels:
+* Current power, direction indicator, net power stat
+* Net power time series (green below zero = export, red above = import)
+* Direction timeline (state-timeline panel)
+* Hourly import vs. export energy (stacked bar chart)
 
 ## Configure more attributes
 

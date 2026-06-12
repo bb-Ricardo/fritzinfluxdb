@@ -19,6 +19,9 @@ from datetime import datetime
 from fritzinfluxdb.common import grab, in_test_mode
 from fritzinfluxdb.classes.fritzbox.service_handler import FritzBoxLuaURLPath
 from fritzinfluxdb.classes.fritzbox.service_definitions import lua_services
+from fritzinfluxdb.classes.fritzbox.energy_direction import (
+    track_energy_reading, get_energy_direction, get_energy_direction_numeric, get_net_power
+)
 
 home_automation_device_classes = {
     0:  "HAN-FUN",
@@ -134,7 +137,43 @@ def get_ha_powermeter_energy(data):
     if in_test_mode():
         return float(energy) + float(datetime.now().timestamp() - test_start_ts)
 
+    ain = data.get("@identifier", "").strip()
+    if ain and energy is not None:
+        track_energy_reading(ain, float(energy))
+
     return energy
+
+
+def _get_channel_pair(data):
+    ain = data.get("@identifier", "").strip()
+    if not ain.endswith("-1"):
+        return None, None
+    base = ain[:-2]
+    return ain, base + "-2"
+
+
+def get_ha_energy_direction(data):
+    bezug_ain, einsp_ain = _get_channel_pair(data)
+    if not bezug_ain:
+        return None
+    return get_energy_direction(bezug_ain, einsp_ain)
+
+
+def get_ha_energy_direction_numeric(data):
+    bezug_ain, einsp_ain = _get_channel_pair(data)
+    if not bezug_ain:
+        return None
+    return get_energy_direction_numeric(bezug_ain, einsp_ain)
+
+
+def get_ha_net_power(data):
+    bezug_ain, einsp_ain = _get_channel_pair(data)
+    if not bezug_ain:
+        return None
+    power = get_ha_powermeter_power(data)
+    if power is None:
+        return None
+    return get_net_power(power, bezug_ain, einsp_ain)
 
 
 def get_ha_powermeter_voltage(data):
@@ -565,6 +604,50 @@ lua_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: force_int(data, "colorcontrol.temperature"),
                     "exclude_filter_function": lambda data: "colorcontrol" not in data.keys()
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
+            },
+
+            # Smart Energy 250 — energy direction detection
+            "ha_energy_direction": {
+                "data_path": "devicelist.device",
+                "type": list,
+                "next": {
+                    "type": str,
+                    "tags_function": lambda data: {"name": data.get("name")},
+                    "value_function": get_ha_energy_direction,
+                    "exclude_filter_function": lambda data: (
+                        "Smart Energy" not in data.get("@productname", "")
+                        or not data.get("@identifier", "").strip().endswith("-1")
+                    )
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
+            },
+            "ha_energy_direction_numeric": {
+                "data_path": "devicelist.device",
+                "type": list,
+                "next": {
+                    "type": int,
+                    "tags_function": lambda data: {"name": data.get("name")},
+                    "value_function": get_ha_energy_direction_numeric,
+                    "exclude_filter_function": lambda data: (
+                        "Smart Energy" not in data.get("@productname", "")
+                        or not data.get("@identifier", "").strip().endswith("-1")
+                    )
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
+            },
+            "ha_energy_net_power": {
+                "data_path": "devicelist.device",
+                "type": list,
+                "next": {
+                    "type": float,
+                    "tags_function": lambda data: {"name": data.get("name")},
+                    "value_function": get_ha_net_power,
+                    "exclude_filter_function": lambda data: (
+                        "Smart Energy" not in data.get("@productname", "")
+                        or not data.get("@identifier", "").strip().endswith("-1")
+                    )
                 },
                 "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
