@@ -144,67 +144,41 @@ def get_ha_powermeter_energy(data):
     return energy
 
 
-def _find_smart_energy_250_pairs(data):
+def _get_channel_pair(data):
     """
-    Identify FRITZ!Smart Energy 250 channel pairs from device list.
-    Returns list of dicts with bezug/einsp AINs and device name.
+    Derive the bezug/einsp AIN pair from a single device dict.
+    Called from within a 'next' value_function where data is one device.
+    The exclude_filter already ensures this is a '-1' suffixed AIN.
     """
-    devices = grab(data, "devicelist.device")
-    if not devices or not isinstance(devices, list):
-        return []
-
-    ain_map = {}
-    for dev in devices:
-        ain = dev.get("@identifier", "").strip()
-        product = dev.get("@productname", "")
-        if "Smart Energy" not in product and grab(dev, "powermeter.energy") is None:
-            continue
-        base_ain = ain.rsplit("-", 1)[0] if "-" in ain else ain
-        if base_ain not in ain_map:
-            ain_map[base_ain] = {}
-        if ain.endswith("-1"):
-            ain_map[base_ain]["bezug_ain"] = ain
-            ain_map[base_ain]["bezug_name"] = dev.get("name", ain)
-        elif ain.endswith("-2"):
-            ain_map[base_ain]["einsp_ain"] = ain
-            ain_map[base_ain]["einsp_name"] = dev.get("name", ain)
-        else:
-            ain_map[base_ain]["base_ain"] = ain
-            ain_map[base_ain]["base_name"] = dev.get("name", ain)
-
-    pairs = []
-    for base, info in ain_map.items():
-        if "bezug_ain" in info and "einsp_ain" in info:
-            pairs.append(info)
-
-    return pairs
+    ain = data.get("@identifier", "").strip()
+    if not ain.endswith("-1"):
+        return None, None
+    base = ain[:-2]
+    return ain, base + "-2"
 
 
 def get_ha_energy_direction(data):
-    pairs = _find_smart_energy_250_pairs(data)
-    if not pairs:
+    bezug_ain, einsp_ain = _get_channel_pair(data)
+    if not bezug_ain:
         return None
-    p = pairs[0]
-    return get_energy_direction(p["bezug_ain"], p["einsp_ain"])
+    return get_energy_direction(bezug_ain, einsp_ain)
 
 
 def get_ha_energy_direction_numeric(data):
-    pairs = _find_smart_energy_250_pairs(data)
-    if not pairs:
+    bezug_ain, einsp_ain = _get_channel_pair(data)
+    if not bezug_ain:
         return None
-    p = pairs[0]
-    return get_energy_direction_numeric(p["bezug_ain"], p["einsp_ain"])
+    return get_energy_direction_numeric(bezug_ain, einsp_ain)
 
 
 def get_ha_net_power(data):
-    pairs = _find_smart_energy_250_pairs(data)
-    if not pairs:
+    bezug_ain, einsp_ain = _get_channel_pair(data)
+    if not bezug_ain:
         return None
-    p = pairs[0]
     power = get_ha_powermeter_power(data)
     if power is None:
         return None
-    return get_net_power(power, p["bezug_ain"], p["einsp_ain"])
+    return get_net_power(power, bezug_ain, einsp_ain)
 
 
 def get_ha_powermeter_voltage(data):
