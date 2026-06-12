@@ -19,6 +19,9 @@ from datetime import datetime
 from fritzinfluxdb.common import grab, in_test_mode
 from fritzinfluxdb.classes.fritzbox.service_handler import FritzBoxLuaURLPath
 from fritzinfluxdb.classes.fritzbox.service_definitions import lua_services
+from fritzinfluxdb.classes.fritzbox.energy_direction import (
+    track_energy_reading, get_energy_direction, get_energy_direction_numeric, get_net_power
+)
 
 home_automation_device_classes = {
     0:  "HAN-FUN",
@@ -134,7 +137,74 @@ def get_ha_powermeter_energy(data):
     if in_test_mode():
         return float(energy) + float(datetime.now().timestamp() - test_start_ts)
 
+    ain = data.get("@identifier", "").strip()
+    if ain and energy is not None:
+        track_energy_reading(ain, float(energy))
+
     return energy
+
+
+def _find_smart_energy_250_pairs(data):
+    """
+    Identify FRITZ!Smart Energy 250 channel pairs from device list.
+    Returns list of dicts with bezug/einsp AINs and device name.
+    """
+    devices = grab(data, "devicelist.device")
+    if not devices or not isinstance(devices, list):
+        return []
+
+    ain_map = {}
+    for dev in devices:
+        ain = dev.get("@identifier", "").strip()
+        product = dev.get("@productname", "")
+        if "Smart Energy" not in product and grab(dev, "powermeter.energy") is None:
+            continue
+        base_ain = ain.rsplit("-", 1)[0] if "-" in ain else ain
+        if base_ain not in ain_map:
+            ain_map[base_ain] = {}
+        if ain.endswith("-1"):
+            ain_map[base_ain]["bezug_ain"] = ain
+            ain_map[base_ain]["bezug_name"] = dev.get("name", ain)
+        elif ain.endswith("-2"):
+            ain_map[base_ain]["einsp_ain"] = ain
+            ain_map[base_ain]["einsp_name"] = dev.get("name", ain)
+        else:
+            ain_map[base_ain]["base_ain"] = ain
+            ain_map[base_ain]["base_name"] = dev.get("name", ain)
+
+    pairs = []
+    for base, info in ain_map.items():
+        if "bezug_ain" in info and "einsp_ain" in info:
+            pairs.append(info)
+
+    return pairs
+
+
+def get_ha_energy_direction(data):
+    pairs = _find_smart_energy_250_pairs(data)
+    if not pairs:
+        return None
+    p = pairs[0]
+    return get_energy_direction(p["bezug_ain"], p["einsp_ain"])
+
+
+def get_ha_energy_direction_numeric(data):
+    pairs = _find_smart_energy_250_pairs(data)
+    if not pairs:
+        return None
+    p = pairs[0]
+    return get_energy_direction_numeric(p["bezug_ain"], p["einsp_ain"])
+
+
+def get_ha_net_power(data):
+    pairs = _find_smart_energy_250_pairs(data)
+    if not pairs:
+        return None
+    p = pairs[0]
+    power = get_ha_powermeter_power(data)
+    if power is None:
+        return None
+    return get_net_power(power, p["bezug_ain"], p["einsp_ain"])
 
 
 def get_ha_powermeter_voltage(data):
@@ -565,6 +635,50 @@ lua_services.append(
                     "tags_function": lambda data: {"name": data.get("name")},
                     "value_function": lambda data: force_int(data, "colorcontrol.temperature"),
                     "exclude_filter_function": lambda data: "colorcontrol" not in data.keys()
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
+            },
+
+            # Smart Energy 250 — energy direction detection
+            "ha_energy_direction": {
+                "data_path": "devicelist.device",
+                "type": list,
+                "next": {
+                    "type": str,
+                    "tags_function": lambda data: {"name": data.get("name")},
+                    "value_function": lambda data: get_ha_energy_direction(data),
+                    "exclude_filter_function": lambda data: (
+                        "@productname" not in data or "Smart Energy" not in data.get("@productname", "")
+                        or not data.get("@identifier", "").strip().endswith("-1")
+                    )
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
+            },
+            "ha_energy_direction_numeric": {
+                "data_path": "devicelist.device",
+                "type": list,
+                "next": {
+                    "type": int,
+                    "tags_function": lambda data: {"name": data.get("name")},
+                    "value_function": lambda data: get_ha_energy_direction_numeric(data),
+                    "exclude_filter_function": lambda data: (
+                        "@productname" not in data or "Smart Energy" not in data.get("@productname", "")
+                        or not data.get("@identifier", "").strip().endswith("-1")
+                    )
+                },
+                "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
+            },
+            "ha_energy_net_power": {
+                "data_path": "devicelist.device",
+                "type": list,
+                "next": {
+                    "type": float,
+                    "tags_function": lambda data: {"name": data.get("name")},
+                    "value_function": lambda data: get_ha_net_power(data),
+                    "exclude_filter_function": lambda data: (
+                        "@productname" not in data or "Smart Energy" not in data.get("@productname", "")
+                        or not data.get("@identifier", "").strip().endswith("-1")
+                    )
                 },
                 "exclude_filter_function": lambda data: "device" not in data.get("devicelist").keys()
             },
